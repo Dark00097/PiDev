@@ -12,6 +12,9 @@ public class CoffreVirtuel {
     private boolean estVerrouille;
     private int idCompte;
 
+
+    public CoffreVirtuel(){};
+
     public CoffreVirtuel(String nom, double objectifMontant, double montantActuel, String dateCreation, String dateObjectifs, String status, boolean estVerrouille, int idCompte) {
         this.nom = nom;
         this.objectifMontant = objectifMontant;
@@ -33,9 +36,6 @@ public class CoffreVirtuel {
         this.status = status;
         this.estVerrouille = estVerrouille;
         this.idCompte = idCompte;
-    }
-
-    public CoffreVirtuel() {
     }
 
     public int getIdCoffre() {
