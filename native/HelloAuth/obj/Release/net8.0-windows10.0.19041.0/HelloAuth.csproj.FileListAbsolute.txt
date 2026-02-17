@@ -1,0 +1,17 @@
+C:\Users\XPS\Desktop\PiDev-main\native\HelloAuth\bin\Release\net8.0-windows10.0.19041.0\HelloAuth.exe
+C:\Users\XPS\Desktop\PiDev-main\native\HelloAuth\bin\Release\net8.0-windows10.0.19041.0\HelloAuth.deps.json
+C:\Users\XPS\Desktop\PiDev-main\native\HelloAuth\bin\Release\net8.0-windows10.0.19041.0\HelloAuth.runtimeconfig.json
+C:\Users\XPS\Desktop\PiDev-main\native\HelloAuth\bin\Release\net8.0-windows10.0.19041.0\HelloAuth.dll
+C:\Users\XPS\Desktop\PiDev-main\native\HelloAuth\bin\Release\net8.0-windows10.0.19041.0\HelloAuth.pdb
+C:\Users\XPS\Desktop\PiDev-main\native\HelloAuth\bin\Release\net8.0-windows10.0.19041.0\Microsoft.Windows.SDK.NET.dll
+C:\Users\XPS\Desktop\PiDev-main\native\HelloAuth\bin\Release\net8.0-windows10.0.19041.0\WinRT.Runtime.dll
+C:\Users\XPS\Desktop\PiDev-main\native\HelloAuth\obj\Release\net8.0-windows10.0.19041.0\HelloAuth.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\XPS\Desktop\PiDev-main\native\HelloAuth\obj\Release\net8.0-windows10.0.19041.0\HelloAuth.AssemblyInfoInputs.cache
+C:\Users\XPS\Desktop\PiDev-main\native\HelloAuth\obj\Release\net8.0-windows10.0.19041.0\HelloAuth.AssemblyInfo.cs
+C:\Users\XPS\Desktop\PiDev-main\native\HelloAuth\obj\Release\net8.0-windows10.0.19041.0\HelloAuth.csproj.CoreCompileInputs.cache
+C:\Users\XPS\Desktop\PiDev-main\native\HelloAuth\obj\Release\net8.0-windows10.0.19041.0\HelloAuth.csproj.Up2Date
+C:\Users\XPS\Desktop\PiDev-main\native\HelloAuth\obj\Release\net8.0-windows10.0.19041.0\HelloAuth.dll
+C:\Users\XPS\Desktop\PiDev-main\native\HelloAuth\obj\Release\net8.0-windows10.0.19041.0\refint\HelloAuth.dll
+C:\Users\XPS\Desktop\PiDev-main\native\HelloAuth\obj\Release\net8.0-windows10.0.19041.0\HelloAuth.pdb
+C:\Users\XPS\Desktop\PiDev-main\native\HelloAuth\obj\Release\net8.0-windows10.0.19041.0\HelloAuth.genruntimeconfig.cache
+C:\Users\XPS\Desktop\PiDev-main\native\HelloAuth\obj\Release\net8.0-windows10.0.19041.0\ref\HelloAuth.dll

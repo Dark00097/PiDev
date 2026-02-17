@@ -1,0 +1,693 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.nexora.bank.controllers.UserDashboardAccountsSectionController"
+      spacing="0"
+      styleClass="comptes-section"
+      stylesheets="@../../css/sections/UserDashboardAccountsSection.css">
+
+    
+    <VBox styleClass="section-header" spacing="16">
+        <padding>
+            <Insets top="28" right="32" bottom="24" left="32"/>
+        </padding>
+        
+        <HBox alignment="CENTER_LEFT" spacing="16">
+            <StackPane styleClass="section-icon-container">
+                <FontIcon iconLiteral="fas-wallet" styleClass="section-icon"/>
+            </StackPane>
+            <VBox spacing="4" HBox.hgrow="ALWAYS">
+                <Label text="Gestion des comptes" styleClass="section-title"/>
+                <Label text="Gerer les comptes, suivre les soldes et configurer les coffres virtuels" styleClass="section-subtitle"/>
+            </VBox>
+            <HBox spacing="10" alignment="CENTER_RIGHT">
+                <Button styleClass="header-btn-secondary" onAction="#refreshData">
+                    <graphic>
+                        <HBox spacing="8" alignment="CENTER">
+                            <FontIcon iconLiteral="fas-sync-alt" styleClass="header-btn-icon"/>
+                            <Label text="Actualiser" styleClass="header-btn-label"/>
+                        </HBox>
+                    </graphic>
+                </Button>
+                <Button styleClass="header-btn-primary" onAction="#toggleCoffreForm">
+                    <graphic>
+                        <HBox spacing="8" alignment="CENTER">
+                            <FontIcon iconLiteral="fas-plus" styleClass="header-btn-icon-light"/>
+                            <Label text="Nouveau coffre" styleClass="header-btn-label-light"/>
+                        </HBox>
+                    </graphic>
+                </Button>
+            </HBox>
+        </HBox>
+    </VBox>
+
+    
+    <HBox styleClass="kpi-container" spacing="20">
+        <padding>
+            <Insets top="0" right="32" bottom="24" left="32"/>
+        </padding>
+
+        
+        <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS" spacing="14">
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <StackPane styleClass="kpi-icon-wrapper kpi-icon-primary">
+                    <FontIcon iconLiteral="fas-coins" styleClass="kpi-icon"/>
+                </StackPane>
+                <VBox spacing="2">
+                    <Label text="SOLDE TOTAL" styleClass="kpi-title"/>
+                    <Label text="Sur tous les comptes" styleClass="kpi-description"/>
+                </VBox>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="8">
+                <Label text="\$58,250.00" styleClass="kpi-value"/>
+                <HBox styleClass="kpi-trend kpi-trend-up" spacing="4" alignment="CENTER">
+                    <FontIcon iconLiteral="fas-arrow-up" styleClass="kpi-trend-icon"/>
+                    <Label text="+12.5%" styleClass="kpi-trend-text"/>
+                </HBox>
+            </HBox>
+        </VBox>
+
+        
+        <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS" spacing="14">
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <StackPane styleClass="kpi-icon-wrapper kpi-icon-secondary">
+                    <FontIcon iconLiteral="fas-university" styleClass="kpi-icon"/>
+                </StackPane>
+                <VBox spacing="2">
+                    <Label text="COMPTES ACTIFS" styleClass="kpi-title"/>
+                    <Label text="Actuellement utilises" styleClass="kpi-description"/>
+                </VBox>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <Label text="4" styleClass="kpi-value"/>
+                <Label text="comptes" styleClass="kpi-unit"/>
+            </HBox>
+        </VBox>
+
+        
+        <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS" spacing="14">
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <StackPane styleClass="kpi-icon-wrapper kpi-icon-accent">
+                    <FontIcon iconLiteral="fas-piggy-bank" styleClass="kpi-icon"/>
+                </StackPane>
+                <VBox spacing="2">
+                    <Label text="COFFRES VIRTUELS" styleClass="kpi-title"/>
+                    <Label text="Objectifs d epargne actifs" styleClass="kpi-description"/>
+                </VBox>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <Label text="3" styleClass="kpi-value"/>
+                <Label text="objectifs en cours" styleClass="kpi-unit"/>
+            </HBox>
+        </VBox>
+
+        
+        <VBox styleClass="kpi-card kpi-card-highlight" HBox.hgrow="ALWAYS" spacing="14">
+            <HBox spacing="12" alignment="CENTER_LEFT">
+                <StackPane styleClass="kpi-icon-wrapper kpi-icon-highlight">
+                    <FontIcon iconLiteral="fas-shield-alt" styleClass="kpi-icon-light"/>
+                </StackPane>
+                <VBox spacing="2">
+                    <Label text="SANTE DU COMPTE" styleClass="kpi-title-light"/>
+                    <Label text="Etat de securite" styleClass="kpi-description-light"/>
+                </VBox>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <Label text="Excellent" styleClass="kpi-value-light"/>
+                <StackPane styleClass="health-indicator">
+                    <FontIcon iconLiteral="fas-check-circle" styleClass="health-icon"/>
+                </StackPane>
+            </HBox>
+        </VBox>
+    </HBox>
+
+    
+    <HBox spacing="24" VBox.vgrow="ALWAYS">
+        <padding>
+            <Insets top="0" right="32" bottom="32" left="32"/>
+        </padding>
+
+        
+        <VBox styleClass="content-card" prefWidth="480" spacing="0">
+            
+            
+            <HBox styleClass="card-header" spacing="14" alignment="CENTER_LEFT">
+                <StackPane styleClass="card-header-icon">
+                    <FontIcon iconLiteral="fas-edit" styleClass="card-header-icon-glyph"/>
+                </StackPane>
+                <VBox spacing="2">
+                    <Label text="Details du compte" styleClass="card-header-title"/>
+                    <Label text="Voir et modifier les informations du compte" styleClass="card-header-subtitle"/>
+                </VBox>
+            </HBox>
+
+            
+            <VBox styleClass="card-body" spacing="20">
+                <GridPane hgap="16" vgap="16" styleClass="form-grid">
+                    <columnConstraints>
+                        <ColumnConstraints percentWidth="38"/>
+                        <ColumnConstraints percentWidth="62"/>
+                    </columnConstraints>
+
+                    
+                    <VBox spacing="6" GridPane.rowIndex="0" GridPane.columnIndex="0" GridPane.columnSpan="2">
+                        <Label text="Numero de compte" styleClass="form-label"/>
+                        <HBox styleClass="input-group" spacing="0">
+                            <StackPane styleClass="input-prefix">
+                                <FontIcon iconLiteral="fas-hashtag" styleClass="input-prefix-icon"/>
+                            </StackPane>
+                            <TextField fx:id="txtAccountNumber" promptText="Saisir le numero de compte" styleClass="text-field input-with-prefix" HBox.hgrow="ALWAYS"/>
+                        </HBox>
+                    </VBox>
+
+                    
+                    <VBox spacing="6" GridPane.rowIndex="1" GridPane.columnIndex="0">
+                        <Label text="Balance" styleClass="form-label"/>
+                        <HBox styleClass="input-group" spacing="0">
+                            <StackPane styleClass="input-prefix input-prefix-currency">
+                                <Label text="\$" styleClass="input-prefix-text"/>
+                            </StackPane>
+                            <TextField fx:id="txtBalance" promptText="0.00" styleClass="text-field input-with-prefix" HBox.hgrow="ALWAYS"/>
+                        </HBox>
+                    </VBox>
+
+                    
+                    <VBox spacing="6" GridPane.rowIndex="1" GridPane.columnIndex="1">
+                        <Label text="Date d ouverture" styleClass="form-label"/>
+                        <DatePicker fx:id="dpOpeningDate" promptText="Selectionner une date" styleClass="date-picker" maxWidth="1.7976931348623157E308"/>
+                    </VBox>
+
+                    
+                    <VBox spacing="6" GridPane.rowIndex="2" GridPane.columnIndex="0">
+                        <Label text="Statut du compte" styleClass="form-label"/>
+                        <ComboBox fx:id="cbStatus" promptText="Selectionner" styleClass="combo-box" maxWidth="1.7976931348623157E308">
+                            <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                    <String fx:value="Active"/>
+                                    <String fx:value="Bloque"/>
+                                    <String fx:value="Ferme"/>
+                                </FXCollections>
+                            </items>
+                        </ComboBox>
+                    </VBox>
+
+                    
+                    <VBox spacing="6" GridPane.rowIndex="2" GridPane.columnIndex="1">
+                        <Label text="Type de compte" styleClass="form-label"/>
+                        <ComboBox fx:id="cbType" promptText="Selectionner le type" styleClass="combo-box" maxWidth="1.7976931348623157E308">
+                            <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                    <String fx:value="Courant"/>
+                                    <String fx:value="Epargne"/>
+                                    <String fx:value="Professionnel"/>
+                                </FXCollections>
+                            </items>
+                        </ComboBox>
+                    </VBox>
+
+                    
+                    <VBox spacing="6" GridPane.rowIndex="3" GridPane.columnIndex="0">
+                        <Label text="Plafond de retrait" styleClass="form-label"/>
+                        <HBox styleClass="input-group" spacing="0">
+                            <StackPane styleClass="input-prefix input-prefix-currency">
+                                <Label text="\$" styleClass="input-prefix-text"/>
+                            </StackPane>
+                            <TextField fx:id="txtWithdrawLimit" promptText="0.00" styleClass="text-field input-with-prefix" HBox.hgrow="ALWAYS"/>
+                        </HBox>
+                    </VBox>
+
+                    
+                    <VBox spacing="6" GridPane.rowIndex="3" GridPane.columnIndex="1">
+                        <Label text="Plafond de virement" styleClass="form-label"/>
+                        <HBox styleClass="input-group" spacing="0">
+                            <StackPane styleClass="input-prefix input-prefix-currency">
+                                <Label text="\$" styleClass="input-prefix-text"/>
+                            </StackPane>
+                            <TextField fx:id="txtTransferLimit" promptText="0.00" styleClass="text-field input-with-prefix" HBox.hgrow="ALWAYS"/>
+                        </HBox>
+                    </VBox>
+                </GridPane>
+
+                
+                <HBox spacing="12" alignment="CENTER_RIGHT" styleClass="form-actions">
+                    <Button styleClass="btn-outline" onAction="#clearForm">
+                        <graphic>
+                            <HBox spacing="6" alignment="CENTER">
+                                <FontIcon iconLiteral="fas-eraser" styleClass="btn-icon"/>
+                                <Label text="Vider"/>
+                            </HBox>
+                        </graphic>
+                    </Button>
+                    <Button styleClass="btn-danger" onAction="#deleteAccount">
+                        <graphic>
+                            <HBox spacing="6" alignment="CENTER">
+                                <FontIcon iconLiteral="fas-trash-alt" styleClass="btn-icon-light"/>
+                                <Label text="Supprimer"/>
+                            </HBox>
+                        </graphic>
+                    </Button>
+                    <Button styleClass="btn-primary" onAction="#saveAccount">
+                        <graphic>
+                            <HBox spacing="6" alignment="CENTER">
+                                <FontIcon iconLiteral="fas-save" styleClass="btn-icon-light"/>
+                                <Label text="Enregistrer les modifications"/>
+                            </HBox>
+                        </graphic>
+                    </Button>
+                </HBox>
+            </VBox>
+
+            
+            <VBox fx:id="coffreFormContainer" styleClass="vault-form-container" spacing="0" visible="false" managed="false">
+                <Separator styleClass="section-divider"/>
+                
+                <HBox styleClass="vault-form-header" spacing="12" alignment="CENTER_LEFT">
+                    <StackPane styleClass="vault-form-icon">
+                        <FontIcon iconLiteral="fas-lock" styleClass="vault-form-icon-glyph"/>
+                    </StackPane>
+                    <VBox spacing="2" HBox.hgrow="ALWAYS">
+                        <Label text="Configuration du coffre virtuel" styleClass="vault-form-title"/>
+                        <Label text="Creer un nouvel objectif d epargne" styleClass="vault-form-subtitle"/>
+                    </VBox>
+                    <Button styleClass="btn-icon-close" onAction="#hideCoffreForm">
+                        <graphic>
+                            <FontIcon iconLiteral="fas-times" styleClass="close-icon"/>
+                        </graphic>
+                    </Button>
+                </HBox>
+
+                <VBox styleClass="vault-form-body" spacing="16">
+                    <GridPane hgap="16" vgap="14">
+                        <columnConstraints>
+                            <ColumnConstraints percentWidth="50"/>
+                            <ColumnConstraints percentWidth="50"/>
+                        </columnConstraints>
+
+                        <VBox spacing="6" GridPane.rowIndex="0" GridPane.columnIndex="0" GridPane.columnSpan="2">
+                            <Label text="Nom du coffre" styleClass="form-label"/>
+                            <HBox styleClass="input-group" spacing="0">
+                                <StackPane styleClass="input-prefix">
+                                    <FontIcon iconLiteral="fas-tag" styleClass="input-prefix-icon"/>
+                                </StackPane>
+                                <TextField promptText="ex. Fonds vacances" styleClass="text-field input-with-prefix" HBox.hgrow="ALWAYS"/>
+                            </HBox>
+                        </VBox>
+
+                        <VBox spacing="6" GridPane.rowIndex="1" GridPane.columnIndex="0">
+                            <Label text="Montant cible" styleClass="form-label"/>
+                            <HBox styleClass="input-group" spacing="0">
+                                <StackPane styleClass="input-prefix input-prefix-currency">
+                                    <Label text="\$" styleClass="input-prefix-text"/>
+                                </StackPane>
+                                <TextField promptText="0.00" styleClass="text-field input-with-prefix" HBox.hgrow="ALWAYS"/>
+                            </HBox>
+                        </VBox>
+
+                        <VBox spacing="6" GridPane.rowIndex="1" GridPane.columnIndex="1">
+                            <Label text="Depot initial" styleClass="form-label"/>
+                            <HBox styleClass="input-group" spacing="0">
+                                <StackPane styleClass="input-prefix input-prefix-currency">
+                                    <Label text="\$" styleClass="input-prefix-text"/>
+                                </StackPane>
+                                <TextField promptText="0.00" styleClass="text-field input-with-prefix" HBox.hgrow="ALWAYS"/>
+                            </HBox>
+                        </VBox>
+
+                        <VBox spacing="6" GridPane.rowIndex="2" GridPane.columnIndex="0">
+                            <Label text="Date cible" styleClass="form-label"/>
+                            <DatePicker promptText="Selectionner une date" styleClass="date-picker" maxWidth="1.7976931348623157E308"/>
+                        </VBox>
+
+                        <VBox spacing="6" GridPane.rowIndex="2" GridPane.columnIndex="1">
+                            <Label text="Statut du coffre" styleClass="form-label"/>
+                            <ComboBox promptText="Selectionner" styleClass="combo-box" maxWidth="1.7976931348623157E308">
+                                <items>
+                                    <FXCollections fx:factory="observableArrayList">
+                                        <String fx:value="Active"/>
+                                        <String fx:value="Locked"/>
+                                        <String fx:value="Ferme"/>
+                                    </FXCollections>
+                                </items>
+                            </ComboBox>
+                        </VBox>
+
+                        <HBox spacing="16" GridPane.rowIndex="3" GridPane.columnIndex="0" GridPane.columnSpan="2" alignment="CENTER_LEFT">
+                            <CheckBox text="Verrouiller le coffre jusqu a la date cible" styleClass="check-box"/>
+                            <CheckBox text="Activer le depot automatique" styleClass="check-box"/>
+                        </HBox>
+                    </GridPane>
+
+                    <HBox spacing="12" alignment="CENTER_RIGHT">
+                        <Button styleClass="btn-outline" onAction="#hideCoffreForm">
+                            <graphic>
+                                <Label text="Annuler"/>
+                            </graphic>
+                        </Button>
+                        <Button styleClass="btn-accent">
+                            <graphic>
+                                <HBox spacing="6" alignment="CENTER">
+                                    <FontIcon iconLiteral="fas-plus-circle" styleClass="btn-icon-light"/>
+                                    <Label text="Creer le coffre"/>
+                                </HBox>
+                            </graphic>
+                        </Button>
+                    </HBox>
+                </VBox>
+            </VBox>
+        </VBox>
+
+        
+        <VBox styleClass="content-card" HBox.hgrow="ALWAYS" spacing="0">
+            
+            
+            <HBox styleClass="card-header" spacing="14" alignment="CENTER_LEFT">
+                <StackPane styleClass="card-header-icon">
+                    <FontIcon iconLiteral="fas-layer-group" styleClass="card-header-icon-glyph"/>
+                </StackPane>
+                <VBox spacing="2" HBox.hgrow="ALWAYS">
+                    <Label text="Vos comptes" styleClass="card-header-title"/>
+                    <Label text="Tous les comptes bancaires lies" styleClass="card-header-subtitle"/>
+                </VBox>
+                <HBox styleClass="search-container" spacing="0" alignment="CENTER_LEFT">
+                    <StackPane styleClass="search-icon-wrapper">
+                        <FontIcon iconLiteral="fas-search" styleClass="search-icon"/>
+                    </StackPane>
+                    <TextField promptText="Rechercher des comptes..." styleClass="search-input"/>
+                </HBox>
+            </HBox>
+
+            
+            <ScrollPane styleClass="comptes-scroll" fitToWidth="true" VBox.vgrow="ALWAYS">
+                <VBox styleClass="card-body" spacing="20">
+                    
+                    
+                    <HBox styleClass="filter-tabs" spacing="8">
+                        <Button text="All" styleClass="filter-tab filter-tab-active"/>
+                        <Button text="Courant" styleClass="filter-tab"/>
+                        <Button text="Epargne" styleClass="filter-tab"/>
+                        <Button text="Professionnel" styleClass="filter-tab"/>
+                    </HBox>
+
+                    
+                    <FlowPane styleClass="comptes-grid" hgap="16" vgap="16">
+                        
+                        
+                        <VBox styleClass="account-card" prefWidth="260" spacing="0" onMouseClicked="#selectAccount">
+                            <HBox styleClass="account-card-header account-card-header-current" spacing="10" alignment="CENTER_LEFT">
+                                <StackPane styleClass="account-type-badge">
+                                    <FontIcon iconLiteral="fas-credit-card" styleClass="account-type-icon"/>
+                                </StackPane>
+                                <VBox spacing="1">
+                                    <Label text="COMPTE COURANT" styleClass="account-type-label"/>
+                                    <Label text="Principal" styleClass="account-tag"/>
+                                </VBox>
+                                <Region HBox.hgrow="ALWAYS"/>
+                                <Button styleClass="account-menu-btn">
+                                    <graphic>
+                                        <FontIcon iconLiteral="fas-ellipsis-v" styleClass="account-menu-icon"/>
+                                    </graphic>
+                                </Button>
+                            </HBox>
+                            <VBox styleClass="account-card-body" spacing="12">
+                                <HBox alignment="CENTER_LEFT" spacing="8">
+                                    <Label text="---- ---- ---- " styleClass="account-number-masked"/>
+                                    <Label text="1101" styleClass="account-number-visible"/>
+                                </HBox>
+                                <VBox spacing="4">
+                                    <Label text="Solde disponible" styleClass="balance-label"/>
+                                    <Label text="\$12,450.00" styleClass="balance-value"/>
+                                </VBox>
+                                <HBox spacing="8" alignment="CENTER_LEFT">
+                                    <StackPane styleClass="status-badge status-active">
+                                        <Label text="Active"/>
+                                    </StackPane>
+                                    <Label text="Derniere activite : aujourd hui" styleClass="last-activity"/>
+                                </HBox>
+                            </VBox>
+                            <HBox styleClass="account-card-footer" spacing="10">
+                                <Button styleClass="account-action-btn" onAction="#showCoffres">
+                                    <graphic>
+                                        <HBox spacing="6" alignment="CENTER">
+                                            <FontIcon iconLiteral="fas-lock" styleClass="account-action-icon"/>
+                                            <Label text="Coffres"/>
+                                        </HBox>
+                                    </graphic>
+                                </Button>
+                                <Button styleClass="account-action-btn">
+                                    <graphic>
+                                        <HBox spacing="6" alignment="CENTER">
+                                            <FontIcon iconLiteral="fas-history" styleClass="account-action-icon"/>
+                                            <Label text="Historique"/>
+                                        </HBox>
+                                    </graphic>
+                                </Button>
+                            </HBox>
+                        </VBox>
+
+                        
+                        <VBox styleClass="account-card" prefWidth="260" spacing="0" onMouseClicked="#selectAccount">
+                            <HBox styleClass="account-card-header account-card-header-savings" spacing="10" alignment="CENTER_LEFT">
+                                <StackPane styleClass="account-type-badge">
+                                    <FontIcon iconLiteral="fas-piggy-bank" styleClass="account-type-icon"/>
+                                </StackPane>
+                                <VBox spacing="1">
+                                    <Label text="COMPTE EPARGNE" styleClass="account-type-label"/>
+                                    <Label text="Haut rendement" styleClass="account-tag"/>
+                                </VBox>
+                                <Region HBox.hgrow="ALWAYS"/>
+                                <Button styleClass="account-menu-btn">
+                                    <graphic>
+                                        <FontIcon iconLiteral="fas-ellipsis-v" styleClass="account-menu-icon"/>
+                                    </graphic>
+                                </Button>
+                            </HBox>
+                            <VBox styleClass="account-card-body" spacing="12">
+                                <HBox alignment="CENTER_LEFT" spacing="8">
+                                    <Label text="---- ---- ---- " styleClass="account-number-masked"/>
+                                    <Label text="2205" styleClass="account-number-visible"/>
+                                </HBox>
+                                <VBox spacing="4">
+                                    <Label text="Solde disponible" styleClass="balance-label"/>
+                                    <Label text="\$45,800.00" styleClass="balance-value"/>
+                                </VBox>
+                                <HBox spacing="8" alignment="CENTER_LEFT">
+                                    <StackPane styleClass="status-badge status-active">
+                                        <Label text="Active"/>
+                                    </StackPane>
+                                    <Label text="2.5% APY" styleClass="apy-badge"/>
+                                </HBox>
+                            </VBox>
+                            <HBox styleClass="account-card-footer" spacing="10">
+                                <Button styleClass="account-action-btn" onAction="#showCoffres">
+                                    <graphic>
+                                        <HBox spacing="6" alignment="CENTER">
+                                            <FontIcon iconLiteral="fas-lock" styleClass="account-action-icon"/>
+                                            <Label text="Coffres"/>
+                                        </HBox>
+                                    </graphic>
+                                </Button>
+                                <Button styleClass="account-action-btn">
+                                    <graphic>
+                                        <HBox spacing="6" alignment="CENTER">
+                                            <FontIcon iconLiteral="fas-history" styleClass="account-action-icon"/>
+                                            <Label text="Historique"/>
+                                        </HBox>
+                                    </graphic>
+                                </Button>
+                            </HBox>
+                        </VBox>
+
+                        
+                        <VBox styleClass="account-card" prefWidth="260" spacing="0">
+                            <HBox styleClass="account-card-header account-card-header-business" spacing="10" alignment="CENTER_LEFT">
+                                <StackPane styleClass="account-type-badge">
+                                    <FontIcon iconLiteral="fas-briefcase" styleClass="account-type-icon"/>
+                                </StackPane>
+                                <VBox spacing="1">
+                                    <Label text="COMPTE PROFESSIONNEL" styleClass="account-type-label"/>
+                                    <Label text="Entreprise" styleClass="account-tag"/>
+                                </VBox>
+                                <Region HBox.hgrow="ALWAYS"/>
+                                <Button styleClass="account-menu-btn">
+                                    <graphic>
+                                        <FontIcon iconLiteral="fas-ellipsis-v" styleClass="account-menu-icon"/>
+                                    </graphic>
+                                </Button>
+                            </HBox>
+                            <VBox styleClass="account-card-body" spacing="12">
+                                <HBox alignment="CENTER_LEFT" spacing="8">
+                                    <Label text="---- ---- ---- " styleClass="account-number-masked"/>
+                                    <Label text="3389" styleClass="account-number-visible"/>
+                                </HBox>
+                                <VBox spacing="4">
+                                    <Label text="Solde disponible" styleClass="balance-label"/>
+                                    <Label text="\$0.00" styleClass="balance-value balance-zero"/>
+                                </VBox>
+                                <HBox spacing="8" alignment="CENTER_LEFT">
+                                    <StackPane styleClass="status-badge status-blocked">
+                                        <Label text="Bloque"/>
+                                    </StackPane>
+                                    <Label text="Verification en attente" styleClass="last-activity"/>
+                                </HBox>
+                            </VBox>
+                            <HBox styleClass="account-card-footer" spacing="10">
+                                <Button styleClass="account-action-btn" disable="false">
+                                    <graphic>
+                                        <HBox spacing="6" alignment="CENTER">
+                                            <FontIcon iconLiteral="fas-lock" styleClass="account-action-icon"/>
+                                            <Label text="Coffres"/>
+                                        </HBox>
+                                    </graphic>
+                                </Button>
+                                <Button styleClass="account-action-btn" disable="false">
+                                    <graphic>
+                                        <HBox spacing="6" alignment="CENTER">
+                                            <FontIcon iconLiteral="fas-history" styleClass="account-action-icon"/>
+                                            <Label text="Historique"/>
+                                        </HBox>
+                                    </graphic>
+                                </Button>
+                            </HBox>
+                        </VBox>
+
+                        
+                        <VBox styleClass="account-card account-card-add" prefWidth="260" alignment="CENTER" spacing="12" onMouseClicked="#addNewAccount">
+                            <StackPane styleClass="add-account-icon-wrapper">
+                                <FontIcon iconLiteral="fas-plus" styleClass="add-account-icon"/>
+                            </StackPane>
+                            <Label text="Lier un nouveau compte" styleClass="add-account-label"/>
+                            <Label text="Connecter un autre compte bancaire" styleClass="add-account-sublabel"/>
+                        </VBox>
+                    </FlowPane>
+
+                    
+                    <VBox fx:id="coffresDisplayContainer" styleClass="vaults-section" spacing="16" visible="false" managed="false">
+                        <Separator styleClass="section-divider"/>
+                        
+                        <HBox alignment="CENTER_LEFT" spacing="12">
+                            <StackPane styleClass="vaults-section-icon">
+                                <FontIcon iconLiteral="fas-lock" styleClass="vaults-section-icon-glyph"/>
+                            </StackPane>
+                            <VBox spacing="2" HBox.hgrow="ALWAYS">
+                                <Label text="Associated Coffres" styleClass="vaults-section-title"/>
+                                <Label text="Epargne goals for this account" styleClass="vaults-section-subtitle"/>
+                            </VBox>
+                            <Button styleClass="btn-outline-small" onAction="#hideCoffres">
+                                <graphic>
+                                    <HBox spacing="4" alignment="CENTER">
+                                        <FontIcon iconLiteral="fas-times" styleClass="btn-icon-small"/>
+                                        <Label text="Fermer"/>
+                                    </HBox>
+                                </graphic>
+                            </Button>
+                        </HBox>
+
+                        <FlowPane hgap="16" vgap="16">
+                            
+                            <VBox styleClass="vault-card" prefWidth="240" spacing="14">
+                                <HBox alignment="CENTER_LEFT" spacing="10">
+                                    <StackPane styleClass="vault-icon-wrapper vault-icon-vacation">
+                                        <FontIcon iconLiteral="fas-plane" styleClass="vault-icon"/>
+                                    </StackPane>
+                                    <VBox spacing="2" HBox.hgrow="ALWAYS">
+                                        <Label text="Vacation Fund" styleClass="vault-name"/>
+                                        <Label text="Objectif : Dec 2025" styleClass="vault-target-date"/>
+                                    </VBox>
+                                    <StackPane styleClass="vault-status-indicator vault-status-active"/>
+                                </HBox>
+                                <VBox spacing="8">
+                                    <HBox alignment="CENTER_LEFT">
+                                        <Label text="\$650" styleClass="vault-current"/>
+                                        <Region HBox.hgrow="ALWAYS"/>
+                                        <Label text="sur $3,000" styleClass="vault-target"/>
+                                    </HBox>
+                                    <StackPane styleClass="progress-track">
+                                        <StackPane styleClass="progress-fill" style="-fx-max-width: 21.67%;"/>
+                                    </StackPane>
+                                    <Label text="22% termine" styleClass="vault-percentage"/>
+                                </VBox>
+                            </VBox>
+
+                            
+                            <VBox styleClass="vault-card" prefWidth="240" spacing="14">
+                                <HBox alignment="CENTER_LEFT" spacing="10">
+                                    <StackPane styleClass="vault-icon-wrapper vault-icon-education">
+                                        <FontIcon iconLiteral="fas-graduation-cap" styleClass="vault-icon"/>
+                                    </StackPane>
+                                    <VBox spacing="2" HBox.hgrow="ALWAYS">
+                                        <Label text="Education" styleClass="vault-name"/>
+                                        <Label text="Objectif : Aout 2026" styleClass="vault-target-date"/>
+                                    </VBox>
+                                    <StackPane styleClass="vault-status-indicator vault-status-active"/>
+                                </HBox>
+                                <VBox spacing="8">
+                                    <HBox alignment="CENTER_LEFT">
+                                        <Label text="\$1,700" styleClass="vault-current"/>
+                                        <Region HBox.hgrow="ALWAYS"/>
+                                        <Label text="sur $5,500" styleClass="vault-target"/>
+                                    </HBox>
+                                    <StackPane styleClass="progress-track">
+                                        <StackPane styleClass="progress-fill progress-fill-alt" style="-fx-max-width: 31%;"/>
+                                    </StackPane>
+                                    <Label text="31% termine" styleClass="vault-percentage"/>
+                                </VBox>
+                            </VBox>
+
+                            
+                            <VBox styleClass="vault-card" prefWidth="240" spacing="14">
+                                <HBox alignment="CENTER_LEFT" spacing="10">
+                                    <StackPane styleClass="vault-icon-wrapper vault-icon-emergency">
+                                        <FontIcon iconLiteral="fas-first-aid" styleClass="vault-icon"/>
+                                    </StackPane>
+                                    <VBox spacing="2" HBox.hgrow="ALWAYS">
+                                        <Label text="Fonds d urgence" styleClass="vault-name"/>
+                                        <Label text="Sans echeance" styleClass="vault-target-date"/>
+                                    </VBox>
+                                    <StackPane styleClass="vault-status-indicator vault-status-locked">
+                                        <FontIcon iconLiteral="fas-lock" styleClass="vault-lock-icon"/>
+                                    </StackPane>
+                                </HBox>
+                                <VBox spacing="8">
+                                    <HBox alignment="CENTER_LEFT">
+                                        <Label text="\$4,200" styleClass="vault-current"/>
+                                        <Region HBox.hgrow="ALWAYS"/>
+                                        <Label text="sur $10,000" styleClass="vault-target"/>
+                                    </HBox>
+                                    <StackPane styleClass="progress-track">
+                                        <StackPane styleClass="progress-fill progress-fill-warning" style="-fx-max-width: 42%;"/>
+                                    </StackPane>
+                                    <Label text="42% termine - Verrouille" styleClass="vault-percentage"/>
+                                </VBox>
+                            </VBox>
+                        </FlowPane>
+                    </VBox>
+                </VBox>
+            </ScrollPane>
+        </VBox>
+    </HBox>
+</VBox>
+
+
+
