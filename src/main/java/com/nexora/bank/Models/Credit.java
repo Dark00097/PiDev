@@ -153,4 +153,5 @@ public class Credit {
     public String toString() {
         return "Credit{idCredit=" + this.idCredit + ", idCompte=" + this.idCompte + ", typeCredit='" + this.typeCredit + "', montantDemande=" + this.montantDemande + ", montantAccord=" + this.montantAccord + ", duree=" + this.duree + ", tauxInteret=" + this.tauxInteret + ", mensualite=" + this.mensualite + ", montantRestant=" + this.montantRestant + ", dateDemande='" + this.dateDemande + "', statut='" + this.statut + "'}";
     }
+    
 }

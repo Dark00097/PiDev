@@ -187,7 +187,7 @@ public class CreditService {
     return 0;
 }
 public double getTotalMontantAccorde() {
-    String sql = "SELECT SUM(montant_accorde) FROM credit";
+   String sql = "SELECT SUM(montantAccord) FROM credit";
     try  (PreparedStatement ps = connection.prepareStatement(sql);
          ResultSet rs = ps.executeQuery()) {
 
