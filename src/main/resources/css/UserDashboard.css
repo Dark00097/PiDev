@@ -248,6 +248,13 @@
     -fx-background-color: rgba(255, 255, 255, 0.15);
 }
 
+.navbar-action-button.navbar-action-button-active {
+    -fx-background-color: rgba(0, 180, 160, 0.22);
+    -fx-border-color: rgba(0, 180, 160, 0.45);
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+}
+
 .navbar-action-icon {
     -fx-icon-size: 16;
     -fx-icon-color: rgba(255, 255, 255, 0.7);
@@ -255,6 +262,11 @@
 }
 
 .navbar-action-button:hover .navbar-action-icon {
+    -fx-icon-color: -nx-white;
+    -fx-fill: -nx-white;
+}
+
+.navbar-action-button.navbar-action-button-active .navbar-action-icon {
     -fx-icon-color: -nx-white;
     -fx-fill: -nx-white;
 }

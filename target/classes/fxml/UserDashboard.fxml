@@ -137,7 +137,7 @@
                         </graphic>
                     </Button>
 
-                    <Button styleClass="navbar-action-button" onAction="#openSettings">
+                    <Button fx:id="btnSettings" styleClass="navbar-action-button" onAction="#openSettings">
                         <graphic>
                             <FontIcon iconLiteral="fas-cog" styleClass="navbar-action-icon"/>
                         </graphic>
@@ -213,6 +213,7 @@
                 <fx:include fx:id="sectionTransaction" source="sections/UserDashboardTransactionsSection.fxml"/>
                 <fx:include fx:id="sectionCredit" source="sections/UserDashboardCreditSection.fxml"/>
                 <fx:include fx:id="sectionCashback" source="sections/UserDashboardCashbackSection.fxml"/>
+                <fx:include fx:id="sectionProfile" source="sections/UserDashboardProfileSection.fxml"/>
             </StackPane>
         </ScrollPane>
     </center>
