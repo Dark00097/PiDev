@@ -68,6 +68,11 @@
 
             <ScrollPane styleClass="nx-form-scroll" fitToWidth="true" VBox.vgrow="ALWAYS">
                 <VBox styleClass="nx-card-body" spacing="16">
+                    <!-- Compte -->
+                    <VBox styleClass="nx-form-group" spacing="8">
+                        <Label text="Compte (ID)" styleClass="nx-label, nx-label-required"/>
+                        <ComboBox fx:id="cmbCompte" promptText="Selectionner un compte" styleClass="nx-select" maxWidth="Infinity"/>
+                    </VBox>
                     
                     <!-- Type Crédit -->
                     <VBox styleClass="nx-form-group" spacing="8">
@@ -125,7 +130,7 @@
                         <Label text="Mensualité (DT)" styleClass="nx-label"/>
                         <HBox styleClass="nx-input-wrapper">
                             <SVGPath content="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z" styleClass="nx-input-icon"/>
-                            <TextField fx:id="txtMensualite" promptText="Calculé automatiquement" styleClass="nx-input, nx-input-calculated" editable="false" HBox.hgrow="ALWAYS"/>
+                            <TextField fx:id="txtMensualite" promptText="Calculé automatiquement" styleClass="nx-input, nx-input-calculated" HBox.hgrow="ALWAYS"/>
                         </HBox>
                     </VBox>
 
@@ -134,7 +139,7 @@
                         <Label text="Montant Restant (DT)" styleClass="nx-label"/>
                         <HBox styleClass="nx-input-wrapper">
                             <SVGPath content="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6" styleClass="nx-input-icon"/>
-                            <TextField fx:id="txtMontantRestant" promptText="Solde restant" styleClass="nx-input, nx-input-calculated" editable="false" HBox.hgrow="ALWAYS"/>
+                            <TextField fx:id="txtMontantRestant" promptText="Solde restant" styleClass="nx-input, nx-input-calculated" HBox.hgrow="ALWAYS"/>
                         </HBox>
                     </VBox>
 
@@ -197,6 +202,7 @@
             <VBox styleClass="nx-table-container" VBox.vgrow="ALWAYS">
                 <TableView fx:id="tableCredits" styleClass="nx-table" VBox.vgrow="ALWAYS">
                     <columns>
+                        <TableColumn fx:id="colCompte" text="Compte ID" prefWidth="95"/>
                         <TableColumn fx:id="colType" text="Type" prefWidth="140"/>
                         <TableColumn fx:id="colMontantDemande" text="Demandé" prefWidth="110"/>
                         <TableColumn fx:id="colMontantAccord" text="Accordé" prefWidth="110"/>
