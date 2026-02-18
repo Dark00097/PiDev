@@ -1,5 +1,6 @@
 package com.nexora.bank.controllers;
 
+import com.nexora.bank.AuthSession;
 import com.nexora.bank.Models.CompteBancaire;
 import com.nexora.bank.Service.CompteBancaireService;
 import javafx.animation.*;
@@ -41,6 +42,29 @@ import javafx.animation.ScaleTransition;
 import javafx.animation.Interpolator;
 
 
+/**
+ * ══════════════════════════════════════════════════════════════════
+ * MODIFICATIONS apportées à CompteBancaireController (BackOffice)
+ * ══════════════════════════════════════════════════════════════════
+ *
+ * ★ [CORRECTION] handleAjouter() — mode EDIT :
+ *      Avant : new CompteBancaire(idCompte, numero, solde, dateStr, statut, plafRetrait, plafVirement, type)
+ *              → 8 arguments → ERREUR de compilation car le constructeur attend 9 (avec idUser).
+ *      Après : new CompteBancaire(idCompte, numero, solde, dateStr, statut, plafRetrait, plafVirement, type,
+ *                                  selectedCompte.getIdUser())
+ *              → on récupère l'idUser existant dans l'objet sélectionné pour ne pas l'écraser.
+ *
+ * ★ [CORRECTION] handleAjouter() — mode AJOUT :
+ *      Avant : new CompteBancaire(numero, solde, dateStr, statut, plafRetrait, plafVirement, type)
+ *              → 7 arguments → ERREUR de compilation.
+ *      Après : new CompteBancaire(numero, solde, dateStr, statut, plafRetrait, plafVirement, type, 0)
+ *              → idUser = 0 signifie "non assigné" en BackOffice (l'admin peut créer sans propriétaire).
+ *              → L'admin BackOffice peut ensuite manuellement lier un compte à un user si besoin.
+ *
+ * NOTE : Le BackOffice (admin) continue d'utiliser service.getAll() — il voit TOUS les comptes.
+ *        Seul le FrontOffice (UserDashboardAccountsSectionController) filtre par idUser.
+ * ══════════════════════════════════════════════════════════════════
+ */
 public class CompteBancaireController implements Initializable {
 
     private final CompteBancaireService service = new CompteBancaireService();
@@ -97,8 +121,6 @@ public class CompteBancaireController implements Initializable {
     }
 
     private void initializeTable() {
-
-        // ========== AJOUTEZ CES 2 LIGNES ICI ==========
         colActions.setPrefWidth(50);
         colActions.setMinWidth(50);
 
@@ -150,11 +172,6 @@ public class CompteBancaireController implements Initializable {
                     CompteBancaire compte = getTableView().getItems().get(getIndex());
                     deleteCompte(compte);
                 });
-                /*btnView.setOnAction(event -> {
-                    CompteBancaire compte = getTableView().getItems().get(getIndex());
-                    showDetails(compte);
-                });*/
-
                 btnView.setOnAction(event -> {
                     CompteBancaire compte = getTableView().getItems().get(getIndex());
                     showCompteCoffres(compte);
@@ -199,6 +216,7 @@ public class CompteBancaireController implements Initializable {
     }
 
     private void refreshData() {
+        // BackOffice admin : charge TOUS les comptes (pas de filtre idUser)
         comptesList.setAll(service.getAll());
         updateStats();
         updateTableInfo();
@@ -217,11 +235,29 @@ public class CompteBancaireController implements Initializable {
         String type = cmbTypeCompte.getValue();
 
         if (isEditMode && selectedCompte != null) {
-            CompteBancaire updated = new CompteBancaire(selectedCompte.getIdCompte(), numero, solde, dateStr, statut, plafRetrait, plafVirement, type);
+            // ★ CORRECTION : on passe selectedCompte.getIdUser() pour préserver l'idUser existant.
+            // Avant : new CompteBancaire(idCompte, numero, solde, dateStr, statut, plafRetrait, plafVirement, type)
+            //         → ERREUR : constructeur attendait 9 arguments, reçus 8.
+            CompteBancaire updated = new CompteBancaire(
+                    selectedCompte.getIdCompte(),
+                    numero, solde, dateStr, statut,
+                    plafRetrait, plafVirement, type,
+                    selectedCompte.getIdUser()  // ★ idUser préservé depuis l'objet sélectionné
+            );
             service.edit(updated);
             showInfo("Succès", "Compte modifié avec succès");
         } else {
-            CompteBancaire nouveau = new CompteBancaire(numero, solde, dateStr, statut, plafRetrait, plafVirement, type);
+            // ★ AuthSession : idUser du user connecté est injecté automatiquement.
+            //   Si aucun user n'est connecté (admin BackOffice pur), idUser = 0 → NULL en BD.
+            int idUserConnecte = 0;
+            if (AuthSession.getCurrentUser() != null) {
+                idUserConnecte = AuthSession.getCurrentUser().getIdUser();
+            }
+            CompteBancaire nouveau = new CompteBancaire(
+                    numero, solde, dateStr, statut,
+                    plafRetrait, plafVirement, type,
+                    idUserConnecte  // ★ idUser rempli automatiquement depuis AuthSession
+            );
             service.add(nouveau);
             showInfo("Succès", "Compte ajouté avec succès");
         }
@@ -294,12 +330,9 @@ public class CompteBancaireController implements Initializable {
         btnAjouter.setText("Enregistrer");
     }
 
-
     private boolean validateForm() {
-
         boolean valid = true;
 
-        // Clear previous errors
         lblNumeroCompteError.setText("");
         lblSoldeError.setText("");
         lblDateError.setText("");
@@ -308,23 +341,15 @@ public class CompteBancaireController implements Initializable {
         lblPlafondVirementError.setText("");
         lblStatusCompteError.setText("");
 
-        // ==============================
-        // 🔹 Numéro de Compte (CB-001)
-        // ==============================
         String numero = txtNumeroCompte.getText().trim();
-
         if (numero.isEmpty()) {
             lblNumeroCompteError.setText("Le numéro de compte est obligatoire.");
             valid = false;
-
         } else if (!numero.matches("^CB-\\d{3,}$")) {
             lblNumeroCompteError.setText("Format invalide. Exemple: CB-001");
             valid = false;
         }
 
-        // ==============================
-        // 🔹 Solde
-        // ==============================
         try {
             double solde = Double.parseDouble(txtSolde.getText().trim());
             if (solde < 0) {
@@ -336,31 +361,20 @@ public class CompteBancaireController implements Initializable {
             valid = false;
         }
 
-        // ==============================
-        // 🔹 Date d'Ouverture
-        // ==============================
         LocalDate dateOuverture = dpDateOuverture.getValue();
-
         if (dateOuverture == null) {
             lblDateError.setText("Date obligatoire.");
             valid = false;
-
         } else if (dateOuverture.isAfter(LocalDate.now())) {
             lblDateError.setText("La date ne peut pas être dans le futur.");
             valid = false;
         }
 
-        // ==============================
-        // 🔹 Statut
-        // ==============================
         if (cmbStatutCompte.getValue() == null) {
             lblStatusError.setText("Veuillez sélectionner un statut.");
             valid = false;
         }
 
-        // ==============================
-        // 🔹 Plafond Retrait
-        // ==============================
         try {
             double plafondRetrait = Double.parseDouble(txtPlafondRetrait.getText().trim());
             if (plafondRetrait < 0) {
@@ -372,9 +386,6 @@ public class CompteBancaireController implements Initializable {
             valid = false;
         }
 
-        // ==============================
-        // 🔹 Plafond Virement
-        // ==============================
         try {
             double plafondVirement = Double.parseDouble(txtPlafondVirement.getText().trim());
             if (plafondVirement < 0) {
@@ -386,9 +397,6 @@ public class CompteBancaireController implements Initializable {
             valid = false;
         }
 
-        // ==============================
-        // 🔹 Type Compte
-        // ==============================
         if (cmbTypeCompte.getValue() == null) {
             lblStatusCompteError.setText("Veuillez sélectionner un type de compte.");
             valid = false;
@@ -398,25 +406,37 @@ public class CompteBancaireController implements Initializable {
     }
 
 
-    private double parseDouble(String s) {
-        if (s == null || s.isEmpty()) return 0.0;
-        return Double.parseDouble(s);
-    }
-
     private void updateStats() {
-        int total = comptesList.size();
-        double totalDepots = comptesList.stream().mapToDouble(CompteBancaire::getSolde).sum();
-        long actifs = comptesList.stream().filter(c -> "Actif".equalsIgnoreCase(c.getStatutCompte())).count();
-        lblTotalComptes.setText(String.valueOf(total));
-        lblTotalDepots.setText(String.format(java.util.Locale.US, "%,.2f DT", totalDepots));
-        lblClientsActifs.setText(String.valueOf(actifs));
+        if (lblTotalComptes != null)
+            lblTotalComptes.setText(String.valueOf(comptesList.size()));
+
+        if (lblClientsActifs != null) {
+            long actifs = comptesList.stream()
+                    .filter(c -> "Actif".equalsIgnoreCase(c.getStatutCompte())
+                            || "Active".equalsIgnoreCase(c.getStatutCompte()))
+                    .count();
+            lblClientsActifs.setText(String.valueOf(actifs));
+        }
+
+        if (lblTotalDepots != null) {
+            double total = comptesList.stream().mapToDouble(CompteBancaire::getSolde).sum();
+            lblTotalDepots.setText(String.format(java.util.Locale.US, "%,.2f DT", total));
+        }
     }
 
     private void updateTableInfo() {
-        int total = comptesList.size();
-        int filtered = filteredData != null ? filteredData.size() : total;
-        lblTableInfo.setText(String.format("Affichage de %d sur %d entrées", filtered, total));
+        if (lblTableInfo != null) {
+            int total = comptesList.size();
+            int filtered = filteredData != null ? filteredData.size() : total;
+            lblTableInfo.setText(String.format("Affichage de %d sur %d comptes", filtered, total));
+        }
     }
+
+    private double parseDouble(String s) {
+        if (s == null || s.isEmpty()) return 0.0;
+        try { return Double.parseDouble(s); } catch (NumberFormatException e) { return 0.0; }
+    }
+
 
     @FXML
     void trierParId(ActionEvent event) { comptesList.sort(Comparator.comparingInt(CompteBancaire::getIdCompte)); }
@@ -741,22 +761,173 @@ public class CompteBancaireController implements Initializable {
         fadeIn.play();
     }
 
-    // ── Utilitaire ────────────────────────────────────────────────────
+    @FXML
+    void showChart(ActionEvent event) {
+        // Données pour le graphique PieChart
+        ObservableList<PieChart.Data> pieData = FXCollections.observableArrayList();
+        Map<String, Long> countByType = new HashMap<>();
+        for (CompteBancaire c : comptesList) {
+            String type = c.getTypeCompte() != null ? c.getTypeCompte() : "Autre";
+            countByType.merge(type, 1L, Long::sum);
+        }
+        double total = comptesList.size();
+        countByType.forEach((type, count) ->
+                pieData.add(new PieChart.Data(type, count)));
+
+        PieChart chart = new PieChart(pieData);
+        chart.setTitle("Répartition par type");
+        chart.setPrefSize(320, 260);
+        chart.setLabelsVisible(false);
+        chart.setLegendVisible(false);
+
+        Label centerLabel = new Label();
+        centerLabel.setStyle("-fx-font-size: 22px; -fx-font-weight: bold;");
+        StackPane chartContainer = new StackPane(chart, centerLabel);
+        chartContainer.setPrefSize(320, 260);
+
+        VBox legend = new VBox(8);
+        legend.setAlignment(Pos.CENTER_LEFT);
+
+        Platform.runLater(() -> {
+            String[] palette = {"#00B4A0", "#0A2540", "#FACC15", "#9CA3AF", "#EF4444"};
+            int idx = 0;
+            for (PieChart.Data d : chart.getData()) {
+                String color;
+                String name = d.getName().toLowerCase();
+                if (name.contains("courant")) color = "#00B4A0";
+                else if (name.contains("epargne") || name.contains("épargne")) color = "#0A2540";
+                else if (name.contains("professionnel")) color = "#FACC15";
+                else color = "#9CA3AF";
+
+                d.getNode().setStyle(
+                        "-fx-pie-color: " + color + "; -fx-border-color: white; -fx-border-width: 2;"
+                );
+
+                double pct = total > 0 ? (d.getPieValue() * 100.0 / total) : 0;
+
+                ScaleTransition st = new ScaleTransition(Duration.millis(400), d.getNode());
+                st.setFromX(0); st.setFromY(0); st.setToX(1); st.setToY(1);
+                st.setInterpolator(Interpolator.EASE_OUT);
+                st.play();
+
+                final String fc = color;
+                d.getNode().setOnMouseEntered(e -> {
+                    d.getNode().setScaleX(1.07); d.getNode().setScaleY(1.07);
+                    centerLabel.setText(String.format("%.0f%%", pct));
+                    centerLabel.setStyle("-fx-font-size: 22px; -fx-font-weight: bold;" +
+                            "-fx-text-fill: " + fc + "; -fx-font-family: 'Segoe UI', sans-serif;");
+                });
+                d.getNode().setOnMouseExited(e -> {
+                    d.getNode().setScaleX(1); d.getNode().setScaleY(1);
+                    centerLabel.setText("");
+                });
+
+                Region swatch = new Region();
+                swatch.setPrefSize(10, 10); swatch.setMinSize(10, 10);
+                swatch.setStyle("-fx-background-color: " + color + "; -fx-background-radius: 2;");
+
+                Label lbl = new Label(capitalise(d.getName()) + "   " + String.format("%.0f%%", pct));
+                lbl.setStyle("-fx-font-size: 12px; -fx-font-weight: 600; -fx-text-fill: #1F2937;" +
+                        "-fx-font-family: 'Segoe UI', sans-serif;");
+
+                HBox row = new HBox(8, swatch, lbl);
+                row.setAlignment(Pos.CENTER_LEFT);
+                legend.getChildren().add(row);
+            }
+        });
+
+        Label title = new Label("Types de Comptes");
+        title.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #0A2540;" +
+                "-fx-font-family: 'Segoe UI', sans-serif;");
+
+        Label subtitle = new Label("Répartition des comptes");
+        subtitle.setStyle("-fx-font-size: 11px; -fx-text-fill: #6B7280;" +
+                "-fx-font-family: 'Segoe UI', sans-serif;");
+
+        Region sep = new Region();
+        sep.setPrefHeight(1);
+        sep.setMaxWidth(Double.MAX_VALUE);
+        sep.setStyle("-fx-background-color: #E5E7EB;");
+
+        VBox titleBox = new VBox(3, title, subtitle);
+        titleBox.setAlignment(Pos.CENTER_LEFT);
+
+        Button closeBtn = new Button("Fermer");
+        String btnN = "-fx-background-color:#FACC15;-fx-text-fill:#0A2540;-fx-font-size:12px;" +
+                "-fx-font-weight:bold;-fx-padding:7 24;-fx-background-radius:9;-fx-cursor:hand;" +
+                "-fx-font-family:'Segoe UI',sans-serif;";
+        String btnH = "-fx-background-color:#EAB308;-fx-text-fill:#0A2540;-fx-font-size:12px;" +
+                "-fx-font-weight:bold;-fx-padding:7 24;-fx-background-radius:9;-fx-cursor:hand;" +
+                "-fx-font-family:'Segoe UI',sans-serif;";
+        closeBtn.setStyle(btnN);
+        closeBtn.setOnMouseEntered(e -> closeBtn.setStyle(btnH));
+        closeBtn.setOnMouseExited(e -> closeBtn.setStyle(btnN));
+
+        HBox btnRow = new HBox(closeBtn);
+        btnRow.setAlignment(Pos.CENTER_RIGHT);
+
+        HBox chartRow = new HBox(24, chartContainer, legend);
+        chartRow.setAlignment(Pos.CENTER_LEFT);
+
+        VBox card = new VBox(14, titleBox, sep, chartRow, btnRow);
+        card.setAlignment(Pos.CENTER_LEFT);
+        card.setPadding(new Insets(22, 26, 20, 26));
+        card.setPrefWidth(400);
+        card.setMaxWidth(400);
+        card.setStyle(
+                "-fx-background-color: #FFFFFF;" +
+                        "-fx-background-radius: 14;" +
+                        "-fx-effect: dropshadow(gaussian, rgba(10,37,64,0.25), 30, 0, 0, 8);"
+        );
+
+        Stage ownerStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+        Stage popupStage = new Stage();
+        popupStage.initStyle(StageStyle.TRANSPARENT);
+        popupStage.initModality(Modality.APPLICATION_MODAL);
+        popupStage.initOwner(ownerStage);
+        popupStage.setResizable(false);
+
+        StackPane root = new StackPane(card);
+        root.setStyle("-fx-background-color: transparent;");
+        root.setPadding(new Insets(20));
+
+        Scene scene = new Scene(root);
+        scene.setFill(Color.TRANSPARENT);
+        popupStage.setScene(scene);
+
+        closeBtn.setOnAction(e -> popupStage.close());
+
+        popupStage.setOnShown(e -> {
+            double cx = ownerStage.getX() + ownerStage.getWidth() / 2;
+            double cy = ownerStage.getY() + ownerStage.getHeight() / 2;
+            popupStage.setX(cx - popupStage.getWidth() / 2);
+            popupStage.setY(cy - popupStage.getHeight() / 2);
+        });
+
+        card.setScaleX(0.80); card.setScaleY(0.80); card.setOpacity(0);
+
+        ScaleTransition scaleIn = new ScaleTransition(Duration.millis(250), card);
+        scaleIn.setToX(1); scaleIn.setToY(1);
+        scaleIn.setInterpolator(Interpolator.EASE_OUT);
+
+        FadeTransition fadeIn = new FadeTransition(Duration.millis(250), card);
+        fadeIn.setToValue(1);
+
+        popupStage.show();
+        scaleIn.play();
+        fadeIn.play();
+    }
+
     private String capitalise(String s) {
         if (s == null || s.isEmpty()) return s;
         return Character.toUpperCase(s.charAt(0)) + s.substring(1);
     }
 
-
-
-    @FXML
-    void pageFirst(ActionEvent event) { tableComptes.scrollTo(0); }
-    @FXML
-    void pagePrev(ActionEvent event) { tableComptes.scrollTo(Math.max(tableComptes.getSelectionModel().getSelectedIndex() - 10, 0)); }
-    @FXML
-    void pageNext(ActionEvent event) { tableComptes.scrollTo(tableComptes.getSelectionModel().getSelectedIndex() + 10); }
-    @FXML
-    void pageLast(ActionEvent event) { tableComptes.scrollTo(Integer.MAX_VALUE); }
+    @FXML void pageFirst(ActionEvent event) { tableComptes.scrollTo(0); }
+    @FXML void pagePrev(ActionEvent event)  { tableComptes.scrollTo(Math.max(tableComptes.getSelectionModel().getSelectedIndex() - 10, 0)); }
+    @FXML void pageNext(ActionEvent event)  { tableComptes.scrollTo(tableComptes.getSelectionModel().getSelectedIndex() + 10); }
+    @FXML void pageLast(ActionEvent event)  { tableComptes.scrollTo(Integer.MAX_VALUE); }
 
     private void showInfo(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -782,6 +953,6 @@ public class CompteBancaireController implements Initializable {
     private void showCompteCoffres(CompteBancaire compte) {
         Stage ownerStage = (Stage) tableComptes.getScene().getWindow();
         CompteCoffresDialog dialog = new CompteCoffresDialog(compte);
-        dialog.show(ownerStage);  // ← passe le stage parent
+        dialog.show(ownerStage);
     }
 }

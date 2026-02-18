@@ -1,5 +1,6 @@
 package com.nexora.bank.controllers;
 
+import com.nexora.bank.AuthSession;
 import com.nexora.bank.Models.CoffreVirtuel;
 import com.nexora.bank.Models.CompteBancaire;  // ✅ NOUVEAU
 import com.nexora.bank.Service.CoffreVirtuelService;
@@ -346,15 +347,21 @@ public class CoffreVirtuelController implements Initializable {
             selectedCoffre.setStatus(status);
             selectedCoffre.setEstVerrouille(estVerrouille);
             selectedCoffre.setIdCompte(idCompte);  // ✅ NOUVEAU
+            // ★ On préserve l'idUser existant (on ne le réécrase pas à chaque édition)
 
             service.edit(selectedCoffre);
             tableCoffres.refresh();
             showInfo("Succès", "Coffre virtuel modifié avec succès");
 
         } else {
+            // ★ Récupération automatique du user connecté via AuthSession
+            int idUserConnecte = 0;
+            if (AuthSession.getCurrentUser() != null) {
+                idUserConnecte = AuthSession.getCurrentUser().getIdUser();
+            }
             CoffreVirtuel nouveau = new CoffreVirtuel(
                     nom, objectif, montant, dateCreation, dateObjectifs,
-                    status, estVerrouille, idCompte  // ✅ PARAMÈTRE AJOUTÉ
+                    status, estVerrouille, idCompte, idUserConnecte  // ★ idUser injecté automatiquement
             );
             service.add(nouveau);
             showInfo("Succès", "Coffre virtuel ajouté avec succès");
