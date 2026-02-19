@@ -10,12 +10,11 @@ public class CompteBancaire {
     private double plafondRetrait;
     private double plafondVirement;
     private String typeCompte;
-    private int    idUser;
 
     public CompteBancaire() {
     }
 
-    public CompteBancaire(String numeroCompte, double solde, String dateOuverture, String statutCompte, double plafondRetrait, double plafondVirement, String typeCompte, int idUser) {
+    public CompteBancaire(String numeroCompte, double solde, String dateOuverture, String statutCompte, double plafondRetrait, double plafondVirement, String typeCompte) {
         this.numeroCompte = numeroCompte;
         this.solde = solde;
         this.dateOuverture = dateOuverture;
@@ -23,10 +22,9 @@ public class CompteBancaire {
         this.plafondRetrait = plafondRetrait;
         this.plafondVirement = plafondVirement;
         this.typeCompte = typeCompte;
-        this.idUser = idUser;
     }
 
-    public CompteBancaire(int idCompte, String numeroCompte, double solde, String dateOuverture, String statutCompte, double plafondRetrait, double plafondVirement, String typeCompte, int idUser) {
+    public CompteBancaire(int idCompte, String numeroCompte, double solde, String dateOuverture, String statutCompte, double plafondRetrait, double plafondVirement, String typeCompte) {
         this.idCompte = idCompte;
         this.numeroCompte = numeroCompte;
         this.solde = solde;
@@ -35,7 +33,6 @@ public class CompteBancaire {
         this.plafondRetrait = plafondRetrait;
         this.plafondVirement = plafondVirement;
         this.typeCompte = typeCompte;
-        this.idUser = idUser;
     }
 
     public int getIdCompte() {
@@ -102,14 +99,6 @@ public class CompteBancaire {
         this.typeCompte = typeCompte;
     }
 
-    public int getIdUser() {
-        return idUser;
-    }
-
-    public void setIdUser(int idUser) {
-        this.idUser = idUser;
-    }
-
     @Override
     public String toString() {
         return "CompteBancaire{" +
@@ -121,7 +110,6 @@ public class CompteBancaire {
                 ", plafondRetrait=" + plafondRetrait +
                 ", plafondVirement=" + plafondVirement +
                 ", typeCompte='" + typeCompte + '\'' +
-                ", idUser=" + idUser +
                 '}';
     }
 }

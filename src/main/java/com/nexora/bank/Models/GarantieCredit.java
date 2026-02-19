@@ -1,11 +1,7 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by FernFlower decompiler)
-//
-
 package com.nexora.bank.Models;
 
 public class GarantieCredit {
+
     private int idGarantie;
     private int idCredit;
     private String typeGarantie;
@@ -20,24 +16,6 @@ public class GarantieCredit {
     private int idUser;
 
     public GarantieCredit() {
-    }
-
-    public GarantieCredit(int idCredit, String typeGarantie, String description, String adresseBien, double valeurEstimee, double valeurRetenue, String documentJustificatif, String dateEvaluation, String nomGarant, String statut) {
-        this.idCredit = idCredit;
-        this.typeGarantie = typeGarantie;
-        this.description = description;
-        this.adresseBien = adresseBien;
-        this.valeurEstimee = valeurEstimee;
-        this.valeurRetenue = valeurRetenue;
-        this.documentJustificatif = documentJustificatif;
-        this.dateEvaluation = dateEvaluation;
-        this.nomGarant = nomGarant;
-        this.statut = statut;
-        this.idUser = 0;
-    }
-
-    public GarantieCredit(int idGarantie, int idCredit, String typeGarantie, String description, String adresseBien, double valeurEstimee, double valeurRetenue, String documentJustificatif, String dateEvaluation, String nomGarant, String statut) {
-        this(idGarantie, idCredit, typeGarantie, description, adresseBien, valeurEstimee, valeurRetenue, documentJustificatif, dateEvaluation, nomGarant, statut, 0);
     }
 
     public GarantieCredit(int idGarantie, int idCredit, String typeGarantie, String description, String adresseBien, double valeurEstimee, double valeurRetenue, String documentJustificatif, String dateEvaluation, String nomGarant, String statut, int idUser) {
@@ -55,8 +33,35 @@ public class GarantieCredit {
         this.idUser = idUser;
     }
 
+    public GarantieCredit(int idCredit, String typeGarantie, String description, String adresseBien, double valeurEstimee, double valeurRetenue, String documentJustificatif, String dateEvaluation, String nomGarant, String statut) {
+        this.idCredit = idCredit;
+        this.typeGarantie = typeGarantie;
+        this.description = description;
+        this.adresseBien = adresseBien;
+        this.valeurEstimee = valeurEstimee;
+        this.valeurRetenue = valeurRetenue;
+        this.documentJustificatif = documentJustificatif;
+        this.dateEvaluation = dateEvaluation;
+        this.nomGarant = nomGarant;
+        this.statut = statut;
+    }
+
+    public GarantieCredit(int idGarantie, int idCredit, String typeGarantie, String description, String adresseBien, double valeurEstimee, double valeurRetenue, String documentJustificatif, String dateEvaluation, String nomGarant, String statut) {
+        this.idGarantie = idGarantie;
+        this.idCredit = idCredit;
+        this.typeGarantie = typeGarantie;
+        this.description = description;
+        this.adresseBien = adresseBien;
+        this.valeurEstimee = valeurEstimee;
+        this.valeurRetenue = valeurRetenue;
+        this.documentJustificatif = documentJustificatif;
+        this.dateEvaluation = dateEvaluation;
+        this.nomGarant = nomGarant;
+        this.statut = statut;
+    }
+
     public int getIdGarantie() {
-        return this.idGarantie;
+        return idGarantie;
     }
 
     public void setIdGarantie(int idGarantie) {
@@ -64,7 +69,7 @@ public class GarantieCredit {
     }
 
     public int getIdCredit() {
-        return this.idCredit;
+        return idCredit;
     }
 
     public void setIdCredit(int idCredit) {
@@ -72,7 +77,7 @@ public class GarantieCredit {
     }
 
     public String getTypeGarantie() {
-        return this.typeGarantie;
+        return typeGarantie;
     }
 
     public void setTypeGarantie(String typeGarantie) {
@@ -80,7 +85,7 @@ public class GarantieCredit {
     }
 
     public String getDescription() {
-        return this.description;
+        return description;
     }
 
     public void setDescription(String description) {
@@ -88,7 +93,7 @@ public class GarantieCredit {
     }
 
     public String getAdresseBien() {
-        return this.adresseBien;
+        return adresseBien;
     }
 
     public void setAdresseBien(String adresseBien) {
@@ -96,7 +101,7 @@ public class GarantieCredit {
     }
 
     public double getValeurEstimee() {
-        return this.valeurEstimee;
+        return valeurEstimee;
     }
 
     public void setValeurEstimee(double valeurEstimee) {
@@ -104,7 +109,7 @@ public class GarantieCredit {
     }
 
     public double getValeurRetenue() {
-        return this.valeurRetenue;
+        return valeurRetenue;
     }
 
     public void setValeurRetenue(double valeurRetenue) {
@@ -112,7 +117,7 @@ public class GarantieCredit {
     }
 
     public String getDocumentJustificatif() {
-        return this.documentJustificatif;
+        return documentJustificatif;
     }
 
     public void setDocumentJustificatif(String documentJustificatif) {
@@ -120,7 +125,7 @@ public class GarantieCredit {
     }
 
     public String getDateEvaluation() {
-        return this.dateEvaluation;
+        return dateEvaluation;
     }
 
     public void setDateEvaluation(String dateEvaluation) {
@@ -128,7 +133,7 @@ public class GarantieCredit {
     }
 
     public String getNomGarant() {
-        return this.nomGarant;
+        return nomGarant;
     }
 
     public void setNomGarant(String nomGarant) {
@@ -136,19 +141,35 @@ public class GarantieCredit {
     }
 
     public String getStatut() {
-        return this.statut;
+        return statut;
     }
 
     public void setStatut(String statut) {
         this.statut = statut;
     }
-    public int getIdUser(){
-        return this.idUser;
+
+    public int getIdUser() {
+        return idUser;
     }
-    public void setIdUser(int idUser){
+
+    public void setIdUser(int idUser) {
         this.idUser = idUser;
     }
+
+    @Override
     public String toString() {
-        return "GarantieCredit{idGarantie=" + this.idGarantie + ", idCredit=" + this.idCredit + ", typeGarantie='" + this.typeGarantie + "', description='" + this.description + "', adresseBien='" + this.adresseBien + "', valeurEstimee=" + this.valeurEstimee + ", valeurRetenue=" + this.valeurRetenue + ", documentJustificatif='" + this.documentJustificatif + "', dateEvaluation='" + this.dateEvaluation + "', nomGarant='" + this.nomGarant + "', statut='" + this.statut + "', idUser=" + this.idUser + "'}";
+        return "GarantieCredit{" +
+                "idGarantie=" + idGarantie +
+                ", idCredit=" + idCredit +
+                ", typeGarantie='" + typeGarantie + '\'' +
+                ", description='" + description + '\'' +
+                ", adresseBien='" + adresseBien + '\'' +
+                ", valeurEstimee=" + valeurEstimee +
+                ", valeurRetenue=" + valeurRetenue +
+                ", documentJustificatif='" + documentJustificatif + '\'' +
+                ", dateEvaluation='" + dateEvaluation + '\'' +
+                ", nomGarant='" + nomGarant + '\'' +
+                ", statut='" + statut + '\'' +
+                '}';
     }
 }

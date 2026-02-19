@@ -95,6 +95,15 @@
                     
                     <!-- Montant Achat -->
                     <VBox styleClass="nx-form-group" spacing="8">
+                        <Label text="ID Utilisateur" styleClass="nx-label, nx-label-required"/>
+                        <HBox styleClass="nx-input-wrapper">
+                            <SVGPath content="M17 20h5v-2a3 3 0 0 0-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 0 1 5.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 0 1 9.288 0M15 7a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" styleClass="nx-input-icon"/>
+                            <TextField fx:id="txtUserId" promptText="Ex: 2" styleClass="nx-input" HBox.hgrow="ALWAYS"/>
+                        </HBox>
+                    </VBox>
+
+                    <!-- Montant Achat -->
+                    <VBox styleClass="nx-form-group" spacing="8">
                         <Label text="Montant de l'Achat (DT)" styleClass="nx-label, nx-label-required"/>
                         <HBox styleClass="nx-input-wrapper">
                             <SVGPath content="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-8 2a2 2 0 1 1-4 0 2 2 0 0 1 4 0z" styleClass="nx-input-icon"/>
@@ -234,6 +243,7 @@
             <VBox styleClass="nx-table-container" VBox.vgrow="ALWAYS">
                 <TableView fx:id="tableCashbacks" styleClass="nx-table" VBox.vgrow="ALWAYS">
                     <columns>
+                        <TableColumn fx:id="colUser" text="Utilisateur" prefWidth="180"/>
                         <TableColumn fx:id="colPartenaire" text="Partenaire" prefWidth="120"/>
                         <TableColumn fx:id="colMontantAchat" text="Montant Achat" prefWidth="120"/>
                         <TableColumn fx:id="colTaux" text="Taux" prefWidth="70"/>
@@ -267,4 +277,3 @@
         </VBox>
     </HBox>
 </VBox>
-

@@ -11,12 +11,8 @@ public class CoffreVirtuel {
     private String status;
     private boolean estVerrouille;
     private int idCompte;
-    private int idUser;
 
-
-    public CoffreVirtuel(){};
-
-    public CoffreVirtuel(String nom, double objectifMontant, double montantActuel, String dateCreation, String dateObjectifs, String status, boolean estVerrouille, int idCompte, int idUser) {
+    public CoffreVirtuel(String nom, double objectifMontant, double montantActuel, String dateCreation, String dateObjectifs, String status, boolean estVerrouille, int idCompte) {
         this.nom = nom;
         this.objectifMontant = objectifMontant;
         this.montantActuel = montantActuel;
@@ -25,10 +21,9 @@ public class CoffreVirtuel {
         this.status = status;
         this.estVerrouille = estVerrouille;
         this.idCompte = idCompte;
-        this.idUser = idUser;
     }
 
-    public CoffreVirtuel(int idCoffre, String nom, double objectifMontant, double montantActuel, String dateCreation, String dateObjectifs, String status, boolean estVerrouille, int idCompte, int idUser) {
+    public CoffreVirtuel(int idCoffre, String nom, double objectifMontant, double montantActuel, String dateCreation, String dateObjectifs, String status, boolean estVerrouille, int idCompte) {
         this.idCoffre = idCoffre;
         this.nom = nom;
         this.objectifMontant = objectifMontant;
@@ -38,7 +33,9 @@ public class CoffreVirtuel {
         this.status = status;
         this.estVerrouille = estVerrouille;
         this.idCompte = idCompte;
-        this.idUser = idUser;
+    }
+
+    public CoffreVirtuel() {
     }
 
     public int getIdCoffre() {
@@ -113,15 +110,6 @@ public class CoffreVirtuel {
         this.idCompte = idCompte;
     }
 
-    public int getIdUser() {
-        return idUser;
-    }
-
-    public void setIdUser(int idUser) {
-        this.idUser = idUser;
-    }
-
-
     @Override
     public String toString() {
         return "CoffreVirtuel{" +
@@ -134,7 +122,6 @@ public class CoffreVirtuel {
                 ", status='" + status + '\'' +
                 ", estVerrouille=" + estVerrouille +
                 ", idCompte=" + idCompte +
-                ", idUser=" + idUser +
                 '}';
     }
 }
