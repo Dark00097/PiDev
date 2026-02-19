@@ -652,6 +652,19 @@ public class UserService {
         return findById(idUser);
     }
 
+    public void sendCustomEmail(String recipientEmail, String subject, String htmlContent) {
+        if (recipientEmail == null || recipientEmail.isBlank()) {
+            throw new IllegalArgumentException("Recipient email is required.");
+        }
+        if (subject == null || subject.isBlank()) {
+            throw new IllegalArgumentException("Email subject is required.");
+        }
+        if (htmlContent == null || htmlContent.isBlank()) {
+            throw new IllegalArgumentException("Email content is required.");
+        }
+        sendPlainEmail(recipientEmail.trim(), subject.trim(), htmlContent);
+    }
+
     private void ensureUsersTable() {
         String sql = """
             CREATE TABLE IF NOT EXISTS users (
