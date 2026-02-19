@@ -42,29 +42,6 @@ import javafx.animation.ScaleTransition;
 import javafx.animation.Interpolator;
 
 
-/**
- * ══════════════════════════════════════════════════════════════════
- * MODIFICATIONS apportées à CompteBancaireController (BackOffice)
- * ══════════════════════════════════════════════════════════════════
- *
- * ★ [CORRECTION] handleAjouter() — mode EDIT :
- *      Avant : new CompteBancaire(idCompte, numero, solde, dateStr, statut, plafRetrait, plafVirement, type)
- *              → 8 arguments → ERREUR de compilation car le constructeur attend 9 (avec idUser).
- *      Après : new CompteBancaire(idCompte, numero, solde, dateStr, statut, plafRetrait, plafVirement, type,
- *                                  selectedCompte.getIdUser())
- *              → on récupère l'idUser existant dans l'objet sélectionné pour ne pas l'écraser.
- *
- * ★ [CORRECTION] handleAjouter() — mode AJOUT :
- *      Avant : new CompteBancaire(numero, solde, dateStr, statut, plafRetrait, plafVirement, type)
- *              → 7 arguments → ERREUR de compilation.
- *      Après : new CompteBancaire(numero, solde, dateStr, statut, plafRetrait, plafVirement, type, 0)
- *              → idUser = 0 signifie "non assigné" en BackOffice (l'admin peut créer sans propriétaire).
- *              → L'admin BackOffice peut ensuite manuellement lier un compte à un user si besoin.
- *
- * NOTE : Le BackOffice (admin) continue d'utiliser service.getAll() — il voit TOUS les comptes.
- *        Seul le FrontOffice (UserDashboardAccountsSectionController) filtre par idUser.
- * ══════════════════════════════════════════════════════════════════
- */
 public class CompteBancaireController implements Initializable {
 
     private final CompteBancaireService service = new CompteBancaireService();
