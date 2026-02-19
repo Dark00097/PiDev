@@ -1,173 +1,114 @@
 package com.nexora.bank.controllers;
 
-import javafx.beans.property.SimpleStringProperty;
+import com.nexora.bank.AuthSession;
+import com.nexora.bank.Models.Transaction;
+import com.nexora.bank.Service.TransactionService;
+import com.nexora.bank.Utils.EmailUtil;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
-import javafx.scene.shape.SVGPath;
-import javafx.geometry.Pos;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.net.URL;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class TransactionController implements Initializable {
 
-    // Stat Labels
-    @FXML private Label lblTotalTransactions;
-    @FXML private Label lblMontantTotal;
-    @FXML private Label lblTransactionsJour;
+    private final TransactionService service = new TransactionService();
 
-    // Form Fields
-    @FXML private ComboBox<String> cmbCategorie;
-    @FXML private DatePicker dpDateTransaction;
-    @FXML private TextField txtMontant;
-    @FXML private ComboBox<String> cmbTypeTransaction;
-    @FXML private ComboBox<String> cmbStatutTransaction;
-    @FXML private TextField txtSoldeApres;
-    @FXML private TextArea txtDescription;
-
-    // Buttons
     @FXML private Button btnAjouter;
-    @FXML private Button btnSupprimer;
     @FXML private Button btnAnnuler;
+    @FXML private Button btnSupprimer;
+    @FXML private ComboBox<String> cmbCategorie;
+    @FXML private ComboBox<String> cmbStatutTransaction;
+    @FXML private ComboBox<String> cmbTypeTransaction;
 
-    // Table
+    @FXML private TableColumn<Transaction, String>    colCategorie;
+    @FXML private TableColumn<Transaction, LocalDate> colDate;
+    @FXML private TableColumn<Transaction, Double>    colMontant;
+    @FXML private TableColumn<Transaction, String>    colType;
+    @FXML private TableColumn<Transaction, String>    colStatut;
+    @FXML private TableColumn<Transaction, String>    colDescription;
+    @FXML private TableColumn<Transaction, Void>      colActions;
+
+    @FXML private DatePicker           dpDateTransaction;
+    @FXML private Label                lblTotalTransactions;
+    @FXML private Label                lblTableInfo;
     @FXML private TableView<Transaction> tableTransactions;
-    @FXML private TableColumn<Transaction, String> colCategorie;
-    @FXML private TableColumn<Transaction, String> colDate;
-    @FXML private TableColumn<Transaction, String> colMontant;
-    @FXML private TableColumn<Transaction, String> colType;
-    @FXML private TableColumn<Transaction, String> colStatut;
-    @FXML private TableColumn<Transaction, String> colSoldeApres;
-    @FXML private TableColumn<Transaction, String> colDescription;
-    @FXML private TableColumn<Transaction, Void> colActions;
+    @FXML private TextField            txtMontant;
+    @FXML private TextArea             txtDescription;
+    @FXML private TextField            txtRecherche;
 
-    // Search and Info
-    @FXML private TextField txtRecherche;
-    @FXML private Label lblTableInfo;
+    // ─── Pagination ────────────────────────────────────────────────────────
+    @FXML private HBox  paginationBar;   // conteneur HBox défini dans le FXML (optionnel)
+    // Si paginationBar est null (pas dans le FXML), on la crée et on l'ajoute dynamiquement.
 
-    private ObservableList<Transaction> transactionsList = FXCollections.observableArrayList();
-    private FilteredList<Transaction> filteredData;
+    private static final int PAGE_SIZE = 3;
+    private int currentPage = 0;
+
+    // ─── Labels erreur ─────────────────────────────────────────────────────
+    @FXML private Label lblCategorieError;
+    @FXML private Label lblDateError;
+    @FXML private Label lblMontantError;
+    @FXML private Label lblTypeError;
+    @FXML private Label lblStatutError;
+    @FXML private Label lblDescriptionError;
+
+    private final ObservableList<Transaction> transactionsList = FXCollections.observableArrayList();
+    private FilteredList<Transaction>         filteredData;
+    private ObservableList<Transaction>       pageData;   // données affichées sur la page courante
+
     private Transaction selectedTransaction = null;
-    private boolean isEditMode = false;
+    private boolean     isEditMode          = false;
+
+    // ══════════════════════════════════════════════════════════════════════
+    // Initialisation
+    // ══════════════════════════════════════════════════════════════════════
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initializeTable();
         initializeSearch();
-        loadSampleData();
-        updateStats();
         setupTableSelection();
+        setupRealTimeValidation();
+        refreshData();
     }
 
     private void initializeTable() {
         colCategorie.setCellValueFactory(new PropertyValueFactory<>("categorie"));
-        colDate.setCellValueFactory(cellData -> 
-            new SimpleStringProperty(cellData.getValue().getDateTransaction().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))));
-        colMontant.setCellValueFactory(cellData -> 
-            new SimpleStringProperty(String.format("%.2f DT", cellData.getValue().getMontant())));
+        colDate.setCellValueFactory(new PropertyValueFactory<>("dateTransaction"));
+        colMontant.setCellValueFactory(new PropertyValueFactory<>("montant"));
         colType.setCellValueFactory(new PropertyValueFactory<>("typeTransaction"));
         colStatut.setCellValueFactory(new PropertyValueFactory<>("statutTransaction"));
-        colSoldeApres.setCellValueFactory(cellData -> 
-            new SimpleStringProperty(String.format("%.2f DT", cellData.getValue().getSoldeApres())));
         colDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
 
-        // Type column with styling
-        colType.setCellFactory(column -> new TableCell<>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setGraphic(null);
-                    setText(null);
-                } else {
-                    Label badge = new Label(item);
-                    badge.getStyleClass().add("nx-badge");
-                    if (item.equals("Credit")) {
-                        badge.getStyleClass().add("nx-badge-success");
-                    } else {
-                        badge.getStyleClass().add("nx-badge-error");
-                    }
-                    setGraphic(badge);
-                }
-            }
-        });
-
-        // Status column with badge
-        colStatut.setCellFactory(column -> new TableCell<>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setGraphic(null);
-                } else {
-                    Label badge = new Label(item);
-                    badge.getStyleClass().add("nx-badge");
-                    switch (item) {
-                        case "Valide": badge.getStyleClass().add("nx-badge-success"); break;
-                        case "En attente": badge.getStyleClass().add("nx-badge-warning"); break;
-                        case "Echouee": badge.getStyleClass().add("nx-badge-error"); break;
-                    }
-                    setGraphic(badge);
-                }
-            }
-        });
-
-        // Montant with color based on type
-        colMontant.setCellFactory(column -> new TableCell<>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
-                    setText(null);
-                    setStyle("");
-                } else {
-                    Transaction trans = getTableView().getItems().get(getIndex());
-                    String prefix = trans.getTypeTransaction().equals("Credit") ? "+ " : "- ";
-                    setText(prefix + item);
-                    if (trans.getTypeTransaction().equals("Credit")) {
-                        setStyle("-fx-text-fill: #10B981; -fx-font-weight: 600;");
-                    } else {
-                        setStyle("-fx-text-fill: #EF4444; -fx-font-weight: 600;");
-                    }
-                }
-            }
-        });
-
-        // Actions column
         colActions.setCellFactory(column -> new TableCell<>() {
-            private final Button btnEdit = new Button();
-            private final Button btnDelete = new Button();
-            private final HBox hbox = new HBox(8);
+            private final Button btnEdit   = new Button("✏");
+            private final Button btnDelete = new Button("🗑");
+            private final HBox   hbox      = new HBox(8, btnEdit, btnDelete);
 
             {
-                btnEdit.getStyleClass().addAll("nx-table-action", "nx-table-action-edit");
-                SVGPath editIcon = new SVGPath();
-                editIcon.setContent("M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z");
-                editIcon.getStyleClass().add("nx-action-icon");
-                btnEdit.setGraphic(editIcon);
-
-                btnDelete.getStyleClass().addAll("nx-table-action", "nx-table-action-delete");
-                SVGPath deleteIcon = new SVGPath();
-                deleteIcon.setContent("M19 7l-.867 12.142A2 2 0 0 1 16.138 21H7.862a2 2 0 0 1-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v3M4 7h16");
-                deleteIcon.getStyleClass().add("nx-action-icon");
-                btnDelete.setGraphic(deleteIcon);
-
                 hbox.setAlignment(Pos.CENTER);
-                hbox.getChildren().addAll(btnEdit, btnDelete);
-
-                btnEdit.setOnAction(event -> editTransaction(getTableView().getItems().get(getIndex())));
-                btnDelete.setOnAction(event -> deleteTransaction(getTableView().getItems().get(getIndex())));
+                btnEdit.setOnAction(e   -> editTransaction(getTableView().getItems().get(getIndex())));
+                btnDelete.setOnAction(e -> deleteTransaction(getTableView().getItems().get(getIndex())));
             }
 
             @Override
@@ -176,24 +117,26 @@ public class TransactionController implements Initializable {
                 setGraphic(empty ? null : hbox);
             }
         });
+
+        // pageData est la liste directement liée au TableView
+        pageData = FXCollections.observableArrayList();
+        tableTransactions.setItems(pageData);
     }
 
     private void initializeSearch() {
-        filteredData = new FilteredList<>(transactionsList, p -> true);
-        txtRecherche.textProperty().addListener((observable, oldValue, newValue) -> {
-            filteredData.setPredicate(trans -> {
-                if (newValue == null || newValue.isEmpty()) return true;
-                String lowerCaseFilter = newValue.toLowerCase();
-                return trans.getCategorie().toLowerCase().contains(lowerCaseFilter) ||
-                       trans.getTypeTransaction().toLowerCase().contains(lowerCaseFilter) ||
-                       trans.getStatutTransaction().toLowerCase().contains(lowerCaseFilter) ||
-                       trans.getDescription().toLowerCase().contains(lowerCaseFilter);
+        filteredData = new FilteredList<>(transactionsList, t -> true);
+
+        txtRecherche.textProperty().addListener((obs, oldVal, newVal) -> {
+            filteredData.setPredicate(t -> {
+                if (newVal == null || newVal.isEmpty()) return true;
+                String f = newVal.toLowerCase();
+                return (t.getCategorie()         != null && t.getCategorie().toLowerCase().contains(f))
+                    || (t.getStatutTransaction() != null && t.getStatutTransaction().toLowerCase().contains(f))
+                    || (t.getTypeTransaction()   != null && t.getTypeTransaction().toLowerCase().contains(f));
             });
-            updateTableInfo();
+            currentPage = 0;
+            applyPage();
         });
-        SortedList<Transaction> sortedData = new SortedList<>(filteredData);
-        sortedData.comparatorProperty().bind(tableTransactions.comparatorProperty());
-        tableTransactions.setItems(sortedData);
     }
 
     private void setupTableSelection() {
@@ -207,184 +150,393 @@ public class TransactionController implements Initializable {
         });
     }
 
-    private void loadSampleData() {
-        transactionsList.addAll(
-            new Transaction("Virement", LocalDate.now(), 1500.00, "Debit", "Valide", 8500.00, "Virement vers compte epargne"),
-            new Transaction("Paiement", LocalDate.now().minusDays(1), 250.00, "Debit", "Valide", 10000.00, "Paiement facture electricite"),
-            new Transaction("Retrait", LocalDate.now().minusDays(2), 500.00, "Debit", "Valide", 10250.00, "Retrait DAB"),
-            new Transaction("Virement", LocalDate.now().minusDays(3), 3000.00, "Credit", "Valide", 10750.00, "Reception salaire"),
-            new Transaction("Paiement", LocalDate.now(), 150.00, "Debit", "En attente", 8350.00, "Paiement en ligne"),
-            new Transaction("Virement", LocalDate.now().minusDays(5), 200.00, "Debit", "Echouee", 7750.00, "Virement international"),
-            new Transaction("Paiement", LocalDate.now().minusDays(7), 320.00, "Debit", "Valide", 7200.00, "Abonnement Internet"),
-            new Transaction("Virement", LocalDate.now().minusDays(10), 2200.00, "Credit", "Valide", 9500.00, "Remboursement client"),
-            new Transaction("Retrait", LocalDate.now().minusDays(12), 400.00, "Debit", "Valide", 6800.00, "Retrait agence"),
-            new Transaction("Paiement", LocalDate.now().minusDays(15), 90.00, "Debit", "Echouee", 7600.00, "Paiement carte étrangère")
-        );
+    // ══════════════════════════════════════════════════════════════════════
+    // Pagination
+    // ══════════════════════════════════════════════════════════════════════
+
+    /** Met à jour pageData selon currentPage et rafraîchit la barre de pagination */
+    private void applyPage() {
+        int total      = filteredData.size();
+        int totalPages = Math.max(1, (int) Math.ceil((double) total / PAGE_SIZE));
+
+        if (currentPage >= totalPages) currentPage = totalPages - 1;
+        if (currentPage < 0)          currentPage = 0;
+
+        int from = currentPage * PAGE_SIZE;
+        int to   = Math.min(from + PAGE_SIZE, total);
+
+        pageData.setAll(filteredData.subList(from, to));
+
         updateTableInfo();
+        refreshPaginationBar(totalPages, total);
     }
 
-    private void updateStats() {
-        int totalTrans = transactionsList.size();
-        double montantTotal = transactionsList.stream().mapToDouble(Transaction::getMontant).sum();
-        long transJour = transactionsList.stream()
-            .filter(t -> t.getDateTransaction().equals(LocalDate.now())).count();
+    /** Reconstruit la barre de pagination et l'injecte dans paginationBar (HBox FXML) */
+    private void refreshPaginationBar(int totalPages, int totalItems) {
+        if (paginationBar == null) return;
 
-        lblTotalTransactions.setText(String.valueOf(totalTrans));
-        lblMontantTotal.setText(String.format("%,.2f DT", montantTotal));
-        lblTransactionsJour.setText(String.valueOf(transJour));
-    }
+        paginationBar.getChildren().clear();
+        paginationBar.setAlignment(Pos.CENTER);
+        paginationBar.setSpacing(6);
 
-    private void updateTableInfo() {
-        lblTableInfo.setText(String.format("Affichage de %d sur %d entrees", filteredData.size(), transactionsList.size()));
-    }
+        int from = currentPage * PAGE_SIZE + 1;
+        int to   = Math.min(from + PAGE_SIZE - 1, totalItems);
 
-    private void populateForm(Transaction trans) {
-        cmbCategorie.setValue(trans.getCategorie());
-        dpDateTransaction.setValue(trans.getDateTransaction());
-        txtMontant.setText(String.valueOf(trans.getMontant()));
-        cmbTypeTransaction.setValue(trans.getTypeTransaction());
-        cmbStatutTransaction.setValue(trans.getStatutTransaction());
-        txtSoldeApres.setText(String.valueOf(trans.getSoldeApres()));
-        txtDescription.setText(trans.getDescription());
-    }
+        // Info "X–Y sur N"
+        Label info = new Label(totalItems == 0 ? "Aucun résultat"
+                                               : from + "–" + to + " sur " + totalItems);
+        info.setStyle("-fx-font-size:12px;-fx-text-fill:#64748b;-fx-padding:0 10 0 0;");
 
-    private void clearForm() {
-        cmbCategorie.setValue(null);
-        dpDateTransaction.setValue(null);
-        txtMontant.clear();
-        cmbTypeTransaction.setValue(null);
-        cmbStatutTransaction.setValue(null);
-        txtSoldeApres.clear();
-        txtDescription.clear();
-        selectedTransaction = null;
-        isEditMode = false;
-        btnAjouter.setText("Ajouter");
-        tableTransactions.getSelectionModel().clearSelection();
-    }
+        // Bouton ◀
+        Button btnPrev = buildNavBtn("◀", currentPage > 0);
+        btnPrev.setOnAction(e -> { currentPage--; applyPage(); });
 
-    @FXML
-    private void handleAjouter() {
-        if (!validateForm()) return;
+        // Numéros de page
+        HBox nums = new HBox(4);
+        nums.setAlignment(Pos.CENTER);
+        for (int i = 0; i < totalPages; i++) {
+            final int idx    = i;
+            boolean   active = (i == currentPage);
+            Label     lbl    = new Label(String.valueOf(i + 1));
+            lbl.setMinSize(28, 28); lbl.setMaxSize(28, 28);
+            lbl.setAlignment(Pos.CENTER);
 
-        try {
-            String categorie = cmbCategorie.getValue();
-            LocalDate date = dpDateTransaction.getValue();
-            double montant = Double.parseDouble(txtMontant.getText().trim());
-            String type = cmbTypeTransaction.getValue();
-            String statut = cmbStatutTransaction.getValue();
-            double soldeApres = txtSoldeApres.getText().isEmpty() ? 0 : Double.parseDouble(txtSoldeApres.getText().trim());
-            String description = txtDescription.getText();
+            String styleActive  = "-fx-background-color:#4f46e5;-fx-text-fill:#fff;" +
+                                  "-fx-background-radius:7;-fx-font-size:11px;-fx-font-weight:700;";
+            String styleNormal  = "-fx-background-color:#e2e8f0;-fx-text-fill:#1e293b;" +
+                                  "-fx-background-radius:7;-fx-font-size:11px;-fx-cursor:hand;";
+            String styleHover   = "-fx-background-color:#c7d2fe;-fx-text-fill:#4f46e5;" +
+                                  "-fx-background-radius:7;-fx-font-size:11px;-fx-cursor:hand;";
 
-            if (isEditMode && selectedTransaction != null) {
-                selectedTransaction.setCategorie(categorie);
-                selectedTransaction.setDateTransaction(date);
-                selectedTransaction.setMontant(montant);
-                selectedTransaction.setTypeTransaction(type);
-                selectedTransaction.setStatutTransaction(statut);
-                selectedTransaction.setSoldeApres(soldeApres);
-                selectedTransaction.setDescription(description);
-                tableTransactions.refresh();
-                showAlert(Alert.AlertType.INFORMATION, "Succes", "Transaction modifiee avec succès!");
-            } else {
-                transactionsList.add(new Transaction(categorie, date, montant, type, statut, soldeApres, description));
-                showAlert(Alert.AlertType.INFORMATION, "Succes", "Transaction ajoutee avec succès!");
+            lbl.setStyle(active ? styleActive : styleNormal);
+
+            if (!active) {
+                lbl.setOnMouseEntered(ev -> lbl.setStyle(styleHover));
+                lbl.setOnMouseExited(ev  -> lbl.setStyle(styleNormal));
+                lbl.setOnMouseClicked(ev -> { currentPage = idx; applyPage(); });
             }
-            clearForm();
-            updateStats();
-            updateTableInfo();
-        } catch (NumberFormatException e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Valeurs numeriques invalides.");
+            nums.getChildren().add(lbl);
         }
+
+        // Bouton ▶
+        Button btnNext = buildNavBtn("▶", currentPage < totalPages - 1);
+        btnNext.setOnAction(e -> { currentPage++; applyPage(); });
+
+        paginationBar.getChildren().addAll(info, btnPrev, nums, btnNext);
     }
 
-    @FXML private void handleSupprimer() {
-        if (selectedTransaction != null) deleteTransaction(selectedTransaction);
-        else showAlert(Alert.AlertType.WARNING, "Avertissement", "Selectionnez une transaction.");
-    }
-
-    @FXML private void handleAnnuler() { clearForm(); }
-
-    private void editTransaction(Transaction trans) {
-        selectedTransaction = trans;
-        populateForm(trans);
-        isEditMode = true;
-        btnAjouter.setText("Modifier");
-    }
-
-    private void deleteTransaction(Transaction trans) {
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION, "Supprimer cette transaction?", ButtonType.OK, ButtonType.CANCEL);
-        Optional<ButtonType> result = confirm.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
-            transactionsList.remove(trans);
-            clearForm();
-            updateStats();
-            updateTableInfo();
+    private Button buildNavBtn(String label, boolean enabled) {
+        Button btn = new Button(label);
+        btn.setMinSize(28, 28); btn.setMaxSize(28, 28);
+        btn.setDisable(!enabled);
+        String base  = "-fx-background-color:#e2e8f0;-fx-text-fill:#1e293b;" +
+                       "-fx-background-radius:7;-fx-font-size:10px;-fx-cursor:hand;-fx-border-width:0;";
+        String muted = "-fx-background-color:#f1f5f9;-fx-text-fill:#94a3b8;" +
+                       "-fx-background-radius:7;-fx-font-size:10px;-fx-border-width:0;";
+        String hover = "-fx-background-color:#c7d2fe;-fx-text-fill:#4f46e5;" +
+                       "-fx-background-radius:7;-fx-font-size:10px;-fx-cursor:hand;-fx-border-width:0;";
+        btn.setStyle(enabled ? base : muted);
+        if (enabled) {
+            btn.setOnMouseEntered(e -> btn.setStyle(hover));
+            btn.setOnMouseExited(e  -> btn.setStyle(base));
         }
+        return btn;
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    // Données
+    // ══════════════════════════════════════════════════════════════════════
+
+    private void refreshData() {
+        transactionsList.setAll(service.getAll());
+        currentPage = 0;
+        applyPage();
+        updateStats();
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    // Validation
+    // ══════════════════════════════════════════════════════════════════════
+
+    private void setupRealTimeValidation() {
+        cmbCategorie.valueProperty().addListener((obs, ov, v) -> {
+            if (v != null && !v.trim().isEmpty()) setSuccess(lblCategorieError, "✓ Catégorie valide");
+            else setError(lblCategorieError, "❌ La catégorie est obligatoire.");
+        });
+
+        dpDateTransaction.valueProperty().addListener((obs, ov, v) -> {
+            if (v == null)                              setError(lblDateError, "❌ La date est obligatoire.");
+            else if (v.isAfter(LocalDate.now()))        setError(lblDateError, "❌ La date ne peut pas être dans le futur.");
+            else if (v.isBefore(LocalDate.now().minusYears(10))) setError(lblDateError, "❌ La date est trop ancienne (max 10 ans).");
+            else setSuccess(lblDateError, "✓ Date valide");
+        });
+
+        txtMontant.textProperty().addListener((obs, ov, v) -> {
+            if (v.trim().isEmpty()) { setError(lblMontantError, "❌ Le montant est obligatoire."); return; }
+            try {
+                double m = Double.parseDouble(v.trim());
+                if (m <= 0)       setError(lblMontantError, "❌ Le montant doit être positif (> 0).");
+                else if (m > 1e6) setError(lblMontantError, "❌ Le montant est trop élevé (max 1 000 000 DT).");
+                else              setSuccess(lblMontantError, "✓ Montant valide");
+            } catch (NumberFormatException e) {
+                setError(lblMontantError, "❌ Format invalide. Utilisez des chiffres (ex: 1500.50).");
+            }
+        });
+
+        cmbTypeTransaction.valueProperty().addListener((obs, ov, v) -> {
+            if (v != null && !v.trim().isEmpty()) setSuccess(lblTypeError, "✓ Type valide");
+            else setError(lblTypeError, "❌ Le type de transaction est obligatoire.");
+        });
+
+        cmbStatutTransaction.valueProperty().addListener((obs, ov, v) -> {
+            if (v != null && !v.trim().isEmpty()) setSuccess(lblStatutError, "✓ Statut valide");
+            else setError(lblStatutError, "❌ Le statut est obligatoire.");
+        });
+
+        txtDescription.textProperty().addListener((obs, ov, v) -> {
+            String t = v.trim();
+            if (t.isEmpty())        lblDescriptionError.setText("");
+            else if (t.length() < 5)   setError(lblDescriptionError, "❌ La description doit contenir au moins 5 caractères.");
+            else if (t.length() > 500) setError(lblDescriptionError, "❌ La description est trop longue (max 500 caractères).");
+            else setSuccess(lblDescriptionError, "✓ Description valide (" + t.length() + "/500 caractères)");
+        });
     }
 
     private boolean validateForm() {
-        if (cmbCategorie.getValue() == null || dpDateTransaction.getValue() == null ||
-            txtMontant.getText().isEmpty() || cmbTypeTransaction.getValue() == null ||
-            cmbStatutTransaction.getValue() == null) {
-            showAlert(Alert.AlertType.ERROR, "Validation", "Remplissez tous les champs obligatoires.");
-            return false;
-        }
-        return true;
-    }
+        boolean valid = true;
+        clearErrorLabels();
 
-    // Sorting
-    @FXML private void trierParDateDesc() { transactionsList.sort(Comparator.comparing(Transaction::getDateTransaction).reversed()); }
-    @FXML private void trierParDateAsc() { transactionsList.sort(Comparator.comparing(Transaction::getDateTransaction)); }
-    @FXML private void trierParMontantAsc() { transactionsList.sort(Comparator.comparing(Transaction::getMontant)); }
-    @FXML private void trierParMontantDesc() { transactionsList.sort(Comparator.comparing(Transaction::getMontant).reversed()); }
-    @FXML private void trierParStatut() { transactionsList.sort(Comparator.comparing(Transaction::getStatutTransaction)); }
+        if (cmbCategorie.getValue() == null || cmbCategorie.getValue().trim().isEmpty())
+            { setError(lblCategorieError, "❌ La catégorie est obligatoire."); valid = false; }
 
-    @FXML private void exporterPDF() { showAlert(Alert.AlertType.INFORMATION, "Export", "Export PDF en developpement."); }
-    @FXML private void envoyerSMS() { showAlert(Alert.AlertType.INFORMATION, "SMS", "Envoi SMS en developpement."); }
+        LocalDate date = dpDateTransaction.getValue();
+        if (date == null)
+            { setError(lblDateError, "❌ La date est obligatoire."); valid = false; }
+        else if (date.isAfter(LocalDate.now()))
+            { setError(lblDateError, "❌ La date ne peut pas être dans le futur."); valid = false; }
+        else if (date.isBefore(LocalDate.now().minusYears(10)))
+            { setError(lblDateError, "❌ La date est trop ancienne (max 10 ans)."); valid = false; }
 
-    private void showAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    // Inner class
-    public static class Transaction {
-        private String categorie;
-        private LocalDate dateTransaction;
-        private double montant;
-        private String typeTransaction;
-        private String statutTransaction;
-        private double soldeApres;
-        private String description;
-
-        public Transaction(String categorie, LocalDate dateTransaction, double montant, 
-                          String typeTransaction, String statutTransaction, double soldeApres, String description) {
-            this.categorie = categorie;
-            this.dateTransaction = dateTransaction;
-            this.montant = montant;
-            this.typeTransaction = typeTransaction;
-            this.statutTransaction = statutTransaction;
-            this.soldeApres = soldeApres;
-            this.description = description;
+        String mt = txtMontant.getText().trim();
+        if (mt.isEmpty()) { setError(lblMontantError, "❌ Le montant est obligatoire."); valid = false; }
+        else {
+            try {
+                double m = Double.parseDouble(mt);
+                if (m <= 0)       { setError(lblMontantError, "❌ Le montant doit être positif (> 0)."); valid = false; }
+                else if (m > 1e6) { setError(lblMontantError, "❌ Le montant est trop élevé (max 1 000 000 DT)."); valid = false; }
+            } catch (NumberFormatException e) {
+                setError(lblMontantError, "❌ Format invalide. Utilisez des chiffres (ex: 1500.50)."); valid = false;
+            }
         }
 
-        // Getters and Setters
-        public String getCategorie() { return categorie; }
-        public void setCategorie(String categorie) { this.categorie = categorie; }
-        public LocalDate getDateTransaction() { return dateTransaction; }
-        public void setDateTransaction(LocalDate dateTransaction) { this.dateTransaction = dateTransaction; }
-        public double getMontant() { return montant; }
-        public void setMontant(double montant) { this.montant = montant; }
-        public String getTypeTransaction() { return typeTransaction; }
-        public void setTypeTransaction(String typeTransaction) { this.typeTransaction = typeTransaction; }
-        public String getStatutTransaction() { return statutTransaction; }
-        public void setStatutTransaction(String statutTransaction) { this.statutTransaction = statutTransaction; }
-        public double getSoldeApres() { return soldeApres; }
-        public void setSoldeApres(double soldeApres) { this.soldeApres = soldeApres; }
-        public String getDescription() { return description; }
-        public void setDescription(String description) { this.description = description; }
+        if (cmbTypeTransaction.getValue() == null || cmbTypeTransaction.getValue().trim().isEmpty())
+            { setError(lblTypeError, "❌ Le type de transaction est obligatoire."); valid = false; }
+
+        if (cmbStatutTransaction.getValue() == null || cmbStatutTransaction.getValue().trim().isEmpty())
+            { setError(lblStatutError, "❌ Le statut est obligatoire."); valid = false; }
+
+        String desc = txtDescription.getText().trim();
+        if (!desc.isEmpty() && desc.length() < 5)
+            { setError(lblDescriptionError, "❌ La description doit contenir au moins 5 caractères."); valid = false; }
+        else if (desc.length() > 500)
+            { setError(lblDescriptionError, "❌ La description est trop longue (max 500 caractères)."); valid = false; }
+
+        return valid;
+    }
+
+    private void setError(Label label, String message) {
+        if (label != null) { label.setText(message); label.setStyle("-fx-text-fill:#ef4444;-fx-font-size:12px;-fx-font-weight:bold;"); }
+    }
+
+    private void setSuccess(Label label, String message) {
+        if (label != null) { label.setText(message); label.setStyle("-fx-text-fill:#22c55e;-fx-font-size:12px;-fx-font-weight:bold;"); }
+    }
+
+    private void clearErrorLabels() {
+        for (Label l : new Label[]{lblCategorieError, lblDateError, lblMontantError,
+                                    lblTypeError, lblStatutError, lblDescriptionError})
+            if (l != null) l.setText("");
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    // CRUD handlers
+    // ══════════════════════════════════════════════════════════════════════
+
+    @FXML
+    void handleAjouter(ActionEvent event) {
+        if (!validateForm()) {
+            new Alert(Alert.AlertType.WARNING, "Veuillez corriger les erreurs en rouge dans le formulaire.",
+                      ButtonType.OK).showAndWait();
+            return;
+        }
+
+        int       idUser    = AuthSession.getCurrentUser().getIdUser();
+        String    emailUser = AuthSession.getCurrentUser().getEmail();
+        String    categorie = cmbCategorie.getValue();
+        LocalDate date      = dpDateTransaction.getValue();
+        double    montant   = Double.parseDouble(txtMontant.getText().trim());
+        String    type      = cmbTypeTransaction.getValue();
+        String    statut    = cmbStatutTransaction.getValue();
+        String    desc      = txtDescription.getText().trim();
+
+        if (isEditMode && selectedTransaction != null) {
+            service.edit(new Transaction(selectedTransaction.getIdTransaction(),
+                    selectedTransaction.getIdUser(), categorie, date, montant, type, statut, desc));
+            new Thread(() -> EmailUtil.envoyerConfirmationTransaction(emailUser, categorie, montant, type, statut)).start();
+            alert(Alert.AlertType.INFORMATION, "Transaction modifiée avec succès ! Un email de confirmation a été envoyé.");
+        } else {
+            service.add(new Transaction(idUser, categorie, date, montant, type, statut, desc));
+            new Thread(() -> EmailUtil.envoyerConfirmationTransaction(emailUser, categorie, montant, type, statut)).start();
+            alert(Alert.AlertType.INFORMATION, "Transaction ajoutée avec succès ! Un email de confirmation a été envoyé.");
+        }
+        clearForm();
+        refreshData();
+    }
+
+    @FXML void handleAnnuler(ActionEvent event) { clearForm(); }
+
+    @FXML
+    void handleSupprimer(ActionEvent event) {
+        if (selectedTransaction != null) {
+            Alert conf = new Alert(Alert.AlertType.CONFIRMATION,
+                    "Voulez-vous vraiment supprimer cette transaction ?", ButtonType.OK, ButtonType.CANCEL);
+            conf.setTitle("Confirmation de suppression");
+            conf.showAndWait().ifPresent(r -> { if (r == ButtonType.OK) deleteTransaction(selectedTransaction); });
+        } else {
+            alert(Alert.AlertType.WARNING, "Veuillez sélectionner une transaction à supprimer.");
+        }
+    }
+
+    private void editTransaction(Transaction t) {
+        selectedTransaction = t; populateForm(t);
+        isEditMode = true; btnAjouter.setText("Modifier");
+    }
+
+    private void deleteTransaction(Transaction t) {
+        service.remove(t); clearForm(); refreshData();
+        alert(Alert.AlertType.INFORMATION, "Transaction supprimée avec succès !");
+    }
+
+    private void populateForm(Transaction t) {
+        cmbCategorie.setValue(t.getCategorie());
+        cmbTypeTransaction.setValue(t.getTypeTransaction());
+        cmbStatutTransaction.setValue(t.getStatutTransaction());
+        txtMontant.setText(String.valueOf(t.getMontant()));
+        txtDescription.setText(t.getDescription());
+        dpDateTransaction.setValue(t.getDateTransaction());
+    }
+
+    private void clearForm() {
+        cmbCategorie.setValue(null); cmbTypeTransaction.setValue(null); cmbStatutTransaction.setValue(null);
+        txtMontant.clear(); txtDescription.clear(); dpDateTransaction.setValue(null);
+        selectedTransaction = null; isEditMode = false; btnAjouter.setText("Ajouter");
+        clearErrorLabels();
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    // Stats
+    // ══════════════════════════════════════════════════════════════════════
+
+    private void updateStats() {
+        if (lblTotalTransactions != null)
+            lblTotalTransactions.setText(String.valueOf(transactionsList.size()));
+    }
+
+    private void updateTableInfo() {
+        if (lblTableInfo == null) return;
+        int total      = filteredData.size();
+        int totalPages = Math.max(1, (int) Math.ceil((double) total / PAGE_SIZE));
+        int from       = currentPage * PAGE_SIZE + 1;
+        int to         = Math.min(from + PAGE_SIZE - 1, total);
+        lblTableInfo.setText(total == 0 ? "Aucun résultat"
+                : "Affichage " + from + "–" + to + " sur " + total
+                  + "  (page " + (currentPage + 1) + "/" + totalPages + ")");
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    // Tri (boutons FXML conservés)
+    // ══════════════════════════════════════════════════════════════════════
+
+    @FXML void trierParDateAsc(ActionEvent e) {
+        tableTransactions.getSortOrder().clear();
+        colDate.setSortType(TableColumn.SortType.ASCENDING);
+        tableTransactions.getSortOrder().add(colDate);
+        currentPage = 0; applyPage();
+    }
+
+    @FXML void trierParDateDesc(ActionEvent e) {
+        tableTransactions.getSortOrder().clear();
+        colDate.setSortType(TableColumn.SortType.DESCENDING);
+        tableTransactions.getSortOrder().add(colDate);
+        currentPage = 0; applyPage();
+    }
+
+    @FXML void trierParMontantAsc(ActionEvent e) {
+        tableTransactions.getSortOrder().clear();
+        colMontant.setSortType(TableColumn.SortType.ASCENDING);
+        tableTransactions.getSortOrder().add(colMontant);
+        currentPage = 0; applyPage();
+    }
+
+    @FXML void trierParMontantDesc(ActionEvent e) {
+        tableTransactions.getSortOrder().clear();
+        colMontant.setSortType(TableColumn.SortType.DESCENDING);
+        tableTransactions.getSortOrder().add(colMontant);
+        currentPage = 0; applyPage();
+    }
+
+    @FXML void trierParStatut(ActionEvent e) {
+        tableTransactions.getSortOrder().clear();
+        colStatut.setSortType(TableColumn.SortType.ASCENDING);
+        tableTransactions.getSortOrder().add(colStatut);
+        currentPage = 0; applyPage();
+    }
+
+    // ══════════════════════════════════════════════════════════════════════
+    // Export PDF
+    // ══════════════════════════════════════════════════════════════════════
+
+    @FXML
+    void exporterPDF(ActionEvent e) {
+        if (transactionsList.isEmpty()) { alert(Alert.AlertType.INFORMATION, "Aucune transaction à exporter !"); return; }
+
+        FileChooser fc = new FileChooser();
+        fc.setTitle("Exporter PDF");
+        fc.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichier PDF", "*.pdf"));
+        File file = fc.showSaveDialog(new Stage());
+        if (file == null) return;
+
+        try {
+            Document doc = new Document(new PdfDocument(new PdfWriter(file.getAbsolutePath())));
+            doc.add(new Paragraph("Liste des transactions").setBold().setFontSize(16));
+            doc.add(new Paragraph(" "));
+            Table tbl = new Table(new float[]{100, 80, 80, 80, 80, 180});
+            for (String h : new String[]{"Catégorie","Date","Montant","Type","Statut","Description"})
+                tbl.addHeaderCell(new Cell().add(new Paragraph(h)));
+            for (Transaction t : filteredData) {
+                tbl.addCell(t.getCategorie()         != null ? t.getCategorie()         : "");
+                tbl.addCell(t.getDateTransaction()   != null ? t.getDateTransaction().toString() : "");
+                tbl.addCell(String.valueOf(t.getMontant()));
+                tbl.addCell(t.getTypeTransaction()   != null ? t.getTypeTransaction()   : "");
+                tbl.addCell(t.getStatutTransaction() != null ? t.getStatutTransaction() : "");
+                tbl.addCell(t.getDescription()       != null ? t.getDescription()       : "");
+            }
+            doc.add(tbl); doc.close();
+            alert(Alert.AlertType.INFORMATION, "PDF exporté avec succès !");
+        } catch (FileNotFoundException ex) {
+            ex.printStackTrace();
+            alert(Alert.AlertType.ERROR, "Impossible de créer le fichier PDF !");
+        }
+    }
+
+    @FXML void envoyerSMS(ActionEvent e) { alert(Alert.AlertType.INFORMATION, "Fonction SMS non implémentée !"); }
+
+    // ══════════════════════════════════════════════════════════════════════
+    // Helper
+    // ══════════════════════════════════════════════════════════════════════
+
+    private void alert(Alert.AlertType type, String msg) {
+        Alert a = new Alert(type, msg, ButtonType.OK);
+        a.setHeaderText(null); a.showAndWait();
     }
 }

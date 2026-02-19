@@ -1,181 +1,139 @@
 package com.nexora.bank.controllers;
 
-import javafx.beans.property.SimpleStringProperty;
+import com.nexora.bank.AuthSession;
+import com.nexora.bank.Models.Reclamation;
+import com.nexora.bank.Models.Transaction;
+import com.nexora.bank.Service.ReclamationService;
+import com.nexora.bank.Service.TransactionService;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Cell;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.element.Table;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
-import javafx.scene.shape.SVGPath;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.net.URL;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
-import java.util.Optional;
+import java.util.List;
 import java.util.ResourceBundle;
-import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class ReclamationController implements Initializable {
 
+    private final ReclamationService service = new ReclamationService();
+    private final TransactionService transactionService = new TransactionService();
+
+    @FXML private Button btnAjouter;
+    @FXML private Button btnAnnuler;
+    @FXML private Button btnSupprimer;
+    @FXML private ComboBox<String> cmbTransaction;
+    @FXML private ComboBox<String> cmbTypeReclamation;
+    @FXML private ComboBox<String> cmbStatut;
+    @FXML private DatePicker dpDateReclamation;
+    @FXML private TextArea txtDescription;
+
+    @FXML private TableView<Reclamation> tableReclamations;
+    @FXML private TableColumn<Reclamation, Integer> colId;
+    @FXML private TableColumn<Reclamation, String> colTransaction;
+    @FXML private TableColumn<Reclamation, String> colDate;
+    @FXML private TableColumn<Reclamation, String> colType;
+    @FXML private TableColumn<Reclamation, String> colDescription;
+    @FXML private TableColumn<Reclamation, String> colStatut;
+    @FXML private TableColumn<Reclamation, Void> colActions;
+
+    @FXML private TextField txtRecherche;
+    @FXML private Label lblTableInfo;
     @FXML private Label lblNombreReclamations;
     @FXML private Label lblEnAttente;
     @FXML private Label lblResolues;
 
-    @FXML private TextField txtIdReclamation;
-    @FXML private DatePicker dpDateReclamation;
-    @FXML private ComboBox<String> cmbTypeReclamation;
-    @FXML private TextArea txtDescription;
-    @FXML private ComboBox<String> cmbStatut;
-    @FXML private TextField txtRecherche;
-
-    @FXML private Button btnAjouter;
-
-    @FXML private TableView<Reclamation> tableReclamations;
-    @FXML private TableColumn<Reclamation, String> colIdReclamation;
-    @FXML private TableColumn<Reclamation, String> colDateReclamation;
-    @FXML private TableColumn<Reclamation, String> colTypeReclamation;
-    @FXML private TableColumn<Reclamation, String> colDescription;
-    @FXML private TableColumn<Reclamation, String> colIdUser;
-    @FXML private TableColumn<Reclamation, String> colIdTransaction;
-    @FXML private TableColumn<Reclamation, String> colStatut;
-    @FXML private TableColumn<Reclamation, Void> colActions;
-
-    @FXML private Label lblTableInfo;
+    @FXML private Label lblTransactionError;
+    @FXML private Label lblDateError;
+    @FXML private Label lblTypeError;
+    @FXML private Label lblStatutError;
+    @FXML private Label lblDescriptionError;
 
     private final ObservableList<Reclamation> reclamationsList = FXCollections.observableArrayList();
     private FilteredList<Reclamation> filteredData;
-    private Reclamation selectedReclamation;
-    private boolean editMode;
+    private Reclamation selectedReclamation = null;
+    private boolean isEditMode = false;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initializeTable();
         initializeSearch();
-        loadSampleData();
-        updateStats();
+        setupTableSelection();
+        setupComboTransaction();
+        setupRealTimeValidation();
+        refreshData();
+    }
+
+    private void setupComboTransaction() {
+        List<String> categories = transactionService.getCategories();
+        cmbTransaction.setItems(FXCollections.observableArrayList(categories));
+        cmbTransaction.setPromptText("Sélectionner une catégorie");
     }
 
     private void initializeTable() {
-        colIdReclamation.setCellValueFactory(new PropertyValueFactory<>("idReclamation"));
-        colDateReclamation.setCellValueFactory(c ->
-            new SimpleStringProperty(c.getValue().getDateReclamation().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))));
-        colTypeReclamation.setCellValueFactory(new PropertyValueFactory<>("typeReclamation"));
+        colId.setCellValueFactory(new PropertyValueFactory<>("idReclamation"));
+
+        colTransaction.setCellValueFactory(cellData -> {
+            Transaction t = transactionService.getAll().stream()
+                    .filter(tr -> tr.getIdTransaction() == cellData.getValue().getIdTransaction())
+                    .findFirst().orElse(null);
+            return new javafx.beans.property.SimpleStringProperty(
+                    t != null ? t.getCategorie() : ""
+            );
+        });
+
+        colDate.setCellValueFactory(new PropertyValueFactory<>("dateReclamation"));
+        colType.setCellValueFactory(new PropertyValueFactory<>("typeReclamation"));
         colDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
-        colIdUser.setCellValueFactory(new PropertyValueFactory<>("idUser"));
-        colIdTransaction.setCellValueFactory(new PropertyValueFactory<>("idTransaction"));
-        colStatut.setCellValueFactory(new PropertyValueFactory<>("statut"));
+        colStatut.setCellValueFactory(new PropertyValueFactory<>("status"));
 
-        colTypeReclamation.setCellFactory(col -> new TableCell<>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setGraphic(null);
-                    return;
-                }
-                Label badge = new Label(item);
-                badge.getStyleClass().add("nx-badge");
-                switch (item) {
-                    case "VIREMENT_NON_RECU" -> badge.getStyleClass().add("nx-badge-warning");
-                    case "ERREUR_MONTANT" -> badge.getStyleClass().add("nx-badge-error");
-                    case "TRANSACTION_INCONNUE" -> badge.getStyleClass().add("nx-badge-purple");
-                    case "PROBLEME_CARTE" -> badge.getStyleClass().add("nx-badge-info");
-                    default -> badge.getStyleClass().add("nx-badge-blue");
-                }
-                setGraphic(badge);
-            }
-        });
-
-        colStatut.setCellFactory(col -> new TableCell<>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setGraphic(null);
-                    return;
-                }
-                Label badge = new Label(item);
-                badge.getStyleClass().add("nx-badge");
-                switch (item) {
-                    case "Resolue" -> badge.getStyleClass().add("nx-badge-success");
-                    case "Rejetee" -> badge.getStyleClass().add("nx-badge-error");
-                    case "En cours" -> badge.getStyleClass().add("nx-badge-info");
-                    default -> badge.getStyleClass().add("nx-badge-warning");
-                }
-                setGraphic(badge);
-            }
-        });
-
-        colActions.setCellFactory(col -> new TableCell<>() {
-            private final Button edit = new Button();
-            private final Button delete = new Button();
-            private final HBox box = new HBox(8, edit, delete);
+        colActions.setCellFactory(column -> new TableCell<>() {
+            private final Button btnEdit = new Button("✏");
+            private final Button btnDelete = new Button("🗑");
+            private final HBox hbox = new HBox(8, btnEdit, btnDelete);
 
             {
-                edit.getStyleClass().addAll("nx-table-action", "nx-table-action-edit");
-                delete.getStyleClass().addAll("nx-table-action", "nx-table-action-delete");
-
-                SVGPath editIcon = new SVGPath();
-                editIcon.setContent("M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z");
-                editIcon.getStyleClass().add("nx-action-icon");
-                edit.setGraphic(editIcon);
-
-                SVGPath deleteIcon = new SVGPath();
-                deleteIcon.setContent("M19 7l-.867 12.142A2 2 0 0 1 16.138 21H7.862a2 2 0 0 1-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v3M4 7h16");
-                deleteIcon.getStyleClass().add("nx-action-icon");
-                delete.setGraphic(deleteIcon);
-
-                box.setAlignment(Pos.CENTER);
-                edit.setOnAction(e -> editReclamation(getTableView().getItems().get(getIndex())));
-                delete.setOnAction(e -> deleteReclamation(getTableView().getItems().get(getIndex())));
+                hbox.setAlignment(Pos.CENTER);
+                btnEdit.setOnAction(e -> editReclamation(getTableView().getItems().get(getIndex())));
+                btnDelete.setOnAction(e -> deleteReclamation(getTableView().getItems().get(getIndex())));
             }
 
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                setGraphic(empty ? null : box);
-            }
-        });
-
-        tableReclamations.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
-            if (newValue != null) {
-                selectedReclamation = newValue;
-                populateForm(newValue);
-                editMode = true;
-                btnAjouter.setText("Modifier");
+                setGraphic(empty ? null : hbox);
             }
         });
     }
 
     private void initializeSearch() {
-        filteredData = new FilteredList<>(reclamationsList, p -> true);
-        txtRecherche.textProperty().addListener((obs, oldValue, newValue) -> {
-            String keyword = newValue == null ? "" : newValue.toLowerCase().trim();
-            filteredData.setPredicate(r -> keyword.isEmpty()
-                || r.getIdReclamation().toLowerCase().contains(keyword)
-                || r.getTypeReclamation().toLowerCase().contains(keyword)
-                || r.getIdUser().toLowerCase().contains(keyword)
-                || r.getIdTransaction().toLowerCase().contains(keyword)
-                || r.getDescription().toLowerCase().contains(keyword)
-                || r.getStatut().toLowerCase().contains(keyword));
+        filteredData = new FilteredList<>(reclamationsList, r -> true);
+
+        txtRecherche.textProperty().addListener((obs, oldVal, newVal) -> {
+            filteredData.setPredicate(r -> {
+                if (newVal == null || newVal.isEmpty()) return true;
+                String f = newVal.toLowerCase();
+                return (r.getTypeReclamation() != null && r.getTypeReclamation().toLowerCase().contains(f)) ||
+                       (r.getStatus() != null && r.getStatus().toLowerCase().contains(f)) ||
+                       (r.getDescription() != null && r.getDescription().toLowerCase().contains(f));
+            });
             updateTableInfo();
         });
 
@@ -184,265 +142,267 @@ public class ReclamationController implements Initializable {
         tableReclamations.setItems(sorted);
     }
 
-    private void loadSampleData() {
-        reclamationsList.addAll(
-            new Reclamation("REC-2026-001", LocalDate.now().minusDays(2), "VIREMENT_NON_RECU", "Virement sortant non recu par le beneficiaire", "USR-0021", "TX-3021", "En attente"),
-            new Reclamation("REC-2026-002", LocalDate.now().minusDays(1), "ERREUR_MONTANT", "Montant debite superieur a la somme confirmee", "USR-0014", "TX-3018", "En cours"),
-            new Reclamation("REC-2026-003", LocalDate.now().minusDays(5), "PROBLEME_CARTE", "Carte bloquee apres paiement international", "USR-0009", "TX-2990", "Resolue"),
-            new Reclamation("REC-2026-004", LocalDate.now().minusDays(3), "TRANSACTION_INCONNUE", "Operation non reconnue sur le compte", "USR-0030", "TX-3004", "Rejetee")
-        );
+    private void setupTableSelection() {
+        tableReclamations.getSelectionModel().selectedItemProperty().addListener((obs, oldSel, newSel) -> {
+            if (newSel != null) {
+                selectedReclamation = newSel;
+                populateForm(newSel);
+                isEditMode = true;
+                btnAjouter.setText("Modifier");
+            }
+        });
+    }
+
+    private void setupRealTimeValidation() {
+        cmbTransaction.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null && !newVal.trim().isEmpty())
+                setSuccess(lblTransactionError, "✓ Catégorie sélectionnée");
+            else
+                setError(lblTransactionError, "❌ La catégorie est obligatoire.");
+        });
+
+        dpDateReclamation.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null) setSuccess(lblDateError, "✓ Date valide");
+            else setError(lblDateError, "❌ La date est obligatoire.");
+        });
+
+        cmbTypeReclamation.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null && !newVal.trim().isEmpty()) setSuccess(lblTypeError, "✓ Type valide");
+            else setError(lblTypeError, "❌ Le type est obligatoire.");
+        });
+
+        cmbStatut.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal != null && !newVal.trim().isEmpty()) setSuccess(lblStatutError, "✓ Statut valide");
+            else setError(lblStatutError, "❌ Le statut est obligatoire.");
+        });
+
+        txtDescription.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal.trim().length() >= 5) setSuccess(lblDescriptionError, "✓ Description valide");
+            else setError(lblDescriptionError, "❌ La description doit contenir au moins 5 caractères.");
+        });
+    }
+
+    private void refreshData() {
+        reclamationsList.setAll(service.getAll());
+
+        long enAttente = reclamationsList.stream()
+                .filter(r -> "En attente".equalsIgnoreCase(r.getStatus()))
+                .count();
+        long resolues = reclamationsList.stream()
+                .filter(r -> "Résolue".equalsIgnoreCase(r.getStatus()))
+                .count();
+
+        lblNombreReclamations.setText(String.valueOf(reclamationsList.size()));
+        lblEnAttente.setText(String.valueOf(enAttente));
+        lblResolues.setText(String.valueOf(resolues));
+
         updateTableInfo();
     }
 
-    private void updateStats() {
-        lblNombreReclamations.setText(String.valueOf(reclamationsList.size()));
-        long pending = reclamationsList.stream().filter(r -> "En attente".equals(r.getStatut())).count();
-        long resolved = reclamationsList.stream().filter(r -> "Resolue".equals(r.getStatut())).count();
-        lblEnAttente.setText(String.valueOf(pending));
-        lblResolues.setText(String.valueOf(resolved));
-    }
-
-    private void updateTableInfo() {
-        int filtered = filteredData == null ? 0 : filteredData.size();
-        lblTableInfo.setText(String.format("Affichage de %d sur %d entrees", filtered, reclamationsList.size()));
-    }
-
-    private void populateForm(Reclamation reclamation) {
-        txtIdReclamation.setText(reclamation.getIdReclamation());
-        dpDateReclamation.setValue(reclamation.getDateReclamation());
-        cmbTypeReclamation.setValue(reclamation.getTypeReclamation());
-        txtDescription.setText(reclamation.getDescription());
-        cmbStatut.setValue(reclamation.getStatut());
+    private void populateForm(Reclamation r) {
+        Transaction t = transactionService.getAll().stream()
+                .filter(tr -> tr.getIdTransaction() == r.getIdTransaction())
+                .findFirst().orElse(null);
+        cmbTransaction.setValue(t != null ? t.getCategorie() : null);
+        dpDateReclamation.setValue(java.time.LocalDate.parse(r.getDateReclamation()));
+        cmbTypeReclamation.setValue(r.getTypeReclamation());
+        cmbStatut.setValue(r.getStatus());
+        txtDescription.setText(r.getDescription());
     }
 
     private void clearForm() {
-        txtIdReclamation.clear();
+        cmbTransaction.setValue(null);
         dpDateReclamation.setValue(null);
         cmbTypeReclamation.setValue(null);
-        txtDescription.clear();
         cmbStatut.setValue(null);
+        txtDescription.clear();
         selectedReclamation = null;
-        editMode = false;
+        isEditMode = false;
         btnAjouter.setText("Ajouter");
-        tableReclamations.getSelectionModel().clearSelection();
+        clearErrorLabels();
+    }
+
+    private void clearErrorLabels() {
+        lblTransactionError.setText("");
+        lblDateError.setText("");
+        lblTypeError.setText("");
+        lblStatutError.setText("");
+        lblDescriptionError.setText("");
+    }
+
+    private boolean validateForm() {
+        boolean valid = true;
+        clearErrorLabels();
+        if (cmbTransaction.getValue() == null || cmbTransaction.getValue().trim().isEmpty()) {
+            setError(lblTransactionError, "❌ La catégorie est obligatoire."); valid = false;
+        }
+        if (dpDateReclamation.getValue() == null) {
+            setError(lblDateError, "❌ La date est obligatoire."); valid = false;
+        }
+        if (cmbTypeReclamation.getValue() == null || cmbTypeReclamation.getValue().trim().isEmpty()) {
+            setError(lblTypeError, "❌ Le type est obligatoire."); valid = false;
+        }
+        if (cmbStatut.getValue() == null || cmbStatut.getValue().trim().isEmpty()) {
+            setError(lblStatutError, "❌ Le statut est obligatoire."); valid = false;
+        }
+        if (txtDescription.getText().trim().length() < 5) {
+            setError(lblDescriptionError, "❌ La description doit contenir au moins 5 caractères."); valid = false;
+        }
+        return valid;
     }
 
     @FXML
-    private void handleAjouter() {
-        String id = txtIdReclamation.getText() == null ? "" : txtIdReclamation.getText().trim();
-        LocalDate date = dpDateReclamation.getValue();
-        String type = cmbTypeReclamation.getValue();
-        String description = txtDescription.getText() == null ? "" : txtDescription.getText().trim();
-        String statut = cmbStatut.getValue();
-
-        if (id.isEmpty()) {
-            id = generateReclamationId();
-        }
-
-        if (date == null || type == null || description.isEmpty() || statut == null) {
-            showAlert(Alert.AlertType.ERROR, "Validation", "Remplissez tous les champs obligatoires.");
+    void handleAjouter(ActionEvent event) {
+        if (!validateForm()) {
+            new Alert(Alert.AlertType.WARNING, "Veuillez corriger les erreurs en rouge dans le formulaire.").showAndWait();
             return;
         }
 
-        String idUser = (editMode && selectedReclamation != null)
-            ? selectedReclamation.getIdUser()
-            : generateUserId();
-        String idTransaction = (editMode && selectedReclamation != null)
-            ? selectedReclamation.getIdTransaction()
-            : generateTransactionId();
+        // ✅ Récupération de l'idUser depuis AuthSession
+        int idUser = AuthSession.getCurrentUser().getIdUser();
 
-        if (editMode && selectedReclamation != null) {
-            selectedReclamation.setIdReclamation(id);
-            selectedReclamation.setDateReclamation(date);
-            selectedReclamation.setTypeReclamation(type);
-            selectedReclamation.setDescription(description);
-            selectedReclamation.setIdUser(idUser);
-            selectedReclamation.setIdTransaction(idTransaction);
-            selectedReclamation.setStatut(statut);
-            tableReclamations.refresh();
+        String categorieChoisie = cmbTransaction.getValue();
+        Transaction transactionLiee = transactionService.getAll().stream()
+                .filter(t -> categorieChoisie.equals(t.getCategorie()))
+                .findFirst().orElse(null);
+
+        if (transactionLiee == null) {
+            new Alert(Alert.AlertType.ERROR, "Aucune transaction trouvée pour cette catégorie.").showAndWait();
+            return;
+        }
+
+        if (isEditMode && selectedReclamation != null) {
+            Reclamation r = new Reclamation(
+                    selectedReclamation.getIdReclamation(),
+                    selectedReclamation.getIdUser(), // ✅ on garde l'idUser original
+                    transactionLiee.getIdTransaction(),
+                    dpDateReclamation.getValue().toString(),
+                    cmbTypeReclamation.getValue(),
+                    txtDescription.getText().trim(),
+                    cmbStatut.getValue()
+            );
+            service.edit(r);
+
+            new Alert(Alert.AlertType.INFORMATION, "Réclamation modifiée avec succès !").showAndWait();
         } else {
-            reclamationsList.add(new Reclamation(id, date, type, description, idUser, idTransaction, statut));
+            Reclamation r = new Reclamation(
+                    idUser, // ✅ idUser de l'utilisateur connecté
+                    transactionLiee.getIdTransaction(),
+                    dpDateReclamation.getValue().toString(),
+                    cmbTypeReclamation.getValue(),
+                    txtDescription.getText().trim(),
+                    cmbStatut.getValue()
+            );
+            service.add(r);
+
+            new Alert(Alert.AlertType.INFORMATION, "Réclamation ajoutée avec succès !").showAndWait();
         }
 
         clearForm();
-        updateStats();
-        updateTableInfo();
+        refreshData();
     }
 
     @FXML
-    private void handleSupprimer() {
+    void handleAnnuler(ActionEvent event) { clearForm(); }
+
+    @FXML
+    void handleSupprimer(ActionEvent event) {
         if (selectedReclamation != null) {
-            deleteReclamation(selectedReclamation);
+            Alert confirmation = new Alert(Alert.AlertType.CONFIRMATION,
+                    "Voulez-vous vraiment supprimer cette réclamation ?");
+            confirmation.showAndWait().ifPresent(response -> {
+                if (response == ButtonType.OK) {
+                    service.remove(selectedReclamation);
+                    clearForm();
+                    refreshData();
+                }
+            });
         }
     }
 
-    @FXML
-    private void handleAnnuler() {
-        clearForm();
-    }
-
-    private String generateReclamationId() {
-        return generateNextId("REC-2026-", 3, Reclamation::getIdReclamation);
-    }
-
-    private String generateUserId() {
-        return generateNextId("USR-", 4, Reclamation::getIdUser);
-    }
-
-    private String generateTransactionId() {
-        return generateNextId("TX-", 4, Reclamation::getIdTransaction);
-    }
-
-    private String generateNextId(String prefix, int width, Function<Reclamation, String> extractor) {
-        int max = reclamationsList.stream()
-            .map(extractor)
-            .mapToInt(value -> extractNumericSuffix(value, prefix))
-            .max()
-            .orElse(0);
-        return String.format("%s%0" + width + "d", prefix, max + 1);
-    }
-
-    private int extractNumericSuffix(String value, String prefix) {
-        if (value == null || !value.startsWith(prefix)) {
-            return 0;
-        }
-        String suffix = value.substring(prefix.length());
-        Matcher matcher = Pattern.compile("(\\d+)").matcher(suffix);
-        if (!matcher.find()) {
-            return 0;
-        }
-        try {
-            return Integer.parseInt(matcher.group(1));
-        } catch (NumberFormatException ex) {
-            return 0;
-        }
-    }
-
-    private void editReclamation(Reclamation reclamation) {
-        selectedReclamation = reclamation;
-        populateForm(reclamation);
-        editMode = true;
+    private void editReclamation(Reclamation r) {
+        selectedReclamation = r;
+        populateForm(r);
+        isEditMode = true;
         btnAjouter.setText("Modifier");
     }
 
-    private void deleteReclamation(Reclamation reclamation) {
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION, "Supprimer cette reclamation ?", ButtonType.OK, ButtonType.CANCEL);
-        Optional<ButtonType> result = confirm.showAndWait();
-        if (result.orElse(ButtonType.CANCEL) == ButtonType.OK) {
-            reclamationsList.remove(reclamation);
-            clearForm();
-            updateStats();
-            updateTableInfo();
-        }
+    private void deleteReclamation(Reclamation r) {
+        service.remove(r);
+        clearForm();
+        refreshData();
+    }
+
+    private void setError(Label label, String message) {
+        label.setText(message);
+        label.setStyle("-fx-text-fill: #ef4444; -fx-font-size: 12px; -fx-font-weight: bold;");
+    }
+
+    private void setSuccess(Label label, String message) {
+        label.setText(message);
+        label.setStyle("-fx-text-fill: #22c55e; -fx-font-size: 12px; -fx-font-weight: bold;");
+    }
+
+    private void updateTableInfo() {
+        lblTableInfo.setText("Total : " + filteredData.size());
     }
 
     @FXML
-    private void trierParDate() {
-        reclamationsList.sort(Comparator.comparing(Reclamation::getDateReclamation).reversed());
-    }
-
-    @FXML
-    private void trierParType() {
-        reclamationsList.sort(Comparator.comparing(Reclamation::getTypeReclamation));
-    }
-
-    @FXML
-    private void trierParStatut() {
-        reclamationsList.sort(Comparator.comparing(Reclamation::getStatut));
-    }
-
-    @FXML
-    private void exporterPDF() {
-        showAlert(Alert.AlertType.INFORMATION, "Export", "Export PDF en developpement.");
-    }
-
-    @FXML
-    private void envoyerSMS() {
-        showAlert(Alert.AlertType.INFORMATION, "Notification", "Envoi notification client en developpement.");
-    }
-
-    private void showAlert(Alert.AlertType type, String title, String message) {
-        Alert alert = new Alert(type);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    public static class Reclamation {
-        private String idReclamation;
-        private LocalDate dateReclamation;
-        private String typeReclamation;
-        private String description;
-        private String idUser;
-        private String idTransaction;
-        private String statut;
-
-        public Reclamation(String idReclamation, LocalDate dateReclamation, String typeReclamation, String description,
-                           String idUser, String idTransaction, String statut) {
-            this.idReclamation = idReclamation;
-            this.dateReclamation = dateReclamation;
-            this.typeReclamation = typeReclamation;
-            this.description = description;
-            this.idUser = idUser;
-            this.idTransaction = idTransaction;
-            this.statut = statut;
+    void exporterPDF(ActionEvent e) {
+        if (reclamationsList.isEmpty()) {
+            new Alert(Alert.AlertType.INFORMATION, "Aucune réclamation à exporter !").showAndWait();
+            return;
         }
 
-        public String getIdReclamation() {
-            return idReclamation;
-        }
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Exporter PDF");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichier PDF", "*.pdf"));
+        File file = fileChooser.showSaveDialog(new Stage());
 
-        public void setIdReclamation(String idReclamation) {
-            this.idReclamation = idReclamation;
-        }
+        if (file != null) {
+            try {
+                PdfWriter writer = new PdfWriter(file.getAbsolutePath());
+                PdfDocument pdf = new PdfDocument(writer);
+                Document document = new Document(pdf);
 
-        public LocalDate getDateReclamation() {
-            return dateReclamation;
-        }
+                document.add(new Paragraph("Liste des réclamations").setBold().setFontSize(16));
+                document.add(new Paragraph(" "));
 
-        public void setDateReclamation(LocalDate dateReclamation) {
-            this.dateReclamation = dateReclamation;
-        }
+                float[] columnWidths = {50, 100, 80, 100, 200, 80};
+                Table table = new Table(columnWidths);
 
-        public String getTypeReclamation() {
-            return typeReclamation;
-        }
+                table.addHeaderCell(new Cell().add(new Paragraph("ID")));
+                table.addHeaderCell(new Cell().add(new Paragraph("Catégorie")));
+                table.addHeaderCell(new Cell().add(new Paragraph("Date")));
+                table.addHeaderCell(new Cell().add(new Paragraph("Type")));
+                table.addHeaderCell(new Cell().add(new Paragraph("Description")));
+                table.addHeaderCell(new Cell().add(new Paragraph("Statut")));
 
-        public void setTypeReclamation(String typeReclamation) {
-            this.typeReclamation = typeReclamation;
-        }
+                for (Reclamation r : filteredData) {
+                    table.addCell(String.valueOf(r.getIdReclamation()));
+                    Transaction t = transactionService.getAll().stream()
+                            .filter(tr -> tr.getIdTransaction() == r.getIdTransaction())
+                            .findFirst().orElse(null);
+                    table.addCell(t != null ? t.getCategorie() : "");
+                    table.addCell(r.getDateReclamation());
+                    table.addCell(r.getTypeReclamation());
+                    table.addCell(r.getDescription());
+                    table.addCell(r.getStatus());
+                }
 
-        public String getDescription() {
-            return description;
-        }
+                document.add(table);
+                document.close();
+                new Alert(Alert.AlertType.INFORMATION, "PDF exporté avec succès !").showAndWait();
 
-        public void setDescription(String description) {
-            this.description = description;
-        }
-
-        public String getIdUser() {
-            return idUser;
-        }
-
-        public void setIdUser(String idUser) {
-            this.idUser = idUser;
-        }
-
-        public String getIdTransaction() {
-            return idTransaction;
-        }
-
-        public void setIdTransaction(String idTransaction) {
-            this.idTransaction = idTransaction;
-        }
-
-        public String getStatut() {
-            return statut;
-        }
-
-        public void setStatut(String statut) {
-            this.statut = statut;
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+                new Alert(Alert.AlertType.ERROR, "Impossible de créer le fichier PDF !").showAndWait();
+            }
         }
     }
+
+    @FXML private void trierParDate() {}
+    @FXML private void trierParType() {}
+    @FXML private void trierParStatut() {}
+    @FXML private void envoyerSMS() {}
 }

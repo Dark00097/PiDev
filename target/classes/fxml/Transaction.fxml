@@ -14,10 +14,9 @@
       styleClass="nx-entity-container" spacing="24">
 
     <!-- ============================================= -->
-    <!-- STAT CARDS (Mini Dashboard) -->
+    <!-- STAT CARDS -->
     <!-- ============================================= -->
     <HBox spacing="24" styleClass="nx-stats-row">
-        <!-- Stat Card 1: Nombre Total de Transactions -->
         <VBox styleClass="nx-stat-card" HBox.hgrow="ALWAYS">
             <HBox alignment="CENTER_LEFT" spacing="16">
                 <StackPane styleClass="nx-stat-card-icon, nx-stat-card-icon-teal">
@@ -34,7 +33,6 @@
             </HBox>
         </VBox>
 
-        <!-- Stat Card 2: Montant Total des Transactions -->
         <VBox styleClass="nx-stat-card" HBox.hgrow="ALWAYS">
             <HBox alignment="CENTER_LEFT" spacing="16">
                 <StackPane styleClass="nx-stat-card-icon, nx-stat-card-icon-gold">
@@ -51,7 +49,6 @@
             </HBox>
         </VBox>
 
-        <!-- Stat Card 3: Transactions du Jour -->
         <VBox styleClass="nx-stat-card" HBox.hgrow="ALWAYS">
             <HBox alignment="CENTER_LEFT" spacing="16">
                 <StackPane styleClass="nx-stat-card-icon, nx-stat-card-icon-blue">
@@ -77,8 +74,7 @@
         <!-- ============================================= -->
         <!-- FORM SECTION -->
         <!-- ============================================= -->
-        <VBox styleClass="nx-card" prefWidth="560" minWidth="560" spacing="0">
-            <!-- Form Header -->
+        <VBox styleClass="nx-card" prefWidth="480" minWidth="480" spacing="0">
             <HBox styleClass="nx-card-header" alignment="CENTER_LEFT" spacing="12">
                 <StackPane styleClass="nx-card-header-icon">
                     <SVGPath content="M17 1l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4m14 4v2a4 4 0 0 1-4 4H3"/>
@@ -89,7 +85,6 @@
                 </VBox>
             </HBox>
 
-            <!-- Form Body -->
             <ScrollPane styleClass="nx-form-scroll" fitToWidth="true" VBox.vgrow="ALWAYS">
                 <VBox styleClass="nx-card-body" spacing="16">
                     
@@ -105,6 +100,7 @@
                                 </FXCollections>
                             </items>
                         </ComboBox>
+                        <Label fx:id="lblCategorieError" text="" styleClass="nx-error-label"/>
                     </VBox>
 
                     <!-- Date Transaction -->
@@ -114,6 +110,7 @@
                             <SVGPath content="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z" styleClass="nx-input-icon"/>
                             <DatePicker fx:id="dpDateTransaction" promptText="Selectionner une date" styleClass="nx-datepicker" HBox.hgrow="ALWAYS"/>
                         </HBox>
+                        <Label fx:id="lblDateError" text="" styleClass="nx-error-label"/>
                     </VBox>
 
                     <!-- Montant -->
@@ -123,6 +120,7 @@
                             <SVGPath content="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" styleClass="nx-input-icon"/>
                             <TextField fx:id="txtMontant" promptText="Ex: 1500.00" styleClass="nx-input" HBox.hgrow="ALWAYS"/>
                         </HBox>
+                        <Label fx:id="lblMontantError" text="" styleClass="nx-error-label"/>
                     </VBox>
 
                     <!-- Type Transaction -->
@@ -136,6 +134,7 @@
                                 </FXCollections>
                             </items>
                         </ComboBox>
+                        <Label fx:id="lblTypeError" text="" styleClass="nx-error-label"/>
                     </VBox>
 
                     <!-- Statut Transaction -->
@@ -150,26 +149,19 @@
                                 </FXCollections>
                             </items>
                         </ComboBox>
-                    </VBox>
-
-                    <!-- Solde Apres -->
-                    <VBox styleClass="nx-form-group" spacing="8">
-                        <Label text="Solde Apres (DT)" styleClass="nx-label"/>
-                        <HBox styleClass="nx-input-wrapper">
-                            <SVGPath content="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2z" styleClass="nx-input-icon"/>
-                            <TextField fx:id="txtSoldeApres" promptText="Ex: 5000.00" styleClass="nx-input, nx-input-calculated" editable="false" HBox.hgrow="ALWAYS"/>
-                        </HBox>
+                        <Label fx:id="lblStatutError" text="" styleClass="nx-error-label"/>
                     </VBox>
 
                     <!-- Description -->
                     <VBox styleClass="nx-form-group" spacing="8">
                         <Label text="Description" styleClass="nx-label"/>
                         <TextArea fx:id="txtDescription" promptText="Description de la transaction..." styleClass="nx-textarea" prefRowCount="3"/>
+                        <Label fx:id="lblDescriptionError" text="" styleClass="nx-error-label"/>
                     </VBox>
                 </VBox>
             </ScrollPane>
 
-            <!-- Form Footer with Buttons -->
+            <!-- Form Footer -->
             <HBox styleClass="nx-card-footer" spacing="12" alignment="CENTER_RIGHT">
                 <Button fx:id="btnAnnuler" text="Annuler" styleClass="nx-btn, nx-btn-outline" onAction="#handleAnnuler">
                     <graphic>
@@ -193,20 +185,17 @@
         <!-- TABLE SECTION -->
         <!-- ============================================= -->
         <VBox styleClass="nx-card" HBox.hgrow="ALWAYS" spacing="0">
-            <!-- Table Header -->
             <HBox styleClass="nx-card-header" alignment="CENTER_LEFT" spacing="16">
                 <VBox spacing="2" HBox.hgrow="ALWAYS">
                     <Label text="Liste des Transactions" styleClass="nx-card-title"/>
                     <Label text="Historique de toutes les transactions" styleClass="nx-card-subtitle"/>
                 </VBox>
 
-                <!-- Search Box -->
                 <HBox styleClass="nx-table-search" alignment="CENTER_LEFT" spacing="8">
                     <SVGPath content="M21 21l-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0z" styleClass="nx-search-icon-sm"/>
                     <TextField fx:id="txtRecherche" promptText="Rechercher..." styleClass="nx-search-input-sm" prefWidth="200"/>
                 </HBox>
 
-                <!-- Sort Button -->
                 <MenuButton text="Trier" styleClass="nx-btn, nx-btn-outline-sm">
                     <graphic>
                         <SVGPath content="M3 6h18M6 12h12M9 18h6" styleClass="nx-btn-icon"/>
@@ -220,7 +209,6 @@
                     </items>
                 </MenuButton>
 
-                <!-- Export PDF Button -->
                 <Button text="Export PDF" styleClass="nx-btn, nx-btn-secondary-sm" onAction="#exporterPDF">
                     <graphic>
                         <SVGPath content="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6" styleClass="nx-btn-icon"/>
@@ -228,18 +216,16 @@
                 </Button>
             </HBox>
 
-            <!-- Table Body -->
             <VBox styleClass="nx-table-container" VBox.vgrow="ALWAYS">
                 <TableView fx:id="tableTransactions" styleClass="nx-table" VBox.vgrow="ALWAYS">
                     <columns>
-                        <TableColumn fx:id="colCategorie" text="Categorie" prefWidth="100"/>
-                        <TableColumn fx:id="colDate" text="Date" prefWidth="110"/>
-                        <TableColumn fx:id="colMontant" text="Montant" prefWidth="120"/>
-                        <TableColumn fx:id="colType" text="Type" prefWidth="90"/>
-                        <TableColumn fx:id="colStatut" text="Statut" prefWidth="100"/>
-                        <TableColumn fx:id="colSoldeApres" text="Solde Apres" prefWidth="120"/>
-                        <TableColumn fx:id="colDescription" text="Description" prefWidth="180"/>
-                        <TableColumn fx:id="colActions" text="Actions" prefWidth="100"/>
+                        <TableColumn fx:id="colCategorie"  text="Categorie"   prefWidth="110"/>
+                        <TableColumn fx:id="colDate"       text="Date"        prefWidth="110"/>
+                        <TableColumn fx:id="colMontant"    text="Montant"     prefWidth="120"/>
+                        <TableColumn fx:id="colType"       text="Type"        prefWidth="90"/>
+                        <TableColumn fx:id="colStatut"     text="Statut"      prefWidth="110"/>
+                        <TableColumn fx:id="colDescription" text="Description" prefWidth="200"/>
+                        <TableColumn fx:id="colActions"    text="Actions"     prefWidth="100"/>
                     </columns>
                     <placeholder>
                         <VBox alignment="CENTER" spacing="16" styleClass="nx-table-empty">
@@ -251,19 +237,16 @@
                 </TableView>
             </VBox>
 
-            <!-- Table Footer -->
             <HBox styleClass="nx-card-footer, nx-table-footer" alignment="CENTER" spacing="16">
-                <Label fx:id="lblTableInfo" text="Affichage de 0 a 0 sur 0 entrees" styleClass="nx-table-info"/>
+                <Label fx:id="lblTableInfo" text="Affichage de 0 entrees" styleClass="nx-table-info"/>
                 <Region HBox.hgrow="ALWAYS"/>
                 
-                <!-- SMS Button -->
                 <Button text="Envoyer SMS" styleClass="nx-btn, nx-btn-gold" onAction="#envoyerSMS">
                     <graphic>
                         <SVGPath content="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" styleClass="nx-btn-icon"/>
                     </graphic>
                 </Button>
 
-                <!-- Pagination -->
                 <HBox styleClass="nx-pagination" spacing="4">
                     <Button text="&lt;&lt;" styleClass="nx-page-btn"/>
                     <Button text="&lt;" styleClass="nx-page-btn"/>
@@ -277,4 +260,3 @@
         </VBox>
     </HBox>
 </VBox>
-
