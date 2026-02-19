@@ -43,12 +43,12 @@ public class CreditController implements Initializable {
 
     private static final DateTimeFormatter TABLE_DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-    // â”€â”€ Statistiques â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Statistiques ────────────────────────────────────────────────────────
     @FXML private Label lblCreditsAccordes;
     @FXML private Label lblMontantTotal;
     @FXML private Label lblCreditsEnCours;
 
-    // â”€â”€ Formulaire â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Formulaire ──────────────────────────────────────────────────────────
     @FXML private ComboBox<Integer> cmbCompte;
     @FXML private ComboBox<String>  cmbTypeCredit;
     @FXML private ComboBox<String>  cmbStatut;
@@ -61,7 +61,7 @@ public class CreditController implements Initializable {
     @FXML private DatePicker        dpDateDemande;
     @FXML private Button            btnAjouter;
 
-    // â”€â”€ Tableau â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Tableau ─────────────────────────────────────────────────────────────
     @FXML private TableView<Credit>                tableCredits;
     @FXML private TableColumn<Credit, String>      colCompte;
     @FXML private TableColumn<Credit, String>      colType;
@@ -75,11 +75,11 @@ public class CreditController implements Initializable {
     @FXML private TableColumn<Credit, String>      colStatut;
     @FXML private TableColumn<Credit, Void>        colActions;
 
-    // â”€â”€ Recherche / info â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── Recherche / info ────────────────────────────────────────────────────
     @FXML private TextField txtRecherche;
     @FXML private Label     lblTableInfo;
 
-    // â”€â”€ Ã‰tat interne â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── État interne ────────────────────────────────────────────────────────
     private final CreditService              creditService = new CreditService();
     private final UserService                userService   = new UserService();
     private final ObservableList<Credit>     creditsList   = FXCollections.observableArrayList();
@@ -87,9 +87,9 @@ public class CreditController implements Initializable {
     private       Credit                     selectedCredit;
     private       boolean                    isEditMode;
 
-    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─────────────────────────────────────────────────────────────────────────
     //  INIT
-    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─────────────────────────────────────────────────────────────────────────
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -100,9 +100,9 @@ public class CreditController implements Initializable {
         loadCredits();
     }
 
-    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─────────────────────────────────────────────────────────────────────────
     //  TABLE
-    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─────────────────────────────────────────────────────────────────────────
 
     private void initializeTable() {
         colCompte.setCellValueFactory(cell ->
@@ -126,7 +126,7 @@ public class CreditController implements Initializable {
                 new SimpleStringProperty(formatDateForTable(cell.getValue().getDateDemande())));
         colStatut.setCellValueFactory(new PropertyValueFactory<>("statut"));
 
-        // â”€â”€ Badge statut â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── Badge statut ────────────────────────────────────────────────────
         colStatut.setCellFactory(col -> new TableCell<>() {
             @Override protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
@@ -137,12 +137,13 @@ public class CreditController implements Initializable {
                 if      (low.contains("accept"))   badge.getStyleClass().add("nx-badge-success");
                 else if (low.contains("cours"))    badge.getStyleClass().add("nx-badge-warning");
                 else if (low.contains("rembours")) badge.getStyleClass().add("nx-badge-info");
+                else if (low.contains("attente"))  badge.getStyleClass().add("nx-badge-warning");
                 else                               badge.getStyleClass().add("nx-badge-error");
                 setGraphic(badge);
             }
         });
 
-        // â”€â”€ Actions (edit + delete) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── Actions (edit + delete) ──────────────────────────────────────────
         colActions.setCellFactory(column -> new TableCell<>() {
             private final Button btnEdit   = new Button();
             private final Button btnDelete = new Button();
@@ -180,15 +181,15 @@ public class CreditController implements Initializable {
             }
         });
 
-        // â”€â”€ SÃ©lection ligne â†’ formulaire â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+        // ── Sélection ligne → formulaire ─────────────────────────────────────
         tableCredits.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) editCredit(newVal);
         });
     }
 
-    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─────────────────────────────────────────────────────────────────────────
     //  RECHERCHE
-    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─────────────────────────────────────────────────────────────────────────
 
     private void initializeSearch() {
         filteredData = new FilteredList<>(creditsList, c -> true);
@@ -206,12 +207,16 @@ public class CreditController implements Initializable {
         tableCredits.setItems(sorted);
     }
 
-    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─────────────────────────────────────────────────────────────────────────
     //  AUTO-CALCUL
-    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─────────────────────────────────────────────────────────────────────────
 
     private void setupAutoCalculation() {
-        txtMontantAccord.textProperty().addListener((obs, o, n) -> { calculateMensualite(); syncMontantRestant(); });
+        txtMontantAccord.textProperty().addListener((obs, o, n) -> {
+            calculateMensualite();
+            // ✅ FIX: Ne pas écraser montantRestant en mode édition
+            if (!isEditMode) syncMontantRestant();
+        });
         txtDuree.textProperty().addListener((obs, o, n) -> calculateMensualite());
         txtTauxInteret.textProperty().addListener((obs, o, n) -> calculateMensualite());
     }
@@ -231,7 +236,10 @@ public class CreditController implements Initializable {
                 double den   = Math.pow(1 + tauxM, duree) - 1;
                 mensualite   = den == 0 ? 0 : num / den;
             }
-            txtMensualite.setText(String.format("%.2f", mensualite));
+            // ✅ FIX: Ne pas écraser la mensualité en mode édition si déjà remplie
+            if (!isEditMode || txtMensualite.getText().isBlank()) {
+                txtMensualite.setText(String.format("%.2f", mensualite));
+            }
         } catch (NumberFormatException e) {
             txtMensualite.clear();
         }
@@ -242,9 +250,9 @@ public class CreditController implements Initializable {
             txtMontantRestant.setText(txtMontantAccord.getText());
     }
 
-    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─────────────────────────────────────────────────────────────────────────
     //  CHARGEMENT
-    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─────────────────────────────────────────────────────────────────────────
 
     private void loadCompteIds() {
         cmbCompte.setItems(FXCollections.observableArrayList(creditService.getCompteIds()));
@@ -256,9 +264,9 @@ public class CreditController implements Initializable {
         updateTableInfo();
     }
 
-    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─────────────────────────────────────────────────────────────────────────
     //  STATS HEADER
-    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─────────────────────────────────────────────────────────────────────────
 
     private void updateStats() {
         long accordes = creditsList.stream().filter(c -> {
@@ -280,15 +288,19 @@ public class CreditController implements Initializable {
         if (lblTableInfo != null) {
             int total    = creditsList.size();
             int filtered = filteredData != null ? filteredData.size() : total;
-            lblTableInfo.setText(String.format("Affichage de %d sur %d crÃ©dits", filtered, total));
+            lblTableInfo.setText(String.format("Affichage de %d sur %d crédits", filtered, total));
         }
     }
 
-    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─────────────────────────────────────────────────────────────────────────
     //  FORMULAIRE
-    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─────────────────────────────────────────────────────────────────────────
 
     private void populateForm(Credit c) {
+        // ✅ FIX: Mettre isEditMode=true AVANT de remplir le formulaire
+        // pour bloquer les listeners auto-calcul
+        isEditMode = true;
+
         if (!cmbCompte.getItems().contains(c.getIdCompte()))
             cmbCompte.getItems().add(c.getIdCompte());
         cmbCompte.setValue(c.getIdCompte());
@@ -298,7 +310,10 @@ public class CreditController implements Initializable {
         txtDuree.setText(String.valueOf(c.getDuree()));
         txtTauxInteret.setText(String.valueOf(c.getTauxInteret()));
         txtMensualite.setText(String.valueOf(c.getMensualite()));
-        txtMontantRestant.setText(String.valueOf(c.getMontantRestant()));
+        // ✅ FIX: Montant restant correctement chargé depuis la DB
+        txtMontantRestant.setText(c.getMontantRestant() == 0 && c.getMontantAccord() != null
+                ? String.valueOf(c.getMontantAccord())
+                : String.valueOf(c.getMontantRestant()));
         dpDateDemande.setValue(parseDate(c.getDateDemande()));
         cmbStatut.setValue(c.getStatut());
     }
@@ -320,9 +335,9 @@ public class CreditController implements Initializable {
         tableCredits.getSelectionModel().clearSelection();
     }
 
-    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─────────────────────────────────────────────────────────────────────────
     //  ACTIONS FXML
-    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─────────────────────────────────────────────────────────────────────────
 
     @FXML
     void handleAjouter(ActionEvent event) {
@@ -333,28 +348,56 @@ public class CreditController implements Initializable {
             LocalDate date   = dpDateDemande.getValue();
 
             if (idCompte == null || type == null || statut == null || date == null) {
-                showWarning("Validation", "SÃ©lectionnez compte, type, date et statut.");
+                showWarning("Validation", "Sélectionnez compte, type, date et statut.");
                 return;
             }
 
-            double montantDemande  = parseRequiredDouble(txtMontantDemande.getText(), "Montant demandÃ©");
-            int    duree           = (int) parseRequiredDouble(txtDuree.getText(), "DurÃ©e");
-            double taux            = parseRequiredDouble(txtTauxInteret.getText(), "Taux d'intÃ©rÃªt");
+            double montantDemande  = parseRequiredDouble(txtMontantDemande.getText(), "Montant demandé");
+            int    duree           = (int) parseRequiredDouble(txtDuree.getText(), "Durée");
+            double taux            = parseRequiredDouble(txtTauxInteret.getText(), "Taux d'intérêt");
             Double montantAccord   = parseOptionalDouble(txtMontantAccord.getText());
             double mensualite      = parseDouble(txtMensualite.getText(), 0);
-            double montantRestant  = parseDouble(txtMontantRestant.getText(), montantAccord == null ? 0 : montantAccord);
+
+            // ✅ FIX: Montant restant — utilise la valeur du champ si remplie,
+            // sinon montantAccord par défaut (uniquement en mode ajout)
+            double montantRestant;
+            String restantText = txtMontantRestant.getText();
+            if (restantText != null && !restantText.isBlank()) {
+                montantRestant = parseDouble(restantText, montantAccord == null ? 0 : montantAccord);
+            } else {
+                montantRestant = montantAccord == null ? 0 : montantAccord;
+            }
 
             Credit credit = new Credit(0, idCompte, type, montantDemande, montantAccord,
                     duree, taux, mensualite, montantRestant, date.toString(), statut);
 
             if (isEditMode && selectedCredit != null) {
                 credit.setIdCredit(selectedCredit.getIdCredit());
+
+                // ✅ DEBUG: Afficher ce qu'on envoie à l'update
+                System.out.println("=== UPDATE CREDIT ===");
+                System.out.println("ID: " + credit.getIdCredit());
+                System.out.println("Compte: " + credit.getIdCompte());
+                System.out.println("Type: " + credit.getTypeCredit());
+                System.out.println("MontantDemande: " + credit.getMontantDemande());
+                System.out.println("MontantAccord: " + credit.getMontantAccord());
+                System.out.println("Duree: " + credit.getDuree());
+                System.out.println("Taux: " + credit.getTauxInteret());
+                System.out.println("Mensualite: " + credit.getMensualite());
+                System.out.println("MontantRestant: " + credit.getMontantRestant());
+                System.out.println("Date: " + credit.getDateDemande());
+                System.out.println("Statut: " + credit.getStatut());
+                System.out.println("=====================");
+
                 boolean ok = creditService.updateCredit(credit);
-                if (!ok) { showWarning("Erreur", "Ã‰chec de la modification du crÃ©dit."); return; }
-                showInfo("SuccÃ¨s", "CrÃ©dit modifiÃ© avec succÃ¨s.");
+                if (!ok) {
+                    showWarning("Erreur", "Échec de la modification du crédit.");
+                    return;
+                }
+                showInfo("Succès", "Crédit modifié avec succès.");
             } else {
                 creditService.addCredit(credit);
-                showInfo("SuccÃ¨s", "CrÃ©dit ajoutÃ© avec succÃ¨s.");
+                showInfo("Succès", "Crédit ajouté avec succès.");
             }
 
             clearForm();
@@ -363,14 +406,14 @@ public class CreditController implements Initializable {
         } catch (IllegalArgumentException ex) {
             showWarning("Erreur de saisie", ex.getMessage());
         } catch (RuntimeException ex) {
-            showWarning("Erreur", "OpÃ©ration impossible : " + ex.getMessage());
+            showWarning("Erreur", "Opération impossible : " + ex.getMessage());
         }
     }
 
     @FXML
     void handleSupprimer(ActionEvent event) {
         if (selectedCredit == null) {
-            showWarning("Avertissement", "SÃ©lectionnez un crÃ©dit Ã  supprimer.");
+            showWarning("Avertissement", "Sélectionnez un crédit à supprimer.");
             return;
         }
         deleteCredit(selectedCredit);
@@ -381,72 +424,71 @@ public class CreditController implements Initializable {
         clearForm();
     }
 
-    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─────────────────────────────────────────────────────────────────────────
     //  EDIT / DELETE
-    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─────────────────────────────────────────────────────────────────────────
 
     private void editCredit(Credit credit) {
         selectedCredit = credit;
-        populateForm(credit);
-        isEditMode = true;
+        populateForm(credit);  // isEditMode est mis à true DANS populateForm()
         btnAjouter.setText("Modifier");
     }
 
     private void deleteCredit(Credit credit) {
         Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
         confirm.setTitle("Confirmation");
-        confirm.setHeaderText("Supprimer le crÃ©dit #" + credit.getIdCredit() + " ?");
-        confirm.setContentText("Cette action est irrÃ©versible.");
+        confirm.setHeaderText("Supprimer le crédit #" + credit.getIdCredit() + " ?");
+        confirm.setContentText("Cette action est irréversible.");
         Optional<ButtonType> res = confirm.showAndWait();
         if (res.isPresent() && res.get() == ButtonType.OK) {
             boolean deleted = creditService.deleteCredit(credit.getIdCredit());
             if (deleted) {
                 clearForm();
                 loadCredits();
-                showInfo("SuccÃ¨s", "CrÃ©dit supprimÃ© avec succÃ¨s.");
+                showInfo("Succès", "Crédit supprimé avec succès.");
             } else {
-                showWarning("Erreur", "Ã‰chec de la suppression du crÃ©dit.");
+                showWarning("Erreur", "Échec de la suppression du crédit.");
             }
         }
     }
 
-    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─────────────────────────────────────────────────────────────────────────
     //  TRIS
-    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─────────────────────────────────────────────────────────────────────────
 
     @FXML void trierParType(ActionEvent event)    { creditsList.sort(Comparator.comparing(c -> safeLower(c.getTypeCredit()))); }
     @FXML void trierParMontant(ActionEvent event) { creditsList.sort(Comparator.comparingDouble(Credit::getMontantDemande).reversed()); }
     @FXML void trierParDate(ActionEvent event)    { creditsList.sort(Comparator.comparing((Credit c) -> parseDate(c.getDateDemande()), Comparator.nullsLast(Comparator.naturalOrder())).reversed()); }
     @FXML void trierParStatut(ActionEvent event)  { creditsList.sort(Comparator.comparing(c -> safeLower(c.getStatut()))); }
 
-    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─────────────────────────────────────────────────────────────────────────
     //  PAGINATION
-    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─────────────────────────────────────────────────────────────────────────
 
     @FXML void pageFirst(ActionEvent event) { tableCredits.scrollTo(0); }
     @FXML void pagePrev(ActionEvent event)  { tableCredits.scrollTo(Math.max(tableCredits.getSelectionModel().getSelectedIndex() - 10, 0)); }
     @FXML void pageNext(ActionEvent event)  { tableCredits.scrollTo(tableCredits.getSelectionModel().getSelectedIndex() + 10); }
     @FXML void pageLast(ActionEvent event)  { tableCredits.scrollTo(Integer.MAX_VALUE); }
 
-    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─────────────────────────────────────────────────────────────────────────
     //  EXPORT PDF
-    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─────────────────────────────────────────────────────────────────────────
 
     @FXML
     void exporterPDF(ActionEvent event) {
         List<Credit> rows = new ArrayList<>(tableCredits.getItems());
-        if (rows.isEmpty()) { showWarning("Export PDF", "Aucune donnÃ©e Ã  exporter."); return; }
+        if (rows.isEmpty()) { showWarning("Export PDF", "Aucune donnée à exporter."); return; }
         FileChooser chooser = new FileChooser();
-        chooser.setTitle("Exporter les crÃ©dits en PDF");
+        chooser.setTitle("Exporter les crédits en PDF");
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Fichier PDF", "*.pdf"));
         chooser.setInitialFileName("credits_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmm")) + ".pdf");
         File file = chooser.showSaveDialog(tableCredits.getScene().getWindow());
         if (file == null) return;
         try {
             PdfReportUtil.exportCredits(rows, file);
-            showInfo("Export PDF", "PDF enregistrÃ© : " + file.getAbsolutePath());
+            showInfo("Export PDF", "PDF enregistré : " + file.getAbsolutePath());
         } catch (IOException ex) {
-            showWarning("Export PDF", "Ã‰chec de l'export : " + ex.getMessage());
+            showWarning("Export PDF", "Échec de l'export : " + ex.getMessage());
         }
     }
 
@@ -523,9 +565,9 @@ public class CreditController implements Initializable {
         }
     }
 
-    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-    //  STATISTIQUES â€” popup flottant (mÃªme style que CompteBancaireController)
-    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─────────────────────────────────────────────────────────────────────────
+    //  STATISTIQUES – popup flottant
+    // ─────────────────────────────────────────────────────────────────────────
 
     @FXML
     void ouvrirStatistiques(ActionEvent event) {
@@ -592,9 +634,9 @@ public class CreditController implements Initializable {
         popup.show();
     }
 
-    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─────────────────────────────────────────────────────────────────────────
     //  UTILITAIRES
-    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─────────────────────────────────────────────────────────────────────────
 
     private double parseDouble(String value, double def) {
         if (value == null || value.isBlank()) return def;
@@ -626,10 +668,6 @@ public class CreditController implements Initializable {
     private String formatAmount(double value)  { return String.format("%,.2f DT", value); }
     private String formatPercent(double value) { return String.format("%.2f%%", value); }
     private String safeLower(String value)     { return value == null ? "" : value.toLowerCase(); }
-    private String capitalise(String s) {
-        if (s == null || s.isEmpty()) return s;
-        return Character.toUpperCase(s.charAt(0)) + s.substring(1);
-    }
 
     private void showInfo(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);

@@ -41,6 +41,7 @@ C:\xampp\htdocs\PiDev\src\main\java\com\nexora\bank\controllers\UserDashboardCon
 C:\xampp\htdocs\PiDev\src\main\java\com\nexora\bank\Service\CompteBancaireService.java
 C:\xampp\htdocs\PiDev\src\main\java\com\nexora\bank\Models\User.java
 C:\xampp\htdocs\PiDev\src\main\java\com\nexora\bank\controllers\ReclamationController.java
+C:\xampp\htdocs\PiDev\src\main\java\com\nexora\bank\controllers\UserDashboardProfileSectionController.java
 C:\xampp\htdocs\PiDev\src\main\java\com\nexora\bank\controllers\SidebarController.java
 C:\xampp\htdocs\PiDev\src\main\java\com\nexora\bank\controllers\LoginController.java
 C:\xampp\htdocs\PiDev\src\main\java\com\nexora\bank\Models\Reclamation.java

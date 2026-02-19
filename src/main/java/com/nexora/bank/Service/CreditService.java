@@ -78,7 +78,8 @@ public class CreditService {
                 """;
         try (PreparedStatement statement = requireConnection().prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             fillCreditStatement(statement, credit);
-            statement.setInt(11, forceUser ? credit.getIdUser() : Math.max(credit.getIdUser(), 0));
+            // ✅ FIX: idUser — utilise NULL si 0 pour éviter violation de clé étrangère
+            setIdUserParam(statement, 11, forceUser ? credit.getIdUser() : credit.getIdUser());
             statement.executeUpdate();
             try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
@@ -101,11 +102,17 @@ public class CreditService {
                 """;
         try (PreparedStatement statement = requireConnection().prepareStatement(sql)) {
             fillCreditStatement(statement, credit);
-            statement.setInt(11, Math.max(credit.getIdUser(), 0));
+            // ✅ FIX: idUser — si 0 ou négatif, on met NULL au lieu de 0
+            //         car 0 peut violer une contrainte de clé étrangère
+            setIdUserParam(statement, 11, credit.getIdUser());
             statement.setInt(12, credit.getIdCredit());
-            return statement.executeUpdate() > 0;
+            int rows = statement.executeUpdate();
+            System.out.println("updateCredit → rows affected: " + rows + " for idCredit=" + credit.getIdCredit());
+            return rows > 0;
         } catch (SQLException ex) {
-            throw new RuntimeException("Failed to update credit.", ex);
+            // ✅ FIX: On relance l'exception avec le message SQL pour mieux diagnostiquer
+            throw new RuntimeException("Failed to update credit. SQLState=" + ex.getSQLState()
+                    + " | Message=" + ex.getMessage(), ex);
         }
     }
 
@@ -219,6 +226,8 @@ public class CreditService {
         return 0;
     }
 
+    // ✅ FIX PRINCIPAL : fillCreditStatement remplit les paramètres 1 à 10
+    //    idUser (11) est géré séparément via setIdUserParam()
     private void fillCreditStatement(PreparedStatement statement, Credit credit) throws SQLException {
         statement.setInt(1, credit.getIdCompte());
         statement.setString(2, credit.getTypeCredit());
@@ -234,6 +243,18 @@ public class CreditService {
         statement.setDouble(8, credit.getMontantRestant());
         statement.setString(9, credit.getDateDemande());
         statement.setString(10, credit.getStatut());
+        // NB: idUser (paramètre 11) est géré par setIdUserParam() pour éviter
+        //     une violation de clé étrangère si idUser == 0
+    }
+
+    // ✅ FIX: Si idUser <= 0, on insère NULL plutôt que 0
+    //         pour éviter une violation de contrainte FK (idUser=0 n'existe pas)
+    private void setIdUserParam(PreparedStatement statement, int paramIndex, int idUser) throws SQLException {
+        if (idUser <= 0) {
+            statement.setNull(paramIndex, Types.INTEGER);
+        } else {
+            statement.setInt(paramIndex, idUser);
+        }
     }
 
     private Credit mapCredit(ResultSet resultSet) throws SQLException {
@@ -268,8 +289,9 @@ public class CreditService {
         Connection conn = requireConnection();
         try {
             if (!hasColumn(conn, "credit", "idUser")) {
+                // ✅ FIX: DEFAULT NULL au lieu de DEFAULT 0 pour éviter les violations FK
                 try (PreparedStatement ps = conn.prepareStatement(
-                        "ALTER TABLE credit ADD COLUMN idUser INT NOT NULL DEFAULT 0")) {
+                        "ALTER TABLE credit ADD COLUMN idUser INT DEFAULT NULL")) {
                     ps.executeUpdate();
                 }
             }
