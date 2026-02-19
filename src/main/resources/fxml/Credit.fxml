@@ -98,6 +98,9 @@
                                     <String fx:value="Crédit Automobile"/>
                                     <String fx:value="Crédit Personnel"/>
                                     <String fx:value="Crédit Professionnel"/>
+                                    <String fx:value="Hypotheque"/>
+                                    <String fx:value="Education"/>
+                                    <String fx:value="Pret auto"/>
                                 </FXCollections>
                             </items>
                         </ComboBox>
@@ -181,6 +184,7 @@
                     </VBox>
 
                     <!-- Statut -->
+                    <!-- ✅ FIX: "En attente" ajouté pour correspondre aux données DB -->
                     <VBox styleClass="nx-form-group" spacing="8">
                         <Label text="Statut" styleClass="nx-label, nx-label-required"/>
                         <ComboBox fx:id="cmbStatut" promptText="Sélectionner un statut"
@@ -188,6 +192,7 @@
                             <items>
                                 <FXCollections fx:factory="observableArrayList">
                                     <String fx:value="En cours"/>
+                                    <String fx:value="En attente"/>
                                     <String fx:value="Accepté"/>
                                     <String fx:value="Refusé"/>
                                     <String fx:value="Remboursé"/>
@@ -212,7 +217,6 @@
                         text="Enregistrer"
                         styleClass="nx-btn, nx-btn-primary"
                         onAction="#handleAjouter"/>
-
             </HBox>
 
         </VBox>
