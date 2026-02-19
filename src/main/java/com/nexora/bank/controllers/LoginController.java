@@ -71,6 +71,8 @@ public class LoginController {
                         return;
                     }
                 }
+                userService.markUserOnline(user.getIdUser());
+                user = userService.findByIdPublic(user.getIdUser()).orElse(user);
                 AuthSession.setCurrentUser(user);
                 SceneRouter.show("/fxml/MainView.fxml", "NEXORA BANK - Systeme de Gestion Bancaire", 1400, 900, 1200, 800);
                 return;
@@ -95,6 +97,18 @@ public class LoginController {
                 showError("Your account is inactive. Contact admin.");
                 return;
             }
+
+            if (user.isBiometricEnabled()) {
+                AuthResult authResult = BiometricVerificationDialog.promptAndVerify("NEXORA Bank user verification");
+                if (authResult != AuthResult.VERIFIED) {
+                    BiometricVerificationDialog.showResultDialog(authResult);
+                    showError("Login denied: biometric verification failed or was cancelled.");
+                    return;
+                }
+            }
+
+            userService.markUserOnline(user.getIdUser());
+            user = userService.findByIdPublic(user.getIdUser()).orElse(user);
             AuthSession.setCurrentUser(user);
             SceneRouter.show("/fxml/UserDashboard.fxml", "NEXORA BANK - User Dashboard", 1200, 760, 980, 680);
         } catch (Exception ex) {

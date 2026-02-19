@@ -18,11 +18,14 @@ public class UserDashboardController {
     @FXML private Button btnTransaction;
     @FXML private Button btnCredit;
     @FXML private Button btnCashback;
+    @FXML private Button btnSettings;
 
     @FXML private VBox sectionCompte;
     @FXML private VBox sectionTransaction;
     @FXML private VBox sectionCredit;
     @FXML private VBox sectionCashback;
+    @FXML private VBox sectionProfile;
+    @FXML private UserDashboardProfileSectionController sectionProfileController;
 
     @FXML private Label lblUserName;
     @FXML private Label lblPageTitle;
@@ -39,7 +42,8 @@ public class UserDashboardController {
         {"Bank Accounts", "Manage and monitor your accounts", "Accounts"},
         {"Transactions", "View your transaction history", "Transactions"},
         {"Credit Services", "Loans, credit cards & financing", "Credit"},
-        {"Rewards", "Cashback and exclusive offers", "Rewards"}
+        {"Rewards", "Cashback and exclusive offers", "Rewards"},
+        {"My Profile", "Manage your identity, security and access preferences", "Profile"}
     };
 
     @FXML
@@ -65,6 +69,7 @@ public class UserDashboardController {
         createModernTooltip(btnTransaction, "Track all your transactions");
         createModernTooltip(btnCredit, "Explore credit services");
         createModernTooltip(btnCashback, "Check your rewards and cashback");
+        createModernTooltip(btnSettings, "Open your profile and security settings");
     }
 
     private void createModernTooltip(Button button, String text) {
@@ -122,6 +127,14 @@ public class UserDashboardController {
         switchSection(sectionCashback, btnCashback, 3);
     }
 
+    @FXML
+    private void showProfile() {
+        if (sectionProfileController != null) {
+            sectionProfileController.refreshProfile();
+        }
+        switchSection(sectionProfile, null, 4);
+    }
+
     private void switchSection(VBox newSection, Button newButton, int pageIndex) {
         if (newSection == currentActiveSection) {
             return;
@@ -148,6 +161,7 @@ public class UserDashboardController {
 
         // Update navigation state
         updateNavigation(newButton);
+        setSettingsButtonActive(newSection == sectionProfile);
         
         currentActiveSection = newSection;
         currentActiveButton = newButton;
@@ -178,6 +192,7 @@ public class UserDashboardController {
         setVisibleManaged(sectionTransaction, false);
         setVisibleManaged(sectionCredit, false);
         setVisibleManaged(sectionCashback, false);
+        setVisibleManaged(sectionProfile, false);
     }
 
     private void animateSectionIn(VBox section) {
@@ -255,6 +270,19 @@ public class UserDashboardController {
         }
     }
 
+    private void setSettingsButtonActive(boolean active) {
+        if (btnSettings == null) {
+            return;
+        }
+        if (active) {
+            if (!btnSettings.getStyleClass().contains("navbar-action-button-active")) {
+                btnSettings.getStyleClass().add("navbar-action-button-active");
+            }
+        } else {
+            btnSettings.getStyleClass().remove("navbar-action-button-active");
+        }
+    }
+
     @FXML
     private void openHome() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -283,8 +311,7 @@ public class UserDashboardController {
 
     @FXML
     private void openSettings() {
-        showInfoAlert("Settings", "Settings Panel", 
-            "Profile settings, security options, and preferences will be available here.");
+        showProfile();
     }
 
     private void showInfoAlert(String title, String header, String content) {
