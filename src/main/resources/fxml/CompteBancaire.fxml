@@ -1,25 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.*?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.image.*?>
-<?import javafx.collections.FXCollections?>
 <?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.SVGPath?>
+<?import javafx.scene.text.Font?>
 
-<VBox xmlns="http://javafx.com/javafx/17" 
-      xmlns:fx="http://javafx.com/fxml/1" 
-      fx:controller="com.nexora.bank.controllers.CompteBancaireController"
-      stylesheets="@../css/CompteBancaire.css"
-      styleClass="nx-entity-container nx-module-content" spacing="24">
+<VBox spacing="24" styleClass="nx-entity-container nx-module-content" stylesheets="@../css/CompteBancaire.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.nexora.bank.controllers.CompteBancaireController">
 
     <!-- PAGE HEADER -->
-    <HBox styleClass="nx-page-header" alignment="CENTER_LEFT">
+    <HBox alignment="CENTER_LEFT" styleClass="nx-page-header">
         <VBox spacing="4">
-            <Label text="Gestion Comptes Bancaires" styleClass="nx-page-title"/>
-            <Label text="Creer, modifier et suivre les comptes" styleClass="nx-page-subtitle"/>
+            <Label styleClass="nx-page-title" text="Gestion Comptes Bancaires" />
+            <Label styleClass="nx-page-subtitle" text="Creer, modifier et suivre les comptes" />
         </VBox>
+        <Region HBox.hgrow="ALWAYS" />
+        <Button onAction="#ouvrirStatistiques" styleClass="nx-btn, nx-btn-gold, nx-btn-sm" text="Statistiques">
+            <graphic>
+                <SVGPath content="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 5h-2v6h6v-2h-4z" styleClass="nx-btn-icon" />
+            </graphic>
+        </Button>
     </HBox>
 
     <!-- ============================================= -->
@@ -30,15 +42,15 @@
         <VBox styleClass="nx-stat-card nx-stat-card-animated" HBox.hgrow="ALWAYS">
             <HBox alignment="CENTER_LEFT" spacing="16">
                 <StackPane styleClass="nx-stat-card-icon, nx-stat-card-icon-success">
-                    <SVGPath content="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/>
+                    <SVGPath content="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" />
                 </StackPane>
                 <VBox spacing="4">
-                    <Label fx:id="lblClientsActifs" text="0" styleClass="nx-stat-card-value"/>
-                    <Label text="Clients Actifs" styleClass="nx-stat-card-label"/>
+                    <Label fx:id="lblClientsActifs" styleClass="nx-stat-card-value" text="0" />
+                    <Label styleClass="nx-stat-card-label" text="Clients Actifs" />
                 </VBox>
-                <Region HBox.hgrow="ALWAYS"/>
+                <Region HBox.hgrow="ALWAYS" />
                 <VBox alignment="CENTER_RIGHT">
-                    <Label text="+12%" styleClass="nx-stat-badge, nx-stat-badge-success"/>
+                    <Label styleClass="nx-stat-badge, nx-stat-badge-success" text="+12%" />
                 </VBox>
             </HBox>
         </VBox>
@@ -47,15 +59,15 @@
         <VBox styleClass="nx-stat-card nx-stat-card-animated" HBox.hgrow="ALWAYS">
             <HBox alignment="CENTER_LEFT" spacing="16">
                 <StackPane styleClass="nx-stat-card-icon, nx-stat-card-icon-gold">
-                    <SVGPath content="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                    <SVGPath content="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                 </StackPane>
                 <VBox spacing="4">
-                    <Label fx:id="lblTotalDepots" text="0.00 DT" styleClass="nx-stat-card-value"/>
-                    <Label text="Total des Depots" styleClass="nx-stat-card-label"/>
+                    <Label fx:id="lblTotalDepots" styleClass="nx-stat-card-value" text="0.00 DT" />
+                    <Label styleClass="nx-stat-card-label" text="Total des Depots" />
                 </VBox>
-                <Region HBox.hgrow="ALWAYS"/>
+                <Region HBox.hgrow="ALWAYS" />
                 <VBox alignment="CENTER_RIGHT">
-                    <Label text="+8.5%" styleClass="nx-stat-badge, nx-stat-badge-success"/>
+                    <Label styleClass="nx-stat-badge, nx-stat-badge-success" text="+8.5%" />
                 </VBox>
             </HBox>
         </VBox>
@@ -64,15 +76,15 @@
         <VBox styleClass="nx-stat-card nx-stat-card-animated" HBox.hgrow="ALWAYS">
             <HBox alignment="CENTER_LEFT" spacing="16">
                 <StackPane styleClass="nx-stat-card-icon, nx-stat-card-icon-blue">
-                    <SVGPath content="M19 21V5a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v16m14 0H5m14 0h2m-2 0v-4"/>
+                    <SVGPath content="M19 21V5a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v16m14 0H5m14 0h2m-2 0v-4" />
                 </StackPane>
                 <VBox spacing="4">
-                    <Label fx:id="lblTotalComptes" text="0" styleClass="nx-stat-card-value"/>
-                    <Label text="Nombre Total de Comptes" styleClass="nx-stat-card-label"/>
+                    <Label fx:id="lblTotalComptes" styleClass="nx-stat-card-value" text="0" />
+                    <Label styleClass="nx-stat-card-label" text="Nombre Total de Comptes" />
                 </VBox>
-                <Region HBox.hgrow="ALWAYS"/>
+                <Region HBox.hgrow="ALWAYS" />
                 <VBox alignment="CENTER_RIGHT">
-                    <Label text="+5%" styleClass="nx-stat-badge, nx-stat-badge-success"/>
+                    <Label styleClass="nx-stat-badge, nx-stat-badge-success" text="+5%" />
                 </VBox>
             </HBox>
         </VBox>
@@ -81,133 +93,189 @@
     <!-- ============================================= -->
     <!-- MAIN CONTENT: FORM + TABLE -->
     <!-- ============================================= -->
-    <HBox spacing="24" VBox.vgrow="ALWAYS" nodeOrientation="LEFT_TO_RIGHT">
+    <HBox nodeOrientation="LEFT_TO_RIGHT" spacing="24" VBox.vgrow="ALWAYS">
 
         <!-- FORM SECTION -->
-        <VBox styleClass="nx-card" prefWidth="560" minWidth="560" spacing="0">
-            <HBox styleClass="nx-card-header" alignment="CENTER_LEFT" spacing="12">
+        <VBox prefWidth="560" spacing="0" styleClass="nx-card">
+            <HBox alignment="CENTER_LEFT" spacing="12" styleClass="nx-card-header">
                 <StackPane styleClass="nx-card-header-icon">
-                    <SVGPath content="M19 21V5a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v16m14 0H5"/>
+                    <SVGPath content="M19 21V5a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v16m14 0H5" />
                 </StackPane>
                 <VBox spacing="2">
-                    <Label text="Compte Bancaire" styleClass="nx-card-title"/>
-                    <Label text="Ajouter ou modifier un compte" styleClass="nx-card-subtitle"/>
+                    <Label styleClass="nx-card-title" text="Compte Bancaire">
+                        <font>
+                            <Font name="System Italic" size="12.0" />
+                        </font></Label>
+                    <Label styleClass="nx-card-subtitle" text="Ajouter ou modifier un compte" />
                 </VBox>
             </HBox>
 
-            <VBox styleClass="nx-card-body" spacing="16">
-                <VBox styleClass="nx-form-group" spacing="8">
-                    <Label text="Numero de Compte" styleClass="nx-label"/>
+            <VBox spacing="16" styleClass="nx-card-body">
+                <VBox spacing="8" styleClass="nx-form-group">
+                    <Label styleClass="nx-label" text="Numero de Compte" />
                     <HBox styleClass="nx-input-wrapper">
-                        <SVGPath content="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2" styleClass="nx-input-icon"/>
-                        <TextField fx:id="txtNumeroCompte" promptText="Ex: CB-2024-001" styleClass="nx-input" HBox.hgrow="ALWAYS"/>
+                        <SVGPath content="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2" styleClass="nx-input-icon" />
+                        <TextField fx:id="txtNumeroCompte" promptText="Ex: CB-2024-001" styleClass="nx-input" HBox.hgrow="ALWAYS" />
                     </HBox>
+                    <Label fx:id="lblNumeroCompteError" style="-fx-text-fill: red;" />
                 </VBox>
 
-                <VBox styleClass="nx-form-group" spacing="8">
-                    <Label text="Solde (DT)" styleClass="nx-label"/>
+                <VBox spacing="8" styleClass="nx-form-group">
+                    <Label styleClass="nx-label" text="Solde (DT)" />
                     <HBox styleClass="nx-input-wrapper">
-                        <SVGPath content="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" styleClass="nx-input-icon"/>
-                        <TextField fx:id="txtSolde" promptText="0.00" styleClass="nx-input" HBox.hgrow="ALWAYS"/>
+                        <SVGPath content="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" styleClass="nx-input-icon" />
+                        <TextField fx:id="txtSolde" promptText="0.00" styleClass="nx-input" HBox.hgrow="ALWAYS" />
                     </HBox>
+                    <Label fx:id="lblSoldeError" style="-fx-text-fill: red;" />
                 </VBox>
 
-                <VBox styleClass="nx-form-group" spacing="8">
-                    <Label text="Date d'Ouverture" styleClass="nx-label"/>
+                <VBox spacing="8" styleClass="nx-form-group">
+                    <Label styleClass="nx-label" text="Date d'Ouverture" />
                     <HBox styleClass="nx-input-wrapper">
-                        <SVGPath content="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z" styleClass="nx-input-icon"/>
-                        <DatePicker fx:id="dpDateOuverture" promptText="Selectionner une date" styleClass="nx-datepicker" HBox.hgrow="ALWAYS"/>
+                        <SVGPath content="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z" styleClass="nx-input-icon" />
+                        <DatePicker fx:id="dpDateOuverture" promptText="Selectionner une date" styleClass="nx-datepicker" HBox.hgrow="ALWAYS" />
                     </HBox>
+                    <Label fx:id="lblDateError" style="-fx-text-fill: red;" />
                 </VBox>
 
-                <VBox styleClass="nx-form-group" spacing="8">
-                    <Label text="Statut du Compte" styleClass="nx-label"/>
-                    <ComboBox fx:id="cmbStatutCompte" promptText="Selectionner un statut" styleClass="nx-select" maxWidth="Infinity">
+                <VBox spacing="8" styleClass="nx-form-group">
+                    <Label styleClass="nx-label" text="Statut du Compte" />
+                    <ComboBox fx:id="cmbStatutCompte" maxWidth="Infinity" promptText="Selectionner un statut" styleClass="nx-select">
                         <items>
                             <FXCollections fx:factory="observableArrayList">
-                                <String fx:value="Actif"/>
-                                <String fx:value="Bloque"/>
-                                <String fx:value="Cloture"/>
+                                <String fx:value="Actif" />
+                                <String fx:value="Bloque" />
+                                <String fx:value="Cloture" />
                             </FXCollections>
                         </items>
                     </ComboBox>
+                    <Label fx:id="lblStatusError" style="-fx-text-fill: red;" />
                 </VBox>
 
-                <VBox styleClass="nx-form-group" spacing="8">
-                    <Label text="Plafond Retrait (DT)" styleClass="nx-label"/>
+                <VBox spacing="8" styleClass="nx-form-group">
+                    <Label styleClass="nx-label" text="Plafond Retrait (DT)" />
                     <HBox styleClass="nx-input-wrapper">
-                        <SVGPath content="M17 9V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2m2 4h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2z" styleClass="nx-input-icon"/>
-                        <TextField fx:id="txtPlafondRetrait" promptText="Ex: 5000.00" styleClass="nx-input" HBox.hgrow="ALWAYS"/>
+                        <SVGPath content="M17 9V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2m2 4h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2z" styleClass="nx-input-icon" />
+                        <TextField fx:id="txtPlafondRetrait" promptText="Ex: 5000.00" styleClass="nx-input" HBox.hgrow="ALWAYS" />
                     </HBox>
+                    <Label fx:id="lblPlafondRetraitError" style="-fx-text-fill: red;" />
                 </VBox>
 
-                <VBox styleClass="nx-form-group" spacing="8">
-                    <Label text="Plafond Virement (DT)" styleClass="nx-label"/>
+                <VBox spacing="8" styleClass="nx-form-group">
+                    <Label styleClass="nx-label" text="Plafond Virement (DT)" />
                     <HBox styleClass="nx-input-wrapper">
-                        <SVGPath content="M17 1l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14" styleClass="nx-input-icon"/>
-                        <TextField fx:id="txtPlafondVirement" promptText="Ex: 10000.00" styleClass="nx-input" HBox.hgrow="ALWAYS"/>
+                        <SVGPath content="M17 1l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14" styleClass="nx-input-icon" />
+                        <TextField fx:id="txtPlafondVirement" promptText="Ex: 10000.00" styleClass="nx-input" HBox.hgrow="ALWAYS" />
                     </HBox>
+                    <Label fx:id="lblPlafondVirementError" style="-fx-text-fill: red;" />
                 </VBox>
 
-                <VBox styleClass="nx-form-group" spacing="8">
-                    <Label text="Type de Compte" styleClass="nx-label"/>
-                    <ComboBox fx:id="cmbTypeCompte" promptText="Selectionner un type" styleClass="nx-select" maxWidth="Infinity">
+                <VBox spacing="8" styleClass="nx-form-group">
+                    <Label styleClass="nx-label" text="Type de Compte" />
+                    <ComboBox fx:id="cmbTypeCompte" maxWidth="Infinity" promptText="Selectionner un type" styleClass="nx-select">
                         <items>
                             <FXCollections fx:factory="observableArrayList">
-                                <String fx:value="Courant"/>
-                                <String fx:value="Epargne"/>
-                                <String fx:value="Professionnel"/>
+                                <String fx:value="Courant" />
+                                <String fx:value="Epargne" />
+                                <String fx:value="Professionnel" />
                             </FXCollections>
                         </items>
                     </ComboBox>
+                    <Label fx:id="lblStatusCompteError" style="-fx-text-fill: red;" />
                 </VBox>
             </VBox>
 
-            <HBox styleClass="nx-card-footer" spacing="12" alignment="CENTER_RIGHT">
-                <Button fx:id="btnAnnuler" text="Annuler" styleClass="nx-btn, nx-btn-outline" onAction="#handleAnnuler">
+            <VBox alignment="CENTER_RIGHT"
+                  spacing="15"
+                  styleClass="nx-card-footer">
+
+                <!-- 🔵 Bouton Enregistrer (grand et large) -->
+                <Button fx:id="btnAjouter"
+                        onAction="#handleAjouter"
+                        styleClass="nx-btn, nx-btn-primary"
+                        text="Enregistrer"
+                        maxWidth="Infinity"
+                        prefHeight="45">
+
                     <graphic>
-                        <SVGPath content="M6 18L18 6M6 6l12 12" styleClass="nx-btn-icon"/>
+                        <SVGPath content="M12 5v14M5 12h14"
+                                 styleClass="nx-btn-icon"/>
                     </graphic>
                 </Button>
-                <Button fx:id="btnSupprimer" text="Supprimer" styleClass="nx-btn, nx-btn-danger" onAction="#handleSupprimer">
-                    <graphic>
-                        <SVGPath content="M19 7l-.867 12.142A2 2 0 0 1 16.138 21H7.862a2 2 0 0 1-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v3M4 7h16" styleClass="nx-btn-icon"/>
-                    </graphic>
-                </Button>
-                <Button fx:id="btnAjouter" text="Ajouter" styleClass="nx-btn, nx-btn-primary" onAction="#handleAjouter">
-                    <graphic>
-                        <SVGPath content="M12 5v14M5 12h14" styleClass="nx-btn-icon"/>
-                    </graphic>
-                </Button>
-            </HBox>
+
+                <!-- 🟥 Boutons Annuler + Supprimer en dessous -->
+                <HBox alignment="CENTER_RIGHT" spacing="12">
+
+                    <Button fx:id="btnAnnuler"
+                            onAction="#handleAnnuler"
+                            styleClass="nx-btn, nx-btn-outline"
+                            text="Annuler"
+                            HBox.hgrow="ALWAYS"
+                            maxWidth="Infinity">
+
+                        <graphic>
+                            <SVGPath content="M6 18L18 6M6 6l12 12"
+                                     styleClass="nx-btn-icon"/>
+                        </graphic>
+                    </Button>
+
+                    <Button fx:id="btnSupprimer"
+                            onAction="#handleSupprimer"
+                            styleClass="nx-btn, nx-btn-danger"
+                            text="Supprimer"
+                            HBox.hgrow="ALWAYS"
+                            maxWidth="Infinity">
+
+                        <graphic>
+                            <SVGPath content="M19 7l-.867 12.142A2 2 0 0 1 16.138 21H7.862a2 2 0 0 1-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v3M4 7h16"
+                                     styleClass="nx-btn-icon"/>
+                        </graphic>
+                    </Button>
+
+                </HBox>
+
+            </VBox>
+
         </VBox>
 
         <!-- TABLE SECTION -->
-        <VBox styleClass="nx-table-card" HBox.hgrow="ALWAYS" spacing="0">
-            <HBox styleClass="nx-table-header" alignment="CENTER_LEFT" spacing="12">
-                <VBox spacing="4" HBox.hgrow="ALWAYS">
-                    <Label text="Liste des Comptes" styleClass="nx-table-title"/>
-                    <Label text="Gestion complete des comptes bancaires" styleClass="nx-table-subtitle"/>
+        <VBox spacing="0" styleClass="nx-table-card" HBox.hgrow="ALWAYS">
+            <HBox alignment="CENTER_LEFT" spacing="12" styleClass="nx-table-header">
+
+                <VBox spacing="2" HBox.hgrow="ALWAYS">
+                    <Label text="Liste des Comptes" styleClass="nx-card-title"/>
+                    <Label text="Gestion complete des comptes bancaires" styleClass="nx-card-subtitle"/>
                 </VBox>
 
-                <TextField fx:id="txtRecherche" promptText="Rechercher..." styleClass="nx-search-input-sm" prefWidth="200"/>
 
-                <MenuButton text="Trier" styleClass="nx-btn, nx-btn-outline, nx-btn-sm">
+                <!-- Search Box -->
+                <HBox styleClass="nx-table-search" alignment="CENTER_LEFT" spacing="8">
+                    <SVGPath content="M21 21l-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0z" styleClass="nx-search-icon-sm"/>
+                    <TextField fx:id="txtRecherche" promptText="Rechercher..." styleClass="nx-search-input-sm" prefWidth="200"/>
+                </HBox>
+
+
+                <MenuButton styleClass="nx-btn, nx-btn-outline, nx-btn-sm" text="Trier" mnemonicParsing="false">
                     <graphic>
-                        <SVGPath content="M3 6h18M6 12h12M9 18h6" styleClass="nx-btn-icon"/>
+                        <HBox alignment="CENTER_LEFT" spacing="8">
+                            <SVGPath content="M3 6h18M6 12h12M9 18h6" styleClass="nx-btn-icon" />
+                            <Label text="Trier" style="-fx-text-fill: #1F2937; -fx-font-size: 13px; -fx-font-weight: 600;" />
+                        </HBox>
                     </graphic>
                     <items>
-                        <MenuItem text="Par Numero" onAction="#trierParNumero"/>
-                        <MenuItem text="Par Solde (Croissant)" onAction="#trierParSoldeAsc"/>
-                        <MenuItem text="Par Solde (Decroissant)" onAction="#trierParSoldeDesc"/>
-                        <MenuItem text="Par Date" onAction="#trierParDate"/>
-                        <MenuItem text="Par Statut" onAction="#trierParStatut"/>
+                        <MenuItem onAction="#trierParId" text="Par Id compte" />
+                        <MenuItem onAction="#trierParNumero" text="Par Numero" />
+                        <MenuItem onAction="#trierParSoldeAsc" text="Par Solde (Croissant)" />
+                        <MenuItem onAction="#trierParSoldeDesc" text="Par Solde (Décroissant)" />
+                        <MenuItem onAction="#trierParDate" text="Par Date" />
+                        <MenuItem onAction="#trierParStatut" text="Par Statut" />
                     </items>
                 </MenuButton>
 
-                <Button text="Export PDF" styleClass="nx-btn, nx-btn-outline, nx-btn-sm" onAction="#exporterPDF">
+
+                <Button onAction="#exporterPDF" styleClass="nx-btn, nx-btn-gold, nx-btn-sm" text="Export PDF">
                     <graphic>
-                        <SVGPath content="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M16 13H8 M16 17H8 M10 9H8" styleClass="nx-btn-icon"/>
+                        <SVGPath content="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M16 13H8 M16 17H8 M10 9H8" styleClass="nx-btn-icon" />
                     </graphic>
                 </Button>
             </HBox>
@@ -215,46 +283,46 @@
             <VBox styleClass="nx-table-container" VBox.vgrow="ALWAYS">
                 <TableView fx:id="tableComptes" styleClass="nx-table" VBox.vgrow="ALWAYS">
                     <columns>
-                        <TableColumn fx:id="colNumero" text="No Compte" prefWidth="120" styleClass="nx-table-col"/>
-                        <TableColumn fx:id="colSolde" text="Solde (DT)" prefWidth="120" styleClass="nx-table-col"/>
-                        <TableColumn fx:id="colDateOuverture" text="Date Ouverture" prefWidth="130" styleClass="nx-table-col"/>
-                        <TableColumn fx:id="colStatut" text="Statut" prefWidth="100" styleClass="nx-table-col"/>
-                        <TableColumn fx:id="colPlafondRetrait" text="Plafond Retrait" prefWidth="120" styleClass="nx-table-col"/>
-                        <TableColumn fx:id="colPlafondVirement" text="Plafond Virement" prefWidth="120" styleClass="nx-table-col"/>
-                        <TableColumn fx:id="colType" text="Type" prefWidth="100" styleClass="nx-table-col"/>
-                        <TableColumn fx:id="colActions" text="Actions" prefWidth="100" styleClass="nx-table-col-actions"/>
+                        <TableColumn fx:id="colID" prefWidth="120" styleClass="nx-table-col" text="id Compte" />
+                        <TableColumn fx:id="colNumero" prefWidth="120" styleClass="nx-table-col" text="No Compte" />
+                        <TableColumn fx:id="colSolde" prefWidth="120" styleClass="nx-table-col" text="Solde (DT)" />
+                        <TableColumn fx:id="colDateOuverture" prefWidth="130" styleClass="nx-table-col" text="Date Ouverture" />
+                        <TableColumn fx:id="colStatut" prefWidth="100" styleClass="nx-table-col" text="Statut" />
+                        <TableColumn fx:id="colPlafondRetrait" prefWidth="120" styleClass="nx-table-col" text="Plafond Retrait" />
+                        <TableColumn fx:id="colPlafondVirement" prefWidth="120" styleClass="nx-table-col" text="Plafond Virement" />
+                        <TableColumn fx:id="colType" prefWidth="100" styleClass="nx-table-col" text="Type" />
+                        <TableColumn fx:id="colActions" prefWidth="100" styleClass="nx-table-col-actions" text="Actions" />
                     </columns>
                     <placeholder>
                         <VBox alignment="CENTER" spacing="16" styleClass="nx-table-empty">
-                            <SVGPath content="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2" styleClass="nx-empty-icon"/>
-                            <Label text="Aucun compte trouve" styleClass="nx-empty-title"/>
-                            <Label text="Commencez par ajouter un nouveau compte bancaire" styleClass="nx-empty-subtitle"/>
+                            <SVGPath content="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2" styleClass="nx-empty-icon" />
+                            <Label styleClass="nx-empty-title" text="Aucun compte trouve" />
+                            <Label styleClass="nx-empty-subtitle" text="Commencez par ajouter un nouveau compte bancaire" />
                         </VBox>
                     </placeholder>
                 </TableView>
             </VBox>
 
-            <HBox styleClass="nx-card-footer, nx-table-footer" alignment="CENTER" spacing="16">
-                <Label fx:id="lblTableInfo" text="Affichage de 0 a 0 sur 0 entrees" styleClass="nx-table-info"/>
-                <Region HBox.hgrow="ALWAYS"/>
+            <HBox alignment="CENTER" spacing="16" styleClass="nx-card-footer, nx-table-footer">
+                <Label fx:id="lblTableInfo" styleClass="nx-table-info" text="Affichage de 0 a 0 sur 0 entrees" />
+                <Region HBox.hgrow="ALWAYS" />
 
-                <Button text="Envoyer SMS" styleClass="nx-btn, nx-btn-gold" onAction="#envoyerSMS">
+                <Button onAction="#envoyerSMS" styleClass="nx-btn, nx-btn-gold" text="Envoyer SMS">
                     <graphic>
-                        <SVGPath content="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" styleClass="nx-btn-icon"/>
+                        <SVGPath content="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" styleClass="nx-btn-icon" />
                     </graphic>
                 </Button>
 
-                <HBox styleClass="nx-pagination" spacing="4">
-                    <Button text="&lt;&lt;" styleClass="nx-page-btn" onAction="#pageFirst"/>
-                    <Button text="&lt;" styleClass="nx-page-btn" onAction="#pagePrev"/>
-                    <Button text="1" styleClass="nx-page-btn, nx-page-btn-active"/>
-                    <Button text="2" styleClass="nx-page-btn"/>
-                    <Button text="3" styleClass="nx-page-btn"/>
-                    <Button text="&gt;" styleClass="nx-page-btn" onAction="#pageNext"/>
-                    <Button text="&gt;&gt;" styleClass="nx-page-btn" onAction="#pageLast"/>
+                <HBox spacing="4" styleClass="nx-pagination">
+                    <Button onAction="#pageFirst" styleClass="nx-page-btn" text="&lt;&lt;" />
+                    <Button onAction="#pagePrev" styleClass="nx-page-btn" text="&lt;" />
+                    <Button styleClass="nx-page-btn, nx-page-btn-active" text="1" />
+                    <Button styleClass="nx-page-btn" text="2" />
+                    <Button styleClass="nx-page-btn" text="3" />
+                    <Button onAction="#pageNext" styleClass="nx-page-btn" text="&gt;" />
+                    <Button onAction="#pageLast" styleClass="nx-page-btn" text="&gt;&gt;" />
                 </HBox>
             </HBox>
         </VBox>
     </HBox>
 </VBox>
-
