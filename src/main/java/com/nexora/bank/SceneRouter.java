@@ -1,6 +1,7 @@
 package com.nexora.bank;
 
 import java.io.IOException;
+import java.net.URL;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -23,8 +24,17 @@ public final class SceneRouter {
 
     public static void showOn(Stage stage, String fxmlPath, String title, double width, double height, double minWidth, double minHeight) {
         try {
-            FXMLLoader loader = new FXMLLoader(SceneRouter.class.getResource(fxmlPath));
+            System.out.println("Loading FXML: " + fxmlPath);
+            URL fxmlUrl = SceneRouter.class.getResource(fxmlPath);
+            if (fxmlUrl == null) {
+                throw new IOException("FXML file not found: " + fxmlPath);
+            }
+            System.out.println("FXML URL: " + fxmlUrl);
+            
+            FXMLLoader loader = new FXMLLoader(fxmlUrl);
             Parent root = loader.load();
+            
+            System.out.println("FXML loaded successfully: " + fxmlPath);
 
             Scene scene = new Scene(root, width, height);
             stage.setScene(scene);
@@ -33,8 +43,14 @@ public final class SceneRouter {
             stage.setMinHeight(minHeight);
 
             if (stage.getIcons().isEmpty()) {
-                Image icon = new Image(SceneRouter.class.getResourceAsStream("/images/logo.png"));
-                stage.getIcons().add(icon);
+                try {
+                    Image icon = new Image(SceneRouter.class.getResourceAsStream("/images/logo.png"));
+                    if (icon != null && !icon.isError()) {
+                        stage.getIcons().add(icon);
+                    }
+                } catch (Exception e) {
+                    System.err.println("Failed to load icon: " + e.getMessage());
+                }
             }
 
             stage.centerOnScreen();
@@ -44,7 +60,14 @@ public final class SceneRouter {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Erreur");
             alert.setHeaderText("Impossible de charger la vue");
-            alert.setContentText("Vue: " + fxmlPath);
+            alert.setContentText("Vue: " + fxmlPath + "\nErreur: " + ex.getMessage());
+            alert.show();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Erreur");
+            alert.setHeaderText("Erreur lors du chargement");
+            alert.setContentText("Vue: " + fxmlPath + "\nErreur: " + ex.getMessage());
             alert.show();
         }
     }

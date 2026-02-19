@@ -3,6 +3,8 @@ package com.nexora.bank.Models;
 public class Cashback {
     private int idCashback;
     private int idPartenaire;
+    private int idTransaction;
+    private int idUser;
     private double montantAchat;
     private double tauxApplique;
     private double montantCashback;
@@ -11,11 +13,19 @@ public class Cashback {
     private String dateExpiration;
     private String statut;
 
+    // Transient display fields (not persisted, populated via JOINs)
+    private String partenaireNom;
+    private String partenaireCategorie;
+
     public Cashback() {
     }
 
-    public Cashback(int idPartenaire, double montantAchat, double tauxApplique, double montantCashback, String dateAchat, String dateCredit, String dateExpiration, String statut) {
+    public Cashback(int idPartenaire, int idTransaction, int idUser,
+                    double montantAchat, double tauxApplique, double montantCashback,
+                    String dateAchat, String dateCredit, String dateExpiration, String statut) {
         this.idPartenaire = idPartenaire;
+        this.idTransaction = idTransaction;
+        this.idUser = idUser;
         this.montantAchat = montantAchat;
         this.tauxApplique = tauxApplique;
         this.montantCashback = montantCashback;
@@ -25,8 +35,25 @@ public class Cashback {
         this.statut = statut;
     }
 
-    public Cashback(int idCashback, int idPartenaire, double montantAchat, double tauxApplique, double montantCashback, String dateAchat, String dateCredit, String dateExpiration, String statut) {
+    public Cashback(int idCashback, int idPartenaire, int idTransaction, int idUser,
+                    double montantAchat, double tauxApplique, double montantCashback,
+                    String dateAchat, String dateCredit, String dateExpiration, String statut) {
         this.idCashback = idCashback;
+        this.idPartenaire = idPartenaire;
+        this.idTransaction = idTransaction;
+        this.idUser = idUser;
+        this.montantAchat = montantAchat;
+        this.tauxApplique = tauxApplique;
+        this.montantCashback = montantCashback;
+        this.dateAchat = dateAchat;
+        this.dateCredit = dateCredit;
+        this.dateExpiration = dateExpiration;
+        this.statut = statut;
+    }
+
+    // Legacy constructor for backward compatibility with admin controller
+    public Cashback(int idPartenaire, double montantAchat, double tauxApplique, double montantCashback,
+                    String dateAchat, String dateCredit, String dateExpiration, String statut) {
         this.idPartenaire = idPartenaire;
         this.montantAchat = montantAchat;
         this.tauxApplique = tauxApplique;
@@ -51,6 +78,22 @@ public class Cashback {
 
     public void setIdPartenaire(int idPartenaire) {
         this.idPartenaire = idPartenaire;
+    }
+
+    public int getIdTransaction() {
+        return idTransaction;
+    }
+
+    public void setIdTransaction(int idTransaction) {
+        this.idTransaction = idTransaction;
+    }
+
+    public int getIdUser() {
+        return idUser;
+    }
+
+    public void setIdUser(int idUser) {
+        this.idUser = idUser;
     }
 
     public double getMontantAchat() {
@@ -109,11 +152,29 @@ public class Cashback {
         this.statut = statut;
     }
 
+    public String getPartenaireNom() {
+        return partenaireNom;
+    }
+
+    public void setPartenaireNom(String partenaireNom) {
+        this.partenaireNom = partenaireNom;
+    }
+
+    public String getPartenaireCategorie() {
+        return partenaireCategorie;
+    }
+
+    public void setPartenaireCategorie(String partenaireCategorie) {
+        this.partenaireCategorie = partenaireCategorie;
+    }
+
     @Override
     public String toString() {
         return "Cashback{" +
                 "idCashback=" + idCashback +
                 ", idPartenaire=" + idPartenaire +
+                ", idTransaction=" + idTransaction +
+                ", idUser=" + idUser +
                 ", montantAchat=" + montantAchat +
                 ", tauxApplique=" + tauxApplique +
                 ", montantCashback=" + montantCashback +
@@ -121,6 +182,7 @@ public class Cashback {
                 ", dateCredit='" + dateCredit + '\'' +
                 ", dateExpiration='" + dateExpiration + '\'' +
                 ", statut='" + statut + '\'' +
+                ", partenaireNom='" + partenaireNom + '\'' +
                 '}';
     }
 }

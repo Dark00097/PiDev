@@ -6,6 +6,7 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextArea?>
@@ -29,19 +30,19 @@
       visible="false"
       managed="false">
 
-    
+    <!-- ═══════════════════ SECTION HEADER ═══════════════════ -->
     <VBox styleClass="section-header" spacing="16">
         <padding>
             <Insets top="28" right="32" bottom="24" left="32"/>
         </padding>
-        
+
         <HBox alignment="CENTER_LEFT" spacing="16">
             <StackPane styleClass="section-icon-container">
                 <FontIcon iconLiteral="fas-gift" styleClass="section-icon"/>
             </StackPane>
             <VBox spacing="4" HBox.hgrow="ALWAYS">
                 <Label text="Recompenses cashback" styleClass="section-title"/>
-                <Label text="Gagnez des recompenses chez les partenaires et suivez votre cashback" styleClass="section-subtitle"/>
+                <Label text="Gagnez des recompenses chez les partenaires et suivre votre cashback" styleClass="section-subtitle"/>
             </VBox>
             <HBox spacing="10" alignment="CENTER_RIGHT">
                 <Button styleClass="header-btn-secondary" onAction="#viewRewardsHistory">
@@ -64,654 +65,479 @@
         </HBox>
     </VBox>
 
-    
-    <HBox styleClass="kpi-container" spacing="20">
+    <!-- ═══════════════════ LOADING STATE ═══════════════════ -->
+    <VBox fx:id="loadingContainer" alignment="CENTER" spacing="16" visible="false" managed="false">
         <padding>
-            <Insets top="0" right="32" bottom="24" left="32"/>
+            <Insets top="80" right="32" bottom="80" left="32"/>
         </padding>
+        <ProgressIndicator styleClass="loading-spinner" prefWidth="48" prefHeight="48"/>
+        <Label text="Chargement de vos recompenses..." styleClass="loading-label"/>
+    </VBox>
 
-        
-        <VBox styleClass="kpi-card kpi-card-featured" HBox.hgrow="ALWAYS" spacing="14">
-            <HBox spacing="12" alignment="CENTER_LEFT">
-                <StackPane styleClass="kpi-icon-wrapper kpi-icon-rewards">
-                    <FontIcon iconLiteral="fas-trophy" styleClass="kpi-icon"/>
-                </StackPane>
-                <VBox spacing="2">
-                    <Label text="RECOMPENSES TOTALES" styleClass="kpi-title"/>
-                    <Label text="Gains cumules" styleClass="kpi-description"/>
-                </VBox>
-            </HBox>
-            <HBox alignment="CENTER_LEFT" spacing="12">
-                <Label text="\$127.50" styleClass="kpi-value kpi-value-rewards"/>
-                <StackPane styleClass="rewards-level-badge">
-                    <HBox spacing="6" alignment="CENTER">
-                        <FontIcon iconLiteral="fas-star" styleClass="rewards-level-icon"/>
-                        <Label text="Membre Or"/>
-                    </HBox>
-                </StackPane>
-            </HBox>
-        </VBox>
+    <!-- ═══════════════════ EMPTY STATE ═══════════════════ -->
+    <VBox fx:id="emptyStateContainer" alignment="CENTER" spacing="16" visible="false" managed="false">
+        <padding>
+            <Insets top="80" right="32" bottom="80" left="32"/>
+        </padding>
+        <StackPane styleClass="empty-state-icon-wrapper">
+            <FontIcon iconLiteral="fas-gift" styleClass="empty-state-icon"/>
+        </StackPane>
+        <Label text="No cashback yet" styleClass="empty-state-title"/>
+        <Label text="Start shopping with our partners to earn cashback rewards!" styleClass="empty-state-message" wrapText="true" maxWidth="400" alignment="CENTER"/>
+        <Button styleClass="empty-state-btn" text="Explore Partners" onAction="#showPartnerForm"/>
+    </VBox>
 
-        
-        <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS" spacing="14">
-            <HBox spacing="12" alignment="CENTER_LEFT">
-                <StackPane styleClass="kpi-icon-wrapper kpi-icon-month">
-                    <FontIcon iconLiteral="fas-calendar-check" styleClass="kpi-icon"/>
-                </StackPane>
-                <VBox spacing="2">
-                    <Label text="CE MOIS" styleClass="kpi-title"/>
-                    <Label text="Decembre 2024" styleClass="kpi-description"/>
-                </VBox>
-            </HBox>
-            <HBox alignment="CENTER_LEFT" spacing="8">
-                <Label text="+$42.30" styleClass="kpi-value kpi-value-positive"/>
-                <HBox styleClass="kpi-trend kpi-trend-up" spacing="4" alignment="CENTER">
-                    <FontIcon iconLiteral="fas-arrow-up" styleClass="kpi-trend-icon-up"/>
-                    <Label text="18%" styleClass="kpi-trend-text-up"/>
+    <!-- ═══════════════════ MAIN CONTENT ═══════════════════ -->
+    <VBox fx:id="contentContainer" spacing="0">
+
+        <!-- ═══════════════════ KPI CARDS ═══════════════════ -->
+        <HBox styleClass="kpi-container" spacing="20">
+            <padding>
+                <Insets top="0" right="32" bottom="24" left="32"/>
+            </padding>
+
+            <!-- Total Rewards -->
+            <VBox styleClass="kpi-card kpi-card-featured" HBox.hgrow="ALWAYS" spacing="14">
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <StackPane styleClass="kpi-icon-wrapper kpi-icon-rewards">
+                        <FontIcon iconLiteral="fas-trophy" styleClass="kpi-icon"/>
+                    </StackPane>
+                    <VBox spacing="2">
+                        <Label text="RECOMPENSES TOTALES" styleClass="kpi-title"/>
+                        <Label text="Gains cumules" styleClass="kpi-description"/>
+                    </VBox>
                 </HBox>
-            </HBox>
-        </VBox>
-
-        
-        <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS" spacing="14">
-            <HBox spacing="12" alignment="CENTER_LEFT">
-                <StackPane styleClass="kpi-icon-wrapper kpi-icon-partners">
-                    <FontIcon iconLiteral="fas-store" styleClass="kpi-icon"/>
-                </StackPane>
-                <VBox spacing="2">
-                    <Label text="PARTENAIRES ACTIFS" styleClass="kpi-title"/>
-                    <Label text="Commercants inscrits" styleClass="kpi-description"/>
-                </VBox>
-            </HBox>
-            <HBox alignment="CENTER_LEFT" spacing="12">
-                <Label text="5" styleClass="kpi-value"/>
-                <Label text="commercants" styleClass="kpi-unit"/>
-            </HBox>
-        </VBox>
-
-        
-        <VBox styleClass="kpi-card kpi-card-highlight" HBox.hgrow="ALWAYS" spacing="14">
-            <HBox spacing="12" alignment="CENTER_LEFT">
-                <StackPane styleClass="kpi-icon-wrapper kpi-icon-highlight">
-                    <FontIcon iconLiteral="fas-hourglass-half" styleClass="kpi-icon-light"/>
-                </StackPane>
-                <VBox spacing="2">
-                    <Label text="EN ATTENTE" styleClass="kpi-title-light"/>
-                    <Label text="En attente de credit" styleClass="kpi-description-light"/>
-                </VBox>
-            </HBox>
-            <HBox alignment="CENTER_LEFT" spacing="10">
-                <Label text="\$18.20" styleClass="kpi-value-light"/>
-                <Label text="3 transactions" styleClass="kpi-unit-light"/>
-            </HBox>
-        </VBox>
-    </HBox>
-
-    
-    <HBox spacing="24" VBox.vgrow="ALWAYS">
-        <padding>
-            <Insets top="0" right="32" bottom="32" left="32"/>
-        </padding>
-
-        
-        <VBox styleClass="content-card" prefWidth="520" spacing="0">
-            
-            
-            <HBox styleClass="card-header" spacing="14" alignment="CENTER_LEFT">
-                <StackPane styleClass="card-header-icon">
-                    <FontIcon iconLiteral="fas-plus-circle" styleClass="card-header-icon-glyph"/>
-                </StackPane>
-                <VBox spacing="2">
-                    <Label text="Ajouter une nouvelle entree" styleClass="card-header-title"/>
-                    <Label text="Enregistrer des partenaires ou saisir du cashback" styleClass="card-header-subtitle"/>
-                </VBox>
-            </HBox>
-
-            
-            <HBox styleClass="form-tabs" spacing="0">
-                <Button fx:id="tabPartner" text="Inscription partenaire" styleClass="form-tab form-tab-active" onAction="#showPartnerForm"/>
-                <Button fx:id="tabCashback" text="Saisir cashback" styleClass="form-tab" onAction="#showCashbackForm"/>
-            </HBox>
-
-            
-            <ScrollPane styleClass="form-scroll" fitToWidth="true" VBox.vgrow="ALWAYS">
-                
-                
-                <VBox fx:id="partnerFormContainer" styleClass="card-body" spacing="20" visible="true" managed="true">
-                    
-                    
-                    <VBox spacing="12">
-                        <Label text="Categorie partenaire" styleClass="form-section-label"/>
-                        <FlowPane styleClass="category-grid" hgap="10" vgap="10">
-                            <VBox styleClass="category-card category-selected" alignment="CENTER" spacing="6">
-                                <StackPane styleClass="category-icon-wrapper">
-                                    <FontIcon iconLiteral="fas-plane" styleClass="category-icon"/>
-                                </StackPane>
-                                <Label text="Voyage" styleClass="category-label"/>
-                            </VBox>
-                            <VBox styleClass="category-card" alignment="CENTER" spacing="6">
-                                <StackPane styleClass="category-icon-wrapper">
-                                    <FontIcon iconLiteral="fas-shopping-bag" styleClass="category-icon"/>
-                                </StackPane>
-                                <Label text="Shopping" styleClass="category-label"/>
-                            </VBox>
-                            <VBox styleClass="category-card" alignment="CENTER" spacing="6">
-                                <StackPane styleClass="category-icon-wrapper">
-                                    <FontIcon iconLiteral="fas-utensils" styleClass="category-icon"/>
-                                </StackPane>
-                                <Label text="Restauration" styleClass="category-label"/>
-                            </VBox>
-                            <VBox styleClass="category-card" alignment="CENTER" spacing="6">
-                                <StackPane styleClass="category-icon-wrapper">
-                                    <FontIcon iconLiteral="fas-gas-pump" styleClass="category-icon"/>
-                                </StackPane>
-                                <Label text="Carburant" styleClass="category-label"/>
-                            </VBox>
-                            <VBox styleClass="category-card" alignment="CENTER" spacing="6">
-                                <StackPane styleClass="category-icon-wrapper">
-                                    <FontIcon iconLiteral="fas-film" styleClass="category-icon"/>
-                                </StackPane>
-                                <Label text="Divertissement" styleClass="category-label"/>
-                            </VBox>
-                            <VBox styleClass="category-card" alignment="CENTER" spacing="6">
-                                <StackPane styleClass="category-icon-wrapper">
-                                    <FontIcon iconLiteral="fas-ellipsis-h" styleClass="category-icon"/>
-                                </StackPane>
-                                <Label text="Autre" styleClass="category-label"/>
-                            </VBox>
-                        </FlowPane>
-                    </VBox>
-
-                    <Separator styleClass="form-separator"/>
-
-                    
-                    <GridPane styleClass="form-grid" hgap="16" vgap="18">
-                        <columnConstraints>
-                            <ColumnConstraints percentWidth="50"/>
-                            <ColumnConstraints percentWidth="50"/>
-                        </columnConstraints>
-
-                        
-                        <VBox spacing="8" GridPane.rowIndex="0" GridPane.columnIndex="0" GridPane.columnSpan="2">
-                            <Label text="Nom du partenaire" styleClass="form-label"/>
-                            <HBox styleClass="input-group">
-                                <StackPane styleClass="input-prefix">
-                                    <FontIcon iconLiteral="fas-store" styleClass="input-prefix-icon"/>
-                                </StackPane>
-                                <TextField fx:id="txtPartnerName" promptText="Saisir le nom du commercant" styleClass="text-field input-with-prefix" HBox.hgrow="ALWAYS"/>
-                            </HBox>
-                        </VBox>
-
-                        
-                        <VBox spacing="8" GridPane.rowIndex="1" GridPane.columnIndex="0">
-                            <Label text="Taux de cashback de base" styleClass="form-label"/>
-                            <HBox styleClass="input-group">
-                                <TextField fx:id="txtBaseRate" promptText="0.00" styleClass="text-field" HBox.hgrow="ALWAYS"/>
-                                <StackPane styleClass="input-suffix input-suffix-percent">
-                                    <Label text="\%" styleClass="input-suffix-text"/>
-                                </StackPane>
-                            </HBox>
-                        </VBox>
-
-                        
-                        <VBox spacing="8" GridPane.rowIndex="1" GridPane.columnIndex="1">
-                            <Label text="Taux de cashback max" styleClass="form-label"/>
-                            <HBox styleClass="input-group">
-                                <TextField fx:id="txtMaxRate" promptText="0.00" styleClass="text-field" HBox.hgrow="ALWAYS"/>
-                                <StackPane styleClass="input-suffix input-suffix-percent">
-                                    <Label text="\%" styleClass="input-suffix-text"/>
-                                </StackPane>
-                            </HBox>
-                        </VBox>
-
-                        
-                        <VBox spacing="8" GridPane.rowIndex="2" GridPane.columnIndex="0">
-                            <Label text="Plafond mensuel" styleClass="form-label"/>
-                            <HBox styleClass="input-group">
-                                <StackPane styleClass="input-prefix input-prefix-currency">
-                                    <Label text="\$" styleClass="input-prefix-text"/>
-                                </StackPane>
-                                <TextField fx:id="txtMonthlyLimit" promptText="0.00" styleClass="text-field input-with-prefix" HBox.hgrow="ALWAYS"/>
-                            </HBox>
-                        </VBox>
-
-                        
-                        <VBox spacing="8" GridPane.rowIndex="2" GridPane.columnIndex="1">
-                            <Label text="Valide jusqu au" styleClass="form-label"/>
-                            <DatePicker fx:id="dpValidUntil" promptText="Selectionner une date" styleClass="date-picker" maxWidth="Infinity"/>
-                        </VBox>
-
-                        
-                        <VBox spacing="8" GridPane.rowIndex="3" GridPane.columnIndex="0" GridPane.columnSpan="2">
-                            <Label text="Description" styleClass="form-label"/>
-                            <TextArea fx:id="txtPartnerDescription" promptText="Decrire le partenaire et les conditions de cashback..." prefRowCount="3" styleClass="text-area"/>
-                        </VBox>
-                    </GridPane>
-
-                    
-                    <HBox spacing="12" alignment="CENTER_RIGHT" styleClass="form-actions">
-                        <Button styleClass="btn-outline" onAction="#clearPartnerForm">
-                            <graphic>
-                                <HBox spacing="8" alignment="CENTER">
-                                    <FontIcon iconLiteral="fas-eraser" styleClass="btn-icon"/>
-                                    <Label text="Vider" styleClass="btn-label"/>
-                                </HBox>
-                            </graphic>
-                        </Button>
-                        <Button styleClass="btn-primary" onAction="#addPartner">
-                            <graphic>
-                                <HBox spacing="8" alignment="CENTER">
-                                    <FontIcon iconLiteral="fas-plus" styleClass="btn-icon-light"/>
-                                    <Label text="Ajouter partenaire" styleClass="btn-label-light"/>
-                                </HBox>
-                            </graphic>
-                        </Button>
-                    </HBox>
-                </VBox>
-
-                
-                <VBox fx:id="cashbackFormContainer" styleClass="card-body" spacing="20" visible="false" managed="false">
-                    
-                    
-                    <VBox spacing="12">
-                        <Label text="Selectionner un partenaire" styleClass="form-section-label"/>
-                        <FlowPane styleClass="partner-select-grid" hgap="12" vgap="12">
-                            <HBox styleClass="partner-select-card partner-select-selected" spacing="10" alignment="CENTER_LEFT">
-                                <StackPane styleClass="partner-select-icon partner-icon-travel">
-                                    <FontIcon iconLiteral="fas-plane" styleClass="partner-select-icon-glyph"/>
-                                </StackPane>
-                                <VBox spacing="2">
-                                    <Label text="Nexora Voyage" styleClass="partner-select-name"/>
-                                    <Label text="Up to 15%" styleClass="partner-select-rate"/>
-                                </VBox>
-                            </HBox>
-                            <HBox styleClass="partner-select-card" spacing="10" alignment="CENTER_LEFT">
-                                <StackPane styleClass="partner-select-icon partner-icon-shopping">
-                                    <FontIcon iconLiteral="fas-shopping-cart" styleClass="partner-select-icon-glyph"/>
-                                </StackPane>
-                                <VBox spacing="2">
-                                    <Label text="MegaStore" styleClass="partner-select-name"/>
-                                    <Label text="Up to 8%" styleClass="partner-select-rate"/>
-                                </VBox>
-                            </HBox>
-                            <HBox styleClass="partner-select-card" spacing="10" alignment="CENTER_LEFT">
-                                <StackPane styleClass="partner-select-icon partner-icon-dining">
-                                    <FontIcon iconLiteral="fas-utensils" styleClass="partner-select-icon-glyph"/>
-                                </StackPane>
-                                <VBox spacing="2">
-                                    <Label text="FoodieHub" styleClass="partner-select-name"/>
-                                    <Label text="Up to 10%" styleClass="partner-select-rate"/>
-                                </VBox>
-                            </HBox>
-                        </FlowPane>
-                    </VBox>
-
-                    <Separator styleClass="form-separator"/>
-
-                    
-                    <GridPane styleClass="form-grid" hgap="16" vgap="18">
-                        <columnConstraints>
-                            <ColumnConstraints percentWidth="50"/>
-                            <ColumnConstraints percentWidth="50"/>
-                        </columnConstraints>
-
-                        
-                        <VBox spacing="8" GridPane.rowIndex="0" GridPane.columnIndex="0">
-                            <Label text="Montant achat" styleClass="form-label"/>
-                            <HBox styleClass="input-group">
-                                <StackPane styleClass="input-prefix input-prefix-currency">
-                                    <Label text="\$" styleClass="input-prefix-text"/>
-                                </StackPane>
-                                <TextField fx:id="txtPurchaseAmount" promptText="0.00" styleClass="text-field input-with-prefix" HBox.hgrow="ALWAYS"/>
-                            </HBox>
-                        </VBox>
-
-                        
-                        <VBox spacing="8" GridPane.rowIndex="0" GridPane.columnIndex="1">
-                            <Label text="Date achat" styleClass="form-label"/>
-                            <DatePicker fx:id="dpPurchaseDate" promptText="Selectionner une date" styleClass="date-picker" maxWidth="Infinity"/>
-                        </VBox>
-
-                        
-                        <VBox spacing="8" GridPane.rowIndex="1" GridPane.columnIndex="0">
-                            <Label text="Taux applique" styleClass="form-label"/>
-                            <HBox styleClass="input-group calculated-field">
-                                <TextField fx:id="txtAppliedRate" text="5.0" styleClass="text-field" HBox.hgrow="ALWAYS" editable="true"/>
-                                <StackPane styleClass="input-suffix input-suffix-percent">
-                                    <Label text="\%" styleClass="input-suffix-text"/>
-                                </StackPane>
-                            </HBox>
-                        </VBox>
-
-                        
-                        <VBox spacing="8" GridPane.rowIndex="1" GridPane.columnIndex="1">
-                            <Label text="Montant cashback" styleClass="form-label"/>
-                            <HBox styleClass="input-group calculated-field-highlight">
-                                <StackPane styleClass="input-prefix input-prefix-reward">
-                                    <Label text="\$" styleClass="input-prefix-text-reward"/>
-                                </StackPane>
-                                <TextField fx:id="txtCashbackAmount" text="0.00" styleClass="text-field input-with-prefix text-field-highlight" HBox.hgrow="ALWAYS" editable="true"/>
-                            </HBox>
-                        </VBox>
-
-                        
-                        <VBox spacing="8" GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.columnSpan="2">
-                            <Label text="Reference transaction (optionnel)" styleClass="form-label"/>
-                            <HBox styleClass="input-group">
-                                <StackPane styleClass="input-prefix">
-                                    <FontIcon iconLiteral="fas-receipt" styleClass="input-prefix-icon"/>
-                                </StackPane>
-                                <TextField fx:id="txtTransactionRef" promptText="Saisir recu ou numero de transaction" styleClass="text-field input-with-prefix" HBox.hgrow="ALWAYS"/>
-                            </HBox>
-                        </VBox>
-                    </GridPane>
-
-                    
-                    <VBox styleClass="cashback-summary-card" spacing="12">
-                        <HBox alignment="CENTER_LEFT">
-                            <VBox spacing="4" HBox.hgrow="ALWAYS">
-                                <Label text="Cashback estime" styleClass="summary-label"/>
-                                <Label text="Base sur votre achat" styleClass="summary-sublabel"/>
-                            </VBox>
-                            <VBox alignment="CENTER_RIGHT">
-                                <Label text="+$22.00" styleClass="summary-value-highlight"/>
-                                <Label text="Sera credite sous 3-5 jours" styleClass="summary-note"/>
-                            </VBox>
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <Label fx:id="lblTotalRewards" text="0.00 DT" styleClass="kpi-value kpi-value-rewards"/>
+                    <StackPane styleClass="rewards-level-badge">
+                        <HBox spacing="6" alignment="CENTER">
+                            <FontIcon fx:id="membershipIcon" iconLiteral="fas-star" styleClass="rewards-level-icon"/>
+                            <Label fx:id="lblMembershipTier" text="Membre Bronze"/>
                         </HBox>
+                    </StackPane>
+                </HBox>
+            </VBox>
+
+            <!-- This Month -->
+            <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS" spacing="14">
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <StackPane styleClass="kpi-icon-wrapper kpi-icon-month">
+                        <FontIcon iconLiteral="fas-calendar-check" styleClass="kpi-icon"/>
+                    </StackPane>
+                    <VBox spacing="2">
+                        <Label text="CE MOIS" styleClass="kpi-title"/>
+                        <Label fx:id="lblMonthName" text="" styleClass="kpi-description"/>
                     </VBox>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="8">
+                    <Label fx:id="lblMonthAmount" text="+0.00 DT" styleClass="kpi-value kpi-value-positive"/>
+                </HBox>
+            </VBox>
 
+            <!-- Active Partners -->
+            <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS" spacing="14">
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <StackPane styleClass="kpi-icon-wrapper kpi-icon-partners">
+                        <FontIcon iconLiteral="fas-store" styleClass="kpi-icon"/>
+                    </StackPane>
+                    <VBox spacing="2">
+                        <Label text="PARTENAIRES ACTIFS" styleClass="kpi-title"/>
+                        <Label text="Commercants inscrits" styleClass="kpi-description"/>
+                    </VBox>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="12">
+                    <Label fx:id="lblPartnerCount" text="0" styleClass="kpi-value"/>
+                    <Label text="commercants" styleClass="kpi-unit"/>
+                </HBox>
+            </VBox>
+
+            <!-- Pending -->
+            <VBox styleClass="kpi-card kpi-card-highlight" HBox.hgrow="ALWAYS" spacing="14">
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <StackPane styleClass="kpi-icon-wrapper kpi-icon-highlight">
+                        <FontIcon iconLiteral="fas-hourglass-half" styleClass="kpi-icon-light"/>
+                    </StackPane>
+                    <VBox spacing="2">
+                        <Label text="EN ATTENTE" styleClass="kpi-title-light"/>
+                        <Label text="En attente de credit" styleClass="kpi-description-light"/>
+                    </VBox>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <Label fx:id="lblPendingAmount" text="0.00 DT" styleClass="kpi-value-light"/>
+                    <Label fx:id="lblPendingCount" text="0 transactions" styleClass="kpi-unit-light"/>
+                </HBox>
+            </VBox>
+        </HBox>
+
+        <!-- ═══════════════════ MAIN CONTENT AREA ═══════════════════ -->
+        <HBox spacing="24" VBox.vgrow="ALWAYS">
+            <padding>
+                <Insets top="0" right="32" bottom="32" left="32"/>
+            </padding>
+
+            <!-- ═══════════════════ FORMS PANEL ═══════════════════ -->
+            <VBox styleClass="content-card" prefWidth="520" spacing="0">
+                
+                <!-- Card Header -->
+                <HBox styleClass="card-header" spacing="14" alignment="CENTER_LEFT">
+                    <StackPane styleClass="card-header-icon">
+                        <FontIcon iconLiteral="fas-plus-circle" styleClass="card-header-icon-glyph"/>
+                    </StackPane>
+                    <VBox spacing="2">
+                        <Label text="Ajouter une nouvelle entree" styleClass="card-header-title"/>
+                        <Label text="Enregistrer des partenaires ou saisir du cashback" styleClass="card-header-subtitle"/>
+                    </VBox>
+                </HBox>
+
+                <!-- Form Tabs -->
+                <HBox styleClass="form-tabs" spacing="0">
+                    <Button fx:id="tabPartner" text="Inscription partenaire" styleClass="form-tab form-tab-active" onAction="#showPartnerForm"/>
+                    <Button fx:id="tabCashback" text="Saisir cashback" styleClass="form-tab" onAction="#showCashbackForm"/>
+                </HBox>
+
+                <!-- Scrollable Form Content -->
+                <ScrollPane styleClass="form-scroll" fitToWidth="true" VBox.vgrow="ALWAYS">
                     
-                    <HBox spacing="12" alignment="CENTER_RIGHT" styleClass="form-actions">
-                        <Button styleClass="btn-outline" onAction="#clearCashbackForm">
-                            <graphic>
-                                <HBox spacing="8" alignment="CENTER">
-                                    <FontIcon iconLiteral="fas-eraser" styleClass="btn-icon"/>
-                                    <Label text="Vider" styleClass="btn-label"/>
+                    <!-- Partner Form -->
+                    <VBox fx:id="partnerFormContainer" styleClass="card-body" spacing="20" visible="true" managed="true">
+                        
+                        <!-- Category Grid -->
+                        <VBox spacing="12">
+                            <Label text="Categorie partenaire" styleClass="form-section-label"/>
+                            <FlowPane styleClass="category-grid" hgap="10" vgap="10">
+                                <VBox styleClass="category-card category-selected" alignment="CENTER" spacing="6">
+                                    <StackPane styleClass="category-icon-wrapper">
+                                        <FontIcon iconLiteral="fas-plane" styleClass="category-icon"/>
+                                    </StackPane>
+                                    <Label text="Voyage" styleClass="category-label"/>
+                                </VBox>
+                                <VBox styleClass="category-card" alignment="CENTER" spacing="6">
+                                    <StackPane styleClass="category-icon-wrapper">
+                                        <FontIcon iconLiteral="fas-shopping-bag" styleClass="category-icon"/>
+                                    </StackPane>
+                                    <Label text="Shopping" styleClass="category-label"/>
+                                </VBox>
+                                <VBox styleClass="category-card" alignment="CENTER" spacing="6">
+                                    <StackPane styleClass="category-icon-wrapper">
+                                        <FontIcon iconLiteral="fas-utensils" styleClass="category-icon"/>
+                                    </StackPane>
+                                    <Label text="Restauration" styleClass="category-label"/>
+                                </VBox>
+                                <VBox styleClass="category-card" alignment="CENTER" spacing="6">
+                                    <StackPane styleClass="category-icon-wrapper">
+                                        <FontIcon iconLiteral="fas-gas-pump" styleClass="category-icon"/>
+                                    </StackPane>
+                                    <Label text="Carburant" styleClass="category-label"/>
+                                </VBox>
+                                <VBox styleClass="category-card" alignment="CENTER" spacing="6">
+                                    <StackPane styleClass="category-icon-wrapper">
+                                        <FontIcon iconLiteral="fas-film" styleClass="category-icon"/>
+                                    </StackPane>
+                                    <Label text="Divertissement" styleClass="category-label"/>
+                                </VBox>
+                                <VBox styleClass="category-card" alignment="CENTER" spacing="6">
+                                    <StackPane styleClass="category-icon-wrapper">
+                                        <FontIcon iconLiteral="fas-ellipsis-h" styleClass="category-icon"/>
+                                    </StackPane>
+                                    <Label text="Autre" styleClass="category-label"/>
+                                </VBox>
+                            </FlowPane>
+                        </VBox>
+
+                        <Separator styleClass="form-separator"/>
+
+                        <!-- Partner Form Fields -->
+                        <GridPane styleClass="form-grid" hgap="16" vgap="18">
+                            <columnConstraints>
+                                <ColumnConstraints percentWidth="50"/>
+                                <ColumnConstraints percentWidth="50"/>
+                            </columnConstraints>
+
+                            <VBox spacing="8" GridPane.rowIndex="0" GridPane.columnIndex="0" GridPane.columnSpan="2">
+                                <Label text="Nom du partenaire" styleClass="form-label"/>
+                                <HBox styleClass="input-group">
+                                    <StackPane styleClass="input-prefix">
+                                        <FontIcon iconLiteral="fas-store" styleClass="input-prefix-icon"/>
+                                    </StackPane>
+                                    <TextField fx:id="txtPartnerName" promptText="Saisir le nom du commercant" styleClass="text-field input-with-prefix" HBox.hgrow="ALWAYS"/>
                                 </HBox>
-                            </graphic>
-                        </Button>
-                        <Button styleClass="btn-primary" onAction="#recordCashback">
-                            <graphic>
-                                <HBox spacing="8" alignment="CENTER">
-                                    <FontIcon iconLiteral="fas-check-circle" styleClass="btn-icon-light"/>
-                                    <Label text="Saisir cashback" styleClass="btn-label-light"/>
+                            </VBox>
+
+                            <VBox spacing="8" GridPane.rowIndex="1" GridPane.columnIndex="0">
+                                <Label text="Taux de cashback de base" styleClass="form-label"/>
+                                <HBox styleClass="input-group">
+                                    <TextField fx:id="txtBaseRate" promptText="0.00" styleClass="text-field" HBox.hgrow="ALWAYS"/>
+                                    <StackPane styleClass="input-suffix input-suffix-percent">
+                                        <Label text="\%" styleClass="input-suffix-text"/>
+                                    </StackPane>
                                 </HBox>
-                            </graphic>
-                        </Button>
-                    </HBox>
-                </VBox>
-            </ScrollPane>
-        </VBox>
+                            </VBox>
 
-        
-        <VBox styleClass="content-card" HBox.hgrow="ALWAYS" spacing="0">
-            
-            
-            <HBox styleClass="card-header rewards-header" spacing="14" alignment="CENTER_LEFT">
-                <StackPane styleClass="card-header-icon rewards-icon">
-                    <FontIcon iconLiteral="fas-wallet" styleClass="card-header-icon-glyph"/>
-                </StackPane>
-                <VBox spacing="2" HBox.hgrow="ALWAYS">
-                    <Label text="Vos recompenses" styleClass="card-header-title"/>
-                    <Label text="Track earnings and partner commercants" styleClass="card-header-subtitle"/>
-                </VBox>
-                <VBox styleClass="total-rewards-box" alignment="CENTER_RIGHT" spacing="2">
-                    <Label text="Solde disponible" styleClass="total-rewards-label"/>
-                            <Label text="\$127.50" styleClass="total-rewards-value"/>
-                </VBox>
-            </HBox>
+                            <VBox spacing="8" GridPane.rowIndex="1" GridPane.columnIndex="1">
+                                <Label text="Taux de cashback max" styleClass="form-label"/>
+                                <HBox styleClass="input-group">
+                                    <TextField fx:id="txtMaxRate" promptText="0.00" styleClass="text-field" HBox.hgrow="ALWAYS"/>
+                                    <StackPane styleClass="input-suffix input-suffix-percent">
+                                        <Label text="\%" styleClass="input-suffix-text"/>
+                                    </StackPane>
+                                </HBox>
+                            </VBox>
 
-            
-            <HBox styleClass="quick-stats" spacing="16">
-                <padding>
-                    <Insets top="16" right="20" bottom="16" left="20"/>
-                </padding>
-                <VBox styleClass="quick-stat-item" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="4">
-                    <Label text="Cette semaine" styleClass="quick-stat-label"/>
-                    <Label text="+$18.20" styleClass="quick-stat-value quick-stat-positive"/>
-                </VBox>
-                <Separator orientation="VERTICAL" styleClass="stat-divider"/>
-                <VBox styleClass="quick-stat-item" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="4">
-                    <Label text="En attente" styleClass="quick-stat-label"/>
-                            <Label text="\$12.48" styleClass="quick-stat-value quick-stat-pending"/>
-                </VBox>
-                <Separator orientation="VERTICAL" styleClass="stat-divider"/>
-                <VBox styleClass="quick-stat-item" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="4">
-                    <Label text="Echange" styleClass="quick-stat-label"/>
-                            <Label text="\$85.00" styleClass="quick-stat-value"/>
-                </VBox>
-            </HBox>
+                            <VBox spacing="8" GridPane.rowIndex="2" GridPane.columnIndex="0">
+                                <Label text="Plafond mensuel" styleClass="form-label"/>
+                                <HBox styleClass="input-group">
+                                    <StackPane styleClass="input-prefix input-prefix-currency">
+                                        <Label text="DT" styleClass="input-prefix-text"/>
+                                    </StackPane>
+                                    <TextField fx:id="txtMonthlyLimit" promptText="0.00" styleClass="text-field input-with-prefix" HBox.hgrow="ALWAYS"/>
+                                </HBox>
+                            </VBox>
 
-            <Separator styleClass="section-divider-light"/>
+                            <VBox spacing="8" GridPane.rowIndex="2" GridPane.columnIndex="1">
+                                <Label text="Valide jusqu'au" styleClass="form-label"/>
+                                <DatePicker fx:id="dpValidUntil" promptText="Selectionner une date" styleClass="date-picker" maxWidth="Infinity"/>
+                            </VBox>
 
-            
-            <ScrollPane styleClass="rewards-scroll" fitToWidth="true" VBox.vgrow="ALWAYS">
-                <VBox styleClass="rewards-content" spacing="24">
-                    <padding>
-                        <Insets top="20" right="20" bottom="20" left="20"/>
-                    </padding>
+                            <VBox spacing="8" GridPane.rowIndex="3" GridPane.columnIndex="0" GridPane.columnSpan="2">
+                                <Label text="Description" styleClass="form-label"/>
+                                <TextArea fx:id="txtPartnerDescription" promptText="Decrire le partenaire et les conditions de cashback..." prefRowCount="3" styleClass="text-area"/>
+                            </VBox>
+                        </GridPane>
 
-                    
-                    <VBox spacing="14">
-                        <HBox alignment="CENTER_LEFT">
-                            <Label text="Commercants partenaires" styleClass="content-section-title"/>
-                            <Region HBox.hgrow="ALWAYS"/>
-                            <Button styleClass="see-all-btn">
+                        <!-- Form Actions -->
+                        <HBox spacing="12" alignment="CENTER_RIGHT" styleClass="form-actions">
+                            <Button styleClass="btn-outline" onAction="#clearPartnerForm">
                                 <graphic>
-                                    <HBox spacing="4" alignment="CENTER">
-                                        <Label text="Voir tout"/>
-                                        <FontIcon iconLiteral="fas-chevron-right" styleClass="see-all-icon"/>
+                                    <HBox spacing="8" alignment="CENTER">
+                                        <FontIcon iconLiteral="fas-eraser" styleClass="btn-icon"/>
+                                        <Label text="Vider" styleClass="btn-label"/>
+                                    </HBox>
+                                </graphic>
+                            </Button>
+                            <Button styleClass="btn-primary" onAction="#addPartner">
+                                <graphic>
+                                    <HBox spacing="8" alignment="CENTER">
+                                        <FontIcon iconLiteral="fas-plus" styleClass="btn-icon-light"/>
+                                        <Label text="Ajouter partenaire" styleClass="btn-label-light"/>
                                     </HBox>
                                 </graphic>
                             </Button>
                         </HBox>
-
-                        <FlowPane styleClass="partners-grid" hgap="16" vgap="16">
-                            
-                            <VBox styleClass="partner-card" prefWidth="180" spacing="0">
-                                <HBox styleClass="partner-card-header partner-header-travel" alignment="CENTER_LEFT" spacing="10">
-                                    <StackPane styleClass="partner-badge">
-                                        <FontIcon iconLiteral="fas-plane" styleClass="partner-badge-icon"/>
-                                    </StackPane>
-                                    <VBox spacing="1">
-                                        <Label text="Nexora Voyage" styleClass="partner-card-name"/>
-                                        <Label text="Voyage &amp; Booking" styleClass="partner-card-category"/>
-                                    </VBox>
-                                </HBox>
-                                <VBox styleClass="partner-card-body" spacing="8">
-                                    <HBox alignment="CENTER_LEFT">
-                                        <Label text="Taux cashback" styleClass="partner-rate-label"/>
-                                        <Region HBox.hgrow="ALWAYS"/>
-                                        <Label text="Up to 15%" styleClass="partner-rate-value"/>
-                                    </HBox>
-                                    <HBox alignment="CENTER_LEFT">
-                                        <Label text="Vos gains" styleClass="partner-earnings-label"/>
-                                        <Region HBox.hgrow="ALWAYS"/>
-                                        <Label text="\$52.30" styleClass="partner-earnings-value"/>
-                                    </HBox>
-                                </VBox>
-                            </VBox>
-
-                            
-                            <VBox styleClass="partner-card" prefWidth="180" spacing="0">
-                                <HBox styleClass="partner-card-header partner-header-shopping" alignment="CENTER_LEFT" spacing="10">
-                                    <StackPane styleClass="partner-badge">
-                                        <FontIcon iconLiteral="fas-shopping-cart" styleClass="partner-badge-icon"/>
-                                    </StackPane>
-                                    <VBox spacing="1">
-                                        <Label text="MegaStore" styleClass="partner-card-name"/>
-                                        <Label text="Shopping" styleClass="partner-card-category"/>
-                                    </VBox>
-                                </HBox>
-                                <VBox styleClass="partner-card-body" spacing="8">
-                                    <HBox alignment="CENTER_LEFT">
-                                        <Label text="Taux cashback" styleClass="partner-rate-label"/>
-                                        <Region HBox.hgrow="ALWAYS"/>
-                                        <Label text="Up to 8%" styleClass="partner-rate-value"/>
-                                    </HBox>
-                                    <HBox alignment="CENTER_LEFT">
-                                        <Label text="Vos gains" styleClass="partner-earnings-label"/>
-                                        <Region HBox.hgrow="ALWAYS"/>
-                                        <Label text="\$38.20" styleClass="partner-earnings-value"/>
-                                    </HBox>
-                                </VBox>
-                            </VBox>
-
-                            
-                            <VBox styleClass="partner-card" prefWidth="180" spacing="0">
-                                <HBox styleClass="partner-card-header partner-header-dining" alignment="CENTER_LEFT" spacing="10">
-                                    <StackPane styleClass="partner-badge">
-                                        <FontIcon iconLiteral="fas-utensils" styleClass="partner-badge-icon"/>
-                                    </StackPane>
-                                    <VBox spacing="1">
-                                        <Label text="FoodieHub" styleClass="partner-card-name"/>
-                                        <Label text="Restauration" styleClass="partner-card-category"/>
-                                    </VBox>
-                                </HBox>
-                                <VBox styleClass="partner-card-body" spacing="8">
-                                    <HBox alignment="CENTER_LEFT">
-                                        <Label text="Taux cashback" styleClass="partner-rate-label"/>
-                                        <Region HBox.hgrow="ALWAYS"/>
-                                        <Label text="Up to 10%" styleClass="partner-rate-value"/>
-                                    </HBox>
-                                    <HBox alignment="CENTER_LEFT">
-                                        <Label text="Vos gains" styleClass="partner-earnings-label"/>
-                                        <Region HBox.hgrow="ALWAYS"/>
-                                        <Label text="\$25.00" styleClass="partner-earnings-value"/>
-                                    </HBox>
-                                </VBox>
-                            </VBox>
-
-                            
-                            <VBox styleClass="partner-card partner-card-add" prefWidth="180" alignment="CENTER" spacing="8">
-                                <StackPane styleClass="add-partner-icon-wrapper">
-                                    <FontIcon iconLiteral="fas-plus" styleClass="add-partner-icon"/>
-                                </StackPane>
-                                <Label text="Ajouter partenaire" styleClass="add-partner-label"/>
-                            </VBox>
-                        </FlowPane>
                     </VBox>
 
-                    
-                    <VBox spacing="14">
-                        <HBox alignment="CENTER_LEFT">
-                            <Label text="Cashback recents" styleClass="content-section-title"/>
-                            <Region HBox.hgrow="ALWAYS"/>
-                            <ComboBox promptText="Toute periode" styleClass="filter-dropdown" prefWidth="120">
-                                <items>
-                                    <FXCollections fx:factory="observableArrayList">
-                                        <String fx:value="Today"/>
-                                        <String fx:value="Cette semaine"/>
-                                        <String fx:value="This Month"/>
-                                        <String fx:value="Toute periode"/>
-                                    </FXCollections>
-                                </items>
-                            </ComboBox>
-                        </HBox>
+                    <!-- Cashback Form -->
+                    <VBox fx:id="cashbackFormContainer" styleClass="card-body" spacing="20" visible="false" managed="false">
+                        
+                        <!-- Partner Selection -->
+                        <VBox spacing="12">
+                            <Label text="Selectionner un partenaire" styleClass="form-section-label"/>
+                            <FlowPane styleClass="partner-select-grid" hgap="12" vgap="12">
+                                <HBox styleClass="partner-select-card partner-select-selected" spacing="10" alignment="CENTER_LEFT">
+                                    <StackPane styleClass="partner-select-icon partner-icon-travel">
+                                        <FontIcon iconLiteral="fas-plane" styleClass="partner-select-icon-glyph"/>
+                                    </StackPane>
+                                    <VBox spacing="2">
+                                        <Label text="Nexora Voyage" styleClass="partner-select-name"/>
+                                        <Label text="Up to 15%" styleClass="partner-select-rate"/>
+                                    </VBox>
+                                </HBox>
+                                <HBox styleClass="partner-select-card" spacing="10" alignment="CENTER_LEFT">
+                                    <StackPane styleClass="partner-select-icon partner-icon-shopping">
+                                        <FontIcon iconLiteral="fas-shopping-cart" styleClass="partner-select-icon-glyph"/>
+                                    </StackPane>
+                                    <VBox spacing="2">
+                                        <Label text="MegaStore" styleClass="partner-select-name"/>
+                                        <Label text="Up to 8%" styleClass="partner-select-rate"/>
+                                    </VBox>
+                                </HBox>
+                                <HBox styleClass="partner-select-card" spacing="10" alignment="CENTER_LEFT">
+                                    <StackPane styleClass="partner-select-icon partner-icon-dining">
+                                        <FontIcon iconLiteral="fas-utensils" styleClass="partner-select-icon-glyph"/>
+                                    </StackPane>
+                                    <VBox spacing="2">
+                                        <Label text="FoodieHub" styleClass="partner-select-name"/>
+                                        <Label text="Up to 10%" styleClass="partner-select-rate"/>
+                                    </VBox>
+                                </HBox>
+                            </FlowPane>
+                        </VBox>
 
-                        <VBox styleClass="cashback-list" spacing="12">
-                            
-                            <HBox styleClass="cashback-item" spacing="14" alignment="CENTER_LEFT">
-                                <StackPane styleClass="cashback-item-icon cashback-icon-travel">
-                                    <FontIcon iconLiteral="fas-plane" styleClass="cashback-item-icon-glyph"/>
-                                </StackPane>
-                                <VBox spacing="4" HBox.hgrow="ALWAYS">
-                                    <HBox spacing="8" alignment="CENTER_LEFT">
-                                        <Label text="Nexora Voyage" styleClass="cashback-item-merchant"/>
-                                        <StackPane styleClass="cashback-badge badge-credited">
-                                            <Label text="Credite"/>
-                                        </StackPane>
-                                    </HBox>
-                                    <HBox spacing="16" alignment="CENTER_LEFT">
-                                        <Label text="Achat : $440.00" styleClass="cashback-item-purchase"/>
-                                        <Label text="-" styleClass="cashback-separator"/>
-                                        <Label text="Aujourd hui, 15:45" styleClass="cashback-item-date"/>
-                                    </HBox>
-                                </VBox>
-                                <VBox alignment="CENTER_RIGHT" spacing="2">
-                                    <Label text="+$22.00" styleClass="cashback-item-amount amount-credited"/>
-                                    <Label text="Taux 5%" styleClass="cashback-item-rate"/>
-                                </VBox>
-                            </HBox>
+                        <Separator styleClass="form-separator"/>
 
-                            
-                            <HBox styleClass="cashback-item cashback-item-pending" spacing="14" alignment="CENTER_LEFT">
-                                <StackPane styleClass="cashback-item-icon cashback-icon-shopping">
-                                    <FontIcon iconLiteral="fas-shopping-cart" styleClass="cashback-item-icon-glyph"/>
-                                </StackPane>
-                                <VBox spacing="4" HBox.hgrow="ALWAYS">
-                                    <HBox spacing="8" alignment="CENTER_LEFT">
-                                        <Label text="MegaStore" styleClass="cashback-item-merchant"/>
-                                        <StackPane styleClass="cashback-badge badge-pending">
-                                            <Label text="En attente"/>
-                                        </StackPane>
-                                    </HBox>
-                                    <HBox spacing="16" alignment="CENTER_LEFT">
-                                        <Label text="Achat : $156.00" styleClass="cashback-item-purchase"/>
-                                        <Label text="-" styleClass="cashback-separator"/>
-                                        <Label text="Hier" styleClass="cashback-item-date"/>
-                                    </HBox>
-                                </VBox>
-                                <VBox alignment="CENTER_RIGHT" spacing="2">
-                                    <Label text="+$12.48" styleClass="cashback-item-amount amount-pending"/>
-                                    <Label text="Taux 8%" styleClass="cashback-item-rate"/>
-                                </VBox>
-                            </HBox>
+                        <!-- Cashback Form Fields -->
+                        <GridPane styleClass="form-grid" hgap="16" vgap="18">
+                            <columnConstraints>
+                                <ColumnConstraints percentWidth="50"/>
+                                <ColumnConstraints percentWidth="50"/>
+                            </columnConstraints>
 
-                            
-                            <HBox styleClass="cashback-item" spacing="14" alignment="CENTER_LEFT">
-                                <StackPane styleClass="cashback-item-icon cashback-icon-dining">
-                                    <FontIcon iconLiteral="fas-utensils" styleClass="cashback-item-icon-glyph"/>
-                                </StackPane>
-                                <VBox spacing="4" HBox.hgrow="ALWAYS">
-                                    <HBox spacing="8" alignment="CENTER_LEFT">
-                                        <Label text="FoodieHub" styleClass="cashback-item-merchant"/>
-                                        <StackPane styleClass="cashback-badge badge-credited">
-                                            <Label text="Credite"/>
-                                        </StackPane>
-                                    </HBox>
-                                    <HBox spacing="16" alignment="CENTER_LEFT">
-                                        <Label text="Achat : $85.00" styleClass="cashback-item-purchase"/>
-                                        <Label text="-" styleClass="cashback-separator"/>
-                                        <Label text="18 Dec 2024" styleClass="cashback-item-date"/>
-                                    </HBox>
-                                </VBox>
-                                <VBox alignment="CENTER_RIGHT" spacing="2">
-                                    <Label text="+$8.50" styleClass="cashback-item-amount amount-credited"/>
-                                    <Label text="Taux 10%" styleClass="cashback-item-rate"/>
-                                </VBox>
-                            </HBox>
+                            <VBox spacing="8" GridPane.rowIndex="0" GridPane.columnIndex="0">
+                                <Label text="Montant achat" styleClass="form-label"/>
+                                <HBox styleClass="input-group">
+                                    <StackPane styleClass="input-prefix input-prefix-currency">
+                                        <Label text="DT" styleClass="input-prefix-text"/>
+                                    </StackPane>
+                                    <TextField fx:id="txtPurchaseAmount" promptText="0.00" styleClass="text-field input-with-prefix" HBox.hgrow="ALWAYS"/>
+                                </HBox>
+                            </VBox>
 
-                            
-                            <HBox styleClass="cashback-item cashback-item-expired" spacing="14" alignment="CENTER_LEFT">
-                                <StackPane styleClass="cashback-item-icon cashback-icon-expired">
-                                    <FontIcon iconLiteral="fas-times" styleClass="cashback-item-icon-glyph"/>
-                                </StackPane>
+                            <VBox spacing="8" GridPane.rowIndex="0" GridPane.columnIndex="1">
+                                <Label text="Date achat" styleClass="form-label"/>
+                                <DatePicker fx:id="dpPurchaseDate" promptText="Selectionner une date" styleClass="date-picker" maxWidth="Infinity"/>
+                            </VBox>
+
+                            <VBox spacing="8" GridPane.rowIndex="1" GridPane.columnIndex="0">
+                                <Label text="Taux applique" styleClass="form-label"/>
+                                <HBox styleClass="input-group calculated-field">
+                                    <TextField fx:id="txtAppliedRate" text="5.0" styleClass="text-field" HBox.hgrow="ALWAYS" editable="true"/>
+                                    <StackPane styleClass="input-suffix input-suffix-percent">
+                                        <Label text="\%" styleClass="input-suffix-text"/>
+                                    </StackPane>
+                                </HBox>
+                            </VBox>
+
+                            <VBox spacing="8" GridPane.rowIndex="1" GridPane.columnIndex="1">
+                                <Label text="Montant cashback" styleClass="form-label"/>
+                                <HBox styleClass="input-group calculated-field-highlight">
+                                    <StackPane styleClass="input-prefix input-prefix-reward">
+                                        <Label text="DT" styleClass="input-prefix-text-reward"/>
+                                    </StackPane>
+                                    <TextField fx:id="txtCashbackAmount" text="0.00" styleClass="text-field input-with-prefix text-field-highlight" HBox.hgrow="ALWAYS" editable="true"/>
+                                </HBox>
+                            </VBox>
+
+                            <VBox spacing="8" GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.columnSpan="2">
+                                <Label text="Reference transaction (optionnel)" styleClass="form-label"/>
+                                <HBox styleClass="input-group">
+                                    <StackPane styleClass="input-prefix">
+                                        <FontIcon iconLiteral="fas-receipt" styleClass="input-prefix-icon"/>
+                                    </StackPane>
+                                    <TextField fx:id="txtTransactionRef" promptText="Saisir recu ou numero de transaction" styleClass="text-field input-with-prefix" HBox.hgrow="ALWAYS"/>
+                                </HBox>
+                            </VBox>
+                        </GridPane>
+
+                        <!-- Cashback Summary -->
+                        <VBox styleClass="cashback-summary-card" spacing="12">
+                            <HBox alignment="CENTER_LEFT">
                                 <VBox spacing="4" HBox.hgrow="ALWAYS">
-                                    <HBox spacing="8" alignment="CENTER_LEFT">
-                                        <Label text="TechWorld" styleClass="cashback-item-merchant"/>
-                                        <StackPane styleClass="cashback-badge badge-expired">
-                                            <Label text="Expire"/>
-                                        </StackPane>
-                                    </HBox>
-                                    <HBox spacing="16" alignment="CENTER_LEFT">
-                                        <Label text="Achat : $299.00" styleClass="cashback-item-purchase"/>
-                                        <Label text="-" styleClass="cashback-separator"/>
-                                        <Label text="15 Nov 2024" styleClass="cashback-item-date"/>
-                                    </HBox>
+                                    <Label text="Cashback estime" styleClass="summary-label"/>
+                                    <Label text="Base sur votre achat" styleClass="summary-sublabel"/>
                                 </VBox>
-                                <VBox alignment="CENTER_RIGHT" spacing="2">
-                                        <Label text="\$14.95" styleClass="cashback-item-amount amount-expired"/>
-                                    <Label text="Non reclame" styleClass="cashback-item-rate"/>
+                                <VBox alignment="CENTER_RIGHT">
+                                    <Label text="+$0.00" styleClass="summary-value-highlight"/>
+                                    <Label text="Sera credite sous 3-5 jours" styleClass="summary-note"/>
                                 </VBox>
                             </HBox>
                         </VBox>
+
+                        <!-- Form Actions -->
+                        <HBox spacing="12" alignment="CENTER_RIGHT" styleClass="form-actions">
+                            <Button styleClass="btn-outline" onAction="#clearCashbackForm">
+                                <graphic>
+                                    <HBox spacing="8" alignment="CENTER">
+                                        <FontIcon iconLiteral="fas-eraser" styleClass="btn-icon"/>
+                                        <Label text="Vider" styleClass="btn-label"/>
+                                    </HBox>
+                                </graphic>
+                            </Button>
+                            <Button styleClass="btn-primary" onAction="#recordCashback">
+                                <graphic>
+                                    <HBox spacing="8" alignment="CENTER">
+                                        <FontIcon iconLiteral="fas-check-circle" styleClass="btn-icon-light"/>
+                                        <Label text="Saisir cashback" styleClass="btn-label-light"/>
+                                    </HBox>
+                                </graphic>
+                            </Button>
+                        </HBox>
                     </VBox>
-                </VBox>
-            </ScrollPane>
-        </VBox>
-    </HBox>
+                </ScrollPane>
+            </VBox>
+
+            <!-- ═══════════════════ REWARDS PANEL ═══════════════════ -->
+            <VBox styleClass="content-card" HBox.hgrow="ALWAYS" spacing="0">
+
+                <!-- Card Header -->
+                <HBox styleClass="card-header rewards-header" spacing="14" alignment="CENTER_LEFT">
+                    <StackPane styleClass="card-header-icon rewards-icon">
+                        <FontIcon iconLiteral="fas-wallet" styleClass="card-header-icon-glyph"/>
+                    </StackPane>
+                    <VBox spacing="2" HBox.hgrow="ALWAYS">
+                        <Label text="Vos recompenses" styleClass="card-header-title"/>
+                        <Label text="Track earnings and partner merchants" styleClass="card-header-subtitle"/>
+                    </VBox>
+                    <VBox styleClass="total-rewards-box" alignment="CENTER_RIGHT" spacing="2">
+                        <Label text="Solde disponible" styleClass="total-rewards-label"/>
+                        <Label fx:id="lblAvailableBalance" text="0.00 DT" styleClass="total-rewards-value"/>
+                    </VBox>
+                </HBox>
+
+                <!-- Quick Stats -->
+                <HBox styleClass="quick-stats" spacing="16">
+                    <padding>
+                        <Insets top="16" right="20" bottom="16" left="20"/>
+                    </padding>
+                    <VBox styleClass="quick-stat-item" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="4">
+                        <Label text="Cette semaine" styleClass="quick-stat-label"/>
+                        <Label fx:id="lblWeekEarnings" text="+0.00 DT" styleClass="quick-stat-value quick-stat-positive"/>
+                    </VBox>
+                    <Separator orientation="VERTICAL" styleClass="stat-divider"/>
+                    <VBox styleClass="quick-stat-item" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="4">
+                        <Label text="En attente" styleClass="quick-stat-label"/>
+                        <Label fx:id="lblPendingStat" text="0.00 DT" styleClass="quick-stat-value quick-stat-pending"/>
+                    </VBox>
+                    <Separator orientation="VERTICAL" styleClass="stat-divider"/>
+                    <VBox styleClass="quick-stat-item" HBox.hgrow="ALWAYS" alignment="CENTER" spacing="4">
+                        <Label text="Echange" styleClass="quick-stat-label"/>
+                        <Label fx:id="lblRedeemedStat" text="0.00 DT" styleClass="quick-stat-value"/>
+                    </VBox>
+                </HBox>
+
+                <Separator styleClass="section-divider-light"/>
+
+                <!-- Scrollable Content -->
+                <ScrollPane styleClass="rewards-scroll" fitToWidth="true" VBox.vgrow="ALWAYS">
+                    <VBox styleClass="rewards-content" spacing="24">
+                        <padding>
+                            <Insets top="20" right="20" bottom="20" left="20"/>
+                        </padding>
+
+                        <!-- Partner Merchants -->
+                        <VBox spacing="14">
+                            <HBox alignment="CENTER_LEFT">
+                                <Label text="Commercants partenaires" styleClass="content-section-title"/>
+                                <Region HBox.hgrow="ALWAYS"/>
+                            </HBox>
+
+                            <FlowPane fx:id="partnersGrid" styleClass="partners-grid" hgap="16" vgap="16">
+                                <!-- Partner cards are built dynamically -->
+                            </FlowPane>
+                        </VBox>
+
+                        <!-- Recent Cashback -->
+                        <VBox spacing="14">
+                            <HBox alignment="CENTER_LEFT">
+                                <Label text="Cashback recents" styleClass="content-section-title"/>
+                                <Region HBox.hgrow="ALWAYS"/>
+                                <ComboBox fx:id="filterPeriod" promptText="Toute periode" styleClass="filter-dropdown" prefWidth="130">
+                                    <items>
+                                        <FXCollections fx:factory="observableArrayList">
+                                            <String fx:value="Today"/>
+                                            <String fx:value="This week"/>
+                                            <String fx:value="This month"/>
+                                            <String fx:value="All time"/>
+                                        </FXCollections>
+                                    </items>
+                                </ComboBox>
+                            </HBox>
+
+                            <VBox fx:id="cashbackListContainer" styleClass="cashback-list" spacing="12">
+                                <!-- Cashback items are built dynamically -->
+                            </VBox>
+                        </VBox>
+                    </VBox>
+                </ScrollPane>
+            </VBox>
+        </HBox>
+    </VBox>
 </VBox>
-
-
-
