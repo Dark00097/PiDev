@@ -1,207 +1,278 @@
 package com.nexora.bank.controllers;
 
-import javafx.beans.property.SimpleStringProperty;
+import com.nexora.bank.AuthSession;
+import com.nexora.bank.Models.CoffreVirtuel;
+import com.nexora.bank.Models.CompteBancaire;  // ✅ NOUVEAU
+import com.nexora.bank.Service.CoffreVirtuelService;
+import com.nexora.bank.Service.CompteBancaireService;  // ✅ NOUVEAU
+
+import javafx.beans.property.SimpleStringProperty;  // ✅ NOUVEAU
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
-import javafx.geometry.Pos;
 
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class CoffreVirtuelController implements Initializable {
 
-    // Stat Labels
-    @FXML private Label lblTotalCoffres;
-    @FXML private Label lblMontantTotal;
-    @FXML private Label lblCoffresActifs;
-
-    // Form Fields
-    @FXML private TextField txtNom;
-    @FXML private TextField txtObjectifMontant;
-    @FXML private TextField txtMontantActuel;
-    @FXML private DatePicker dpDateCreation;
-    @FXML private DatePicker dpDateObjectif;
-    @FXML private ComboBox<String> cmbStatus;
-    @FXML private CheckBox chkEstVerrouille;
-
-    // Buttons
     @FXML private Button btnAjouter;
-    @FXML private Button btnSupprimer;
     @FXML private Button btnAnnuler;
+    @FXML private Button btnSupprimer;
 
-    // Table
+    @FXML private CheckBox chkEstVerrouille;
+    @FXML private ComboBox<String> cmbStatus;
+    @FXML private ComboBox<CompteBancaire> cmbCompteBancaire;  // ✅ NOUVEAU
+
     @FXML private TableView<CoffreVirtuel> tableCoffres;
-    @FXML private TableColumn<CoffreVirtuel, String> colNom;
-    @FXML private TableColumn<CoffreVirtuel, String> colObjectif;
-    @FXML private TableColumn<CoffreVirtuel, String> colMontantActuel;
-    @FXML private TableColumn<CoffreVirtuel, Void> colProgression;
+    @FXML private TableColumn<CoffreVirtuel, Void> colActions;
     @FXML private TableColumn<CoffreVirtuel, String> colDateCreation;
     @FXML private TableColumn<CoffreVirtuel, String> colDateObjectif;
+    @FXML private TableColumn<CoffreVirtuel, Integer> colID;
+    @FXML private TableColumn<CoffreVirtuel, Double> colMontantActuel;
+    @FXML private TableColumn<CoffreVirtuel, String> colNom;
+    @FXML private TableColumn<CoffreVirtuel, String> colCompte;  // ✅ NOUVEAU
+    @FXML private TableColumn<CoffreVirtuel, Double> colObjectif;
     @FXML private TableColumn<CoffreVirtuel, String> colStatus;
-    @FXML private TableColumn<CoffreVirtuel, String> colVerrouille;
-    @FXML private TableColumn<CoffreVirtuel, Void> colActions;
+    @FXML private TableColumn<CoffreVirtuel, Boolean> colVerrouille;
+    @FXML private TableColumn<CoffreVirtuel, Void> colProgression;
 
-    // Search and Info
-    @FXML private TextField txtRecherche;
+    @FXML private DatePicker dpDateCreation;
+    @FXML private DatePicker dpDateObjectif;
+    @FXML private Label lblCoffresActifs;
+    @FXML private Label lblMontantTotal;
     @FXML private Label lblTableInfo;
+    @FXML private Label lblTotalCoffres;
 
-    private ObservableList<CoffreVirtuel> coffresList = FXCollections.observableArrayList();
+    @FXML private TextField txtMontantActuel;
+    @FXML private TextField txtNom;
+    @FXML private TextField txtObjectifMontant;
+    @FXML private TextField txtRecherche;
+
+    @FXML private Label lblNomError;
+    @FXML private Label lblObjectifError;
+    @FXML private Label lblMontantError;
+    @FXML private Label lblDateCreationError;
+    @FXML private Label lblDateObjectifError;
+    @FXML private Label lblCompteError;  // ✅ NOUVEAU
+
+    private final ObservableList<CoffreVirtuel> coffresList = FXCollections.observableArrayList();
     private FilteredList<CoffreVirtuel> filteredData;
     private CoffreVirtuel selectedCoffre = null;
     private boolean isEditMode = false;
 
+    private final CoffreVirtuelService service = new CoffreVirtuelService();
+    private CompteBancaireService compteService;  // ✅ NOUVEAU
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        compteService = new CompteBancaireService();  // ✅ NOUVEAU
+
+        initializeComboBoxCompte();  // ✅ NOUVEAU
         initializeTable();
         initializeSearch();
-        loadSampleData();
-        updateStats();
         setupTableSelection();
+        refreshData();
+    }
+
+    // ✅ NOUVELLE MÉTHODE
+    private void initializeComboBoxCompte() {
+        // Charger tous les comptes bancaires
+        ObservableList<CompteBancaire> comptes =
+                FXCollections.observableArrayList(compteService.getAll());
+
+        cmbCompteBancaire.setItems(comptes);
+
+        // Afficher le numéro de compte dans la ComboBox
+        cmbCompteBancaire.setCellFactory(param -> new ListCell<CompteBancaire>() {
+            @Override
+            protected void updateItem(CompteBancaire compte, boolean empty) {
+                super.updateItem(compte, empty);
+                if (empty || compte == null) {
+                    setText(null);
+                } else {
+                    setText(compte.getNumeroCompte() + " - " + compte.getTypeCompte());
+                }
+            }
+        });
+
+        cmbCompteBancaire.setButtonCell(new ListCell<CompteBancaire>() {
+            @Override
+            protected void updateItem(CompteBancaire compte, boolean empty) {
+                super.updateItem(compte, empty);
+                if (empty || compte == null) {
+                    setText(null);
+                } else {
+                    setText(compte.getNumeroCompte() + " - " + compte.getTypeCompte());
+                }
+            }
+        });
     }
 
     private void initializeTable() {
-        colNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
-        colObjectif.setCellValueFactory(cellData -> 
-            new SimpleStringProperty(String.format("%.2f DT", cellData.getValue().getObjectifMontant())));
-        colMontantActuel.setCellValueFactory(cellData -> 
-            new SimpleStringProperty(String.format("%.2f DT", cellData.getValue().getMontantActuel())));
-        colDateCreation.setCellValueFactory(cellData -> 
-            new SimpleStringProperty(cellData.getValue().getDateCreation().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))));
-        colDateObjectif.setCellValueFactory(cellData -> 
-            new SimpleStringProperty(cellData.getValue().getDateObjectifs().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))));
-        colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
 
-        // Progression column with progress bar
-        colProgression.setCellFactory(column -> new TableCell<>() {
+        // ========== AJOUTEZ CES 2 LIGNES ICI ==========
+        colActions.setPrefWidth(60);
+        colActions.setMinWidth(60);
+
+
+        colID.setCellValueFactory(new PropertyValueFactory<>("idCoffre"));
+        colNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
+        colObjectif.setCellValueFactory(new PropertyValueFactory<>("objectifMontant"));
+        colMontantActuel.setCellValueFactory(new PropertyValueFactory<>("montantActuel"));
+        colDateCreation.setCellValueFactory(new PropertyValueFactory<>("dateCreation"));
+        colDateObjectif.setCellValueFactory(new PropertyValueFactory<>("dateObjectifs"));
+        colStatus.setCellValueFactory(new PropertyValueFactory<>("status"));
+        colVerrouille.setCellValueFactory(new PropertyValueFactory<>("estVerrouille"));
+
+        // ✅ NOUVELLE COLONNE : Afficher le numéro de compte
+        colCompte.setCellValueFactory(cellData -> {
+            int idCompte = cellData.getValue().getIdCompte();
+
+            if (idCompte == 0) {
+                return new SimpleStringProperty("N/A");
+            }
+
+            // Chercher le compte correspondant
+            CompteBancaire compte = compteService.getAll().stream()
+                    .filter(c -> c.getIdCompte() == idCompte)
+                    .findFirst()
+                    .orElse(null);
+
+            String numeroCompte = compte != null ? compte.getNumeroCompte() : "N/A";
+            return new SimpleStringProperty(numeroCompte);
+        });
+
+        // -------------------- Colonne Progression avec barre colorée --------------------
+        colProgression.setCellFactory(column -> new TableCell<CoffreVirtuel, Void>() {
             private final ProgressBar progressBar = new ProgressBar();
-            private final Label label = new Label();
-            private final HBox hbox = new HBox(8);
 
             {
-                progressBar.setPrefWidth(80);
-                progressBar.setPrefHeight(8);
-                progressBar.getStyleClass().add("nx-progress-bar");
-                hbox.setAlignment(Pos.CENTER_LEFT);
-                hbox.getChildren().addAll(progressBar, label);
+                progressBar.setPrefWidth(100);
+                progressBar.setPrefHeight(18);
             }
 
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty) {
+
+                if (empty || getTableRow() == null || getTableRow().getItem() == null) {
                     setGraphic(null);
+                    setText(null);
                 } else {
-                    CoffreVirtuel coffre = getTableView().getItems().get(getIndex());
-                    double progress = coffre.getObjectifMontant() > 0 ? 
-                        coffre.getMontantActuel() / coffre.getObjectifMontant() : 0;
-                    progressBar.setProgress(Math.min(progress, 1.0));
-                    label.setText(String.format("%.0f%%", progress * 100));
-                    label.getStyleClass().add("nx-progress-label");
-                    
-                    // Color based on progress
-                    progressBar.getStyleClass().removeAll("nx-progress-success", "nx-progress-warning", "nx-progress-error");
-                    if (progress >= 1.0) {
-                        progressBar.getStyleClass().add("nx-progress-success");
-                    } else if (progress >= 0.5) {
-                        progressBar.getStyleClass().add("nx-progress-warning");
+                    CoffreVirtuel coffre = getTableRow().getItem();
+                    double objectif = coffre.getObjectifMontant();
+                    double actuel = coffre.getMontantActuel();
+                    double progression = objectif > 0 ? (actuel / objectif) : 0;
+
+                    progressBar.setProgress(Math.min(progression, 1.0));
+
+                    // Couleurs selon progression
+                    String color;
+                    if (progression >= 1.0) {
+                        color = "#4CAF50"; // Vert - Objectif atteint (100%)
+                    } else if (progression >= 0.5) {
+                        color = "#FF9800"; // Orange - En bonne voie (50-99%)
                     } else {
-                        progressBar.getStyleClass().add("nx-progress-error");
+                        color = "#F44336"; // Rouge - Début (0-49%)
                     }
-                    
-                    setGraphic(hbox);
+
+                    progressBar.setStyle(
+                            "-fx-accent: " + color + ";" +
+                                    "-fx-control-inner-background: #E8E8E8;" +
+                                    "-fx-background-radius: 4px;" +
+                                    "-fx-background-insets: 0;"
+                    );
+
+                    setGraphic(progressBar);
+                    setAlignment(Pos.CENTER);
                 }
             }
         });
 
-        // Status column with badge
-        colStatus.setCellFactory(column -> new TableCell<>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setGraphic(null);
-                } else {
-                    Label badge = new Label(item);
-                    badge.getStyleClass().add("nx-badge");
-                    switch (item) {
-                        case "Actif": badge.getStyleClass().add("nx-badge-success"); break;
-                        case "Bloqué": badge.getStyleClass().add("nx-badge-warning"); break;
-                        case "Clôturé": badge.getStyleClass().add("nx-badge-error"); break;
-                    }
-                    setGraphic(badge);
-                }
-            }
-        });
+        // -------------------- Colonne Verrouillé avec icône --------------------
+        colVerrouille.setCellFactory(column -> new TableCell<CoffreVirtuel, Boolean>() {
+            private final Label iconLabel = new Label();
 
-        // Verrouillé column with icon
-        colVerrouille.setCellFactory(column -> new TableCell<>() {
             @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
+            protected void updateItem(Boolean estVerrouille, boolean empty) {
+                super.updateItem(estVerrouille, empty);
+                if (empty || estVerrouille == null) {
                     setGraphic(null);
                 } else {
-                    CoffreVirtuel coffre = getTableView().getItems().get(getIndex());
-                    SVGPath icon = new SVGPath();
-                    if (coffre.isEstVerrouille()) {
-                        icon.setContent("M12 15v2m-6 4h12a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2zm10-10V7a4 4 0 0 0-8 0v4h8z");
-                        icon.getStyleClass().addAll("nx-lock-icon", "nx-lock-locked");
+                    if (estVerrouille) {
+                        iconLabel.setText("🔒");
+                        iconLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: red;");
                     } else {
-                        icon.setContent("M8 11V7a4 4 0 1 1 8 0m-4 8v2m-6 4h12a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2z");
-                        icon.getStyleClass().addAll("nx-lock-icon", "nx-lock-unlocked");
+                        iconLabel.setText("🗝");
+                        iconLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: green;");
                     }
-                    StackPane container = new StackPane(icon);
-                    container.setAlignment(Pos.CENTER);
-                    setGraphic(container);
+                    setGraphic(iconLabel);
+                    setAlignment(Pos.CENTER);
                 }
             }
         });
 
-        // Actions column
-        colActions.setCellFactory(column -> new TableCell<>() {
+        colActions.setCellFactory(column -> new TableCell<CoffreVirtuel, Void>() {
             private final Button btnEdit = new Button();
             private final Button btnDelete = new Button();
+            private final Button btnView = new Button();
             private final HBox hbox = new HBox(8);
 
             {
+                // Modifier
                 btnEdit.getStyleClass().addAll("nx-table-action", "nx-table-action-edit");
                 SVGPath editIcon = new SVGPath();
                 editIcon.setContent("M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z");
-                editIcon.getStyleClass().add("nx-action-icon");
+                editIcon.setStyle("-fx-fill: #00B4A0;");
                 btnEdit.setGraphic(editIcon);
                 btnEdit.setTooltip(new Tooltip("Modifier"));
 
+                // Supprimer
                 btnDelete.getStyleClass().addAll("nx-table-action", "nx-table-action-delete");
                 SVGPath deleteIcon = new SVGPath();
                 deleteIcon.setContent("M19 7l-.867 12.142A2 2 0 0 1 16.138 21H7.862a2 2 0 0 1-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v3M4 7h16");
-                deleteIcon.getStyleClass().add("nx-action-icon");
+                deleteIcon.setStyle("-fx-fill: #EF4444;");
                 btnDelete.setGraphic(deleteIcon);
                 btnDelete.setTooltip(new Tooltip("Supprimer"));
 
+                // Voir
+                btnView.getStyleClass().addAll("nx-table-action");
+                SVGPath viewIcon = new SVGPath();
+                viewIcon.setContent("M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8zm11 4a4 4 0 1 0 0-8 4 4 0 0 0 0 8z");
+                viewIcon.setStyle("-fx-fill: #F4C430;");
+                btnView.setGraphic(viewIcon);
+                btnView.setTooltip(new Tooltip("Voir"));
+
                 hbox.setAlignment(Pos.CENTER);
-                hbox.getChildren().addAll(btnEdit, btnDelete);
+                hbox.getChildren().addAll(btnEdit, btnDelete, btnView);
 
                 btnEdit.setOnAction(event -> {
                     CoffreVirtuel coffre = getTableView().getItems().get(getIndex());
                     editCoffre(coffre);
                 });
-
                 btnDelete.setOnAction(event -> {
                     CoffreVirtuel coffre = getTableView().getItems().get(getIndex());
                     deleteCoffre(coffre);
+                });
+                btnView.setOnAction(event -> {
+                    CoffreVirtuel coffre = getTableView().getItems().get(getIndex());
+                    showDetails(coffre);
                 });
             }
 
@@ -213,142 +284,105 @@ public class CoffreVirtuelController implements Initializable {
         });
     }
 
+    // -------------------- Recherche --------------------
     private void initializeSearch() {
         filteredData = new FilteredList<>(coffresList, p -> true);
-
-        txtRecherche.textProperty().addListener((observable, oldValue, newValue) -> {
+        txtRecherche.textProperty().addListener((obs, oldValue, newValue) -> {
             filteredData.setPredicate(coffre -> {
-                if (newValue == null || newValue.isEmpty()) {
-                    return true;
-                }
-                String lowerCaseFilter = newValue.toLowerCase();
-                return coffre.getNom().toLowerCase().contains(lowerCaseFilter) ||
-                       coffre.getStatus().toLowerCase().contains(lowerCaseFilter);
+                if (newValue == null || newValue.isEmpty()) return true;
+                String f = newValue.toLowerCase();
+                return String.valueOf(coffre.getIdCoffre()).contains(f)
+                        || (coffre.getNom() != null && coffre.getNom().toLowerCase().contains(f))
+                        || String.valueOf(coffre.getObjectifMontant()).contains(f)
+                        || String.valueOf(coffre.getMontantActuel()).contains(f)
+                        || (coffre.getStatus() != null && coffre.getStatus().toLowerCase().contains(f))
+                        || (coffre.getDateCreation() != null && coffre.getDateCreation().toLowerCase().contains(f))
+                        || (coffre.getDateObjectifs() != null && coffre.getDateObjectifs().toLowerCase().contains(f));
             });
             updateTableInfo();
         });
 
-        SortedList<CoffreVirtuel> sortedData = new SortedList<>(filteredData);
-        sortedData.comparatorProperty().bind(tableCoffres.comparatorProperty());
-        tableCoffres.setItems(sortedData);
+        SortedList<CoffreVirtuel> sorted = new SortedList<>(filteredData);
+        sorted.comparatorProperty().bind(tableCoffres.comparatorProperty());
+        tableCoffres.setItems(sorted);
     }
 
+    // -------------------- Selection --------------------
     private void setupTableSelection() {
-        tableCoffres.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            if (newSelection != null) {
-                selectedCoffre = newSelection;
-                populateForm(newSelection);
+        tableCoffres.getSelectionModel().selectedItemProperty().addListener((obs, oldSel, newSel) -> {
+            if (newSel != null) {
+                selectedCoffre = newSel;
+                populateForm(newSel);
                 isEditMode = true;
                 btnAjouter.setText("Modifier");
             }
         });
     }
 
-    private void loadSampleData() {
-        coffresList.addAll(
-            new CoffreVirtuel("Vacances 2024", 5000.00, 3500.00, LocalDate.of(2024, 1, 1), LocalDate.of(2024, 6, 1), "Actif", true),
-            new CoffreVirtuel("Achat Voiture", 30000.00, 12000.00, LocalDate.of(2023, 6, 15), LocalDate.of(2025, 1, 1), "Actif", true),
-            new CoffreVirtuel("Fonds d'urgence", 10000.00, 10000.00, LocalDate.of(2022, 1, 1), LocalDate.of(2024, 12, 31), "Actif", false),
-            new CoffreVirtuel("Mariage", 20000.00, 5000.00, LocalDate.of(2024, 3, 1), LocalDate.of(2026, 6, 1), "Actif", true),
-            new CoffreVirtuel("Études enfants", 50000.00, 15000.00, LocalDate.of(2020, 9, 1), LocalDate.of(2035, 9, 1), "Bloqué", true),
-            new CoffreVirtuel("Projet Maison", 80000.00, 22000.00, LocalDate.of(2021, 5, 20), LocalDate.of(2028, 5, 20), "Actif", true),
-            new CoffreVirtuel("Santé & Bien-être", 12000.00, 3500.00, LocalDate.of(2024, 2, 10), LocalDate.of(2025, 2, 10), "Actif", false),
-            new CoffreVirtuel("Technologie", 9000.00, 7200.00, LocalDate.of(2024, 1, 5), LocalDate.of(2024, 10, 1), "Actif", true)
-        );
-        updateTableInfo();
-    }
-
-    private void updateStats() {
-        int totalCoffres = coffresList.size();
-        double montantTotal = coffresList.stream().mapToDouble(CoffreVirtuel::getMontantActuel).sum();
-        long coffresActifs = coffresList.stream().filter(c -> c.getStatus().equals("Actif")).count();
-
-        lblTotalCoffres.setText(String.valueOf(totalCoffres));
-        lblMontantTotal.setText(String.format("%,.2f DT", montantTotal));
-        lblCoffresActifs.setText(String.valueOf(coffresActifs));
-    }
-
-    private void updateTableInfo() {
-        int total = coffresList.size();
-        int filtered = filteredData.size();
-        lblTableInfo.setText(String.format("Affichage de %d sur %d entrées", filtered, total));
-    }
-
-    private void populateForm(CoffreVirtuel coffre) {
-        txtNom.setText(coffre.getNom());
-        txtObjectifMontant.setText(String.valueOf(coffre.getObjectifMontant()));
-        txtMontantActuel.setText(String.valueOf(coffre.getMontantActuel()));
-        dpDateCreation.setValue(coffre.getDateCreation());
-        dpDateObjectif.setValue(coffre.getDateObjectifs());
-        cmbStatus.setValue(coffre.getStatus());
-        chkEstVerrouille.setSelected(coffre.isEstVerrouille());
-    }
-
-    private void clearForm() {
-        txtNom.clear();
-        txtObjectifMontant.clear();
-        txtMontantActuel.clear();
-        dpDateCreation.setValue(null);
-        dpDateObjectif.setValue(null);
-        cmbStatus.setValue(null);
-        chkEstVerrouille.setSelected(false);
-        selectedCoffre = null;
-        isEditMode = false;
-        btnAjouter.setText("Ajouter");
-        tableCoffres.getSelectionModel().clearSelection();
-    }
-
+    // -------------------- CRUD --------------------
     @FXML
-    private void handleAjouter() {
-        if (!validateForm()) {
-            return;
-        }
+    void handleAjouter(ActionEvent event) {
+        if (!validateForm()) return;
 
-        try {
-            String nom = txtNom.getText().trim();
-            double objectif = Double.parseDouble(txtObjectifMontant.getText().trim());
-            double actuel = Double.parseDouble(txtMontantActuel.getText().trim());
-            LocalDate dateCreation = dpDateCreation.getValue();
-            LocalDate dateObjectif = dpDateObjectif.getValue();
-            String status = cmbStatus.getValue();
-            boolean verrouille = chkEstVerrouille.isSelected();
+        String nom = txtNom.getText().trim();
+        double objectif = parseDouble(txtObjectifMontant.getText().trim());
+        double montant = parseDouble(txtMontantActuel.getText().trim());
+        String dateCreation = dpDateCreation.getValue() != null
+                ? dpDateCreation.getValue().format(DateTimeFormatter.ISO_DATE) : "";
+        String dateObjectifs = dpDateObjectif.getValue() != null
+                ? dpDateObjectif.getValue().format(DateTimeFormatter.ISO_DATE) : "";
+        String status = cmbStatus.getValue();
+        boolean estVerrouille = chkEstVerrouille.isSelected();
 
-            if (isEditMode && selectedCoffre != null) {
-                selectedCoffre.setNom(nom);
-                selectedCoffre.setObjectifMontant(objectif);
-                selectedCoffre.setMontantActuel(actuel);
-                selectedCoffre.setDateCreation(dateCreation);
-                selectedCoffre.setDateObjectifs(dateObjectif);
-                selectedCoffre.setStatus(status);
-                selectedCoffre.setEstVerrouille(verrouille);
-                tableCoffres.refresh();
-                showSuccessAlert("Succès", "Le coffre a été modifié avec succès!");
-            } else {
-                CoffreVirtuel newCoffre = new CoffreVirtuel(nom, objectif, actuel, dateCreation, dateObjectif, status, verrouille);
-                coffresList.add(newCoffre);
-                showSuccessAlert("Succès", "Le coffre a été ajouté avec succès!");
+        // ✅ RÉCUPÉRER L'ID DU COMPTE SÉLECTIONNÉ
+        CompteBancaire compteSelectionne = cmbCompteBancaire.getValue();
+        int idCompte = compteSelectionne.getIdCompte();
+
+        if (isEditMode && selectedCoffre != null) {
+            selectedCoffre.setNom(nom);
+            selectedCoffre.setObjectifMontant(objectif);
+            selectedCoffre.setMontantActuel(montant);
+            selectedCoffre.setDateCreation(dateCreation);
+            selectedCoffre.setDateObjectifs(dateObjectifs);
+            selectedCoffre.setStatus(status);
+            selectedCoffre.setEstVerrouille(estVerrouille);
+            selectedCoffre.setIdCompte(idCompte);  // ✅ NOUVEAU
+            // ★ On préserve l'idUser existant (on ne le réécrase pas à chaque édition)
+
+            service.edit(selectedCoffre);
+            tableCoffres.refresh();
+            showInfo("Succès", "Coffre virtuel modifié avec succès");
+
+        } else {
+            // ★ Récupération automatique du user connecté via AuthSession
+            int idUserConnecte = 0;
+            if (AuthSession.getCurrentUser() != null) {
+                idUserConnecte = AuthSession.getCurrentUser().getIdUser();
             }
-
-            clearForm();
-            updateStats();
-            updateTableInfo();
-        } catch (NumberFormatException e) {
-            showErrorAlert("Erreur", "Veuillez entrer des valeurs numériques valides pour les montants.");
+            CoffreVirtuel nouveau = new CoffreVirtuel(
+                    nom, objectif, montant, dateCreation, dateObjectifs,
+                    status, estVerrouille, idCompte, idUserConnecte  // ★ idUser injecté automatiquement
+            );
+            service.add(nouveau);
+            showInfo("Succès", "Coffre virtuel ajouté avec succès");
         }
+
+        clearForm();
+        refreshData();
     }
 
     @FXML
-    private void handleSupprimer() {
+    void handleAnnuler(ActionEvent event) {
+        clearForm();
+    }
+
+    @FXML
+    void handleSupprimer(ActionEvent event) {
         if (selectedCoffre == null) {
-            showWarningAlert("Avertissement", "Veuillez sélectionner un coffre à supprimer.");
+            showWarning("Avertissement", "Sélectionnez un coffre à supprimer.");
             return;
         }
         deleteCoffre(selectedCoffre);
-    }
-
-    @FXML
-    private void handleAnnuler() {
-        clearForm();
     }
 
     private void editCoffre(CoffreVirtuel coffre) {
@@ -359,62 +393,206 @@ public class CoffreVirtuelController implements Initializable {
     }
 
     private void deleteCoffre(CoffreVirtuel coffre) {
-        Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
-        confirmDialog.setTitle("Confirmation de suppression");
-        confirmDialog.setHeaderText("Supprimer le coffre \"" + coffre.getNom() + "\"?");
-        confirmDialog.setContentText("Cette action est irréversible.");
-
-        Optional<ButtonType> result = confirmDialog.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
-            coffresList.remove(coffre);
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+        confirm.setTitle("Confirmation");
+        confirm.setHeaderText("Supprimer le coffre \"" + coffre.getNom() + "\" ?");
+        confirm.setContentText("Cette action est irréversible.");
+        Optional<ButtonType> res = confirm.showAndWait();
+        if (res.isPresent() && res.get() == ButtonType.OK) {
+            service.remove(coffre);
             clearForm();
-            updateStats();
-            updateTableInfo();
-            showSuccessAlert("Succès", "Le coffre a été supprimé avec succès!");
+            refreshData();
+            showInfo("Succès", "Coffre virtuel supprimé avec succès");
         }
     }
 
+    private void showDetails(CoffreVirtuel coffre) {
+        Dialog<Void> dialog = new Dialog<>();
+        dialog.setTitle("Détails du Coffre");
+        dialog.getDialogPane().getButtonTypes().add(ButtonType.CLOSE);
+
+        VBox content = new VBox(8);
+        content.setAlignment(Pos.CENTER_LEFT);
+        content.getChildren().addAll(
+                new Label("ID: " + coffre.getIdCoffre()),
+                new Label("Nom: " + coffre.getNom()),
+                new Label(String.format("Objectif: %,.2f DT", coffre.getObjectifMontant())),
+                new Label(String.format("Montant Actuel: %,.2f DT", coffre.getMontantActuel())),
+                new Label("Date Création: " + coffre.getDateCreation()),
+                new Label("Date Objectifs: " + coffre.getDateObjectifs()),
+                new Label("Status: " + coffre.getStatus()),
+                new Label("Verrouillé: " + (coffre.isEstVerrouille() ? "Oui" : "Non"))
+        );
+        dialog.getDialogPane().setContent(content);
+        dialog.showAndWait();
+    }
+
+    // -------------------- Formulaire --------------------
+    private void populateForm(CoffreVirtuel c) {
+        txtNom.setText(c.getNom());
+        txtObjectifMontant.setText(String.valueOf(c.getObjectifMontant()));
+        txtMontantActuel.setText(String.valueOf(c.getMontantActuel()));
+        cmbStatus.setValue(c.getStatus());
+        chkEstVerrouille.setSelected(c.isEstVerrouille());
+
+        try {
+            dpDateCreation.setValue(c.getDateCreation() != null && !c.getDateCreation().isEmpty()
+                    ? LocalDate.parse(c.getDateCreation()) : null);
+            dpDateObjectif.setValue(c.getDateObjectifs() != null && !c.getDateObjectifs().isEmpty()
+                    ? LocalDate.parse(c.getDateObjectifs()) : null);
+        } catch (Exception e) {
+            dpDateCreation.setValue(null);
+            dpDateObjectif.setValue(null);
+        }
+
+        // ✅ SÉLECTIONNER LE COMPTE DANS LA COMBOBOX
+        for (CompteBancaire compte : cmbCompteBancaire.getItems()) {
+            if (compte.getIdCompte() == c.getIdCompte()) {
+                cmbCompteBancaire.setValue(compte);
+                break;
+            }
+        }
+    }
+
+    private void clearForm() {
+        txtNom.clear();
+        txtObjectifMontant.clear();
+        txtMontantActuel.clear();
+        cmbStatus.setValue(null);
+        cmbCompteBancaire.setValue(null);  // ✅ NOUVEAU
+        chkEstVerrouille.setSelected(false);
+        dpDateCreation.setValue(null);
+        dpDateObjectif.setValue(null);
+        tableCoffres.getSelectionModel().clearSelection();
+        selectedCoffre = null;
+        isEditMode = false;
+        btnAjouter.setText("Enregistrer");
+    }
+
+    // -------------------- Validation --------------------
     private boolean validateForm() {
-        StringBuilder errors = new StringBuilder();
+        boolean valid = true;
 
-        if (txtNom.getText().trim().isEmpty()) {
-            errors.append("- Le nom est obligatoire\n");
-        }
-        if (txtObjectifMontant.getText().trim().isEmpty()) {
-            errors.append("- L'objectif montant est obligatoire\n");
-        }
-        if (dpDateCreation.getValue() == null) {
-            errors.append("- La date de création est obligatoire\n");
-        }
-        if (dpDateObjectif.getValue() == null) {
-            errors.append("- La date objectif est obligatoire\n");
-        }
-        if (cmbStatus.getValue() == null) {
-            errors.append("- Le statut est obligatoire\n");
+        // Clear previous errors
+        lblNomError.setText("");
+        lblObjectifError.setText("");
+        lblMontantError.setText("");
+        lblDateCreationError.setText("");
+        lblDateObjectifError.setText("");
+        if (lblCompteError != null) lblCompteError.setText("");  // ✅ NOUVEAU
+
+        // --- Nom ---
+        String nom = txtNom.getText().trim();
+        if (nom.isEmpty()) {
+            lblNomError.setText("Le nom est obligatoire.");
+            valid = false;
+        } else if (nom.length() < 3 || nom.length() > 50) {
+            lblNomError.setText("Le nom doit contenir entre 3 et 50 caractères.");
+            valid = false;
+        } else if (!nom.matches("[a-zA-Z0-9 ]+")) {
+            lblNomError.setText("Caractères invalides (lettres, chiffres et espaces seulement).");
+            valid = false;
         }
 
-        if (errors.length() > 0) {
-            showErrorAlert("Validation", "Veuillez corriger les erreurs suivantes:\n" + errors.toString());
-            return false;
+        // --- Objectif Montant ---
+        double objectif = 0;
+        try {
+            objectif = Double.parseDouble(txtObjectifMontant.getText().trim());
+            if (objectif <= 0 || objectif > 1_000_000) {
+                lblObjectifError.setText("Doit être > 0 et < 1 000 000.");
+                valid = false;
+            }
+        } catch (NumberFormatException e) {
+            lblObjectifError.setText("Montant invalide.");
+            valid = false;
         }
-        return true;
+
+        // --- Montant Actuel ---
+        double montant = 0;
+        try {
+            montant = Double.parseDouble(txtMontantActuel.getText().trim());
+            if (montant < 0) {
+                lblMontantError.setText("Montant >= 0.");
+                valid = false;
+            } else if (montant > objectif) {
+                lblMontantError.setText("Ne peut dépasser l'objectif.");
+                valid = false;
+            }
+        } catch (NumberFormatException e) {
+            lblMontantError.setText("Montant invalide.");
+            valid = false;
+        }
+
+        // --- Date Création ---
+        LocalDate dateCreation = dpDateCreation.getValue();
+        if (dateCreation == null) {
+            lblDateCreationError.setText("Date de création obligatoire.");
+            valid = false;
+        } else if (dateCreation.isAfter(LocalDate.now())) {
+            lblDateCreationError.setText("Date ne peut pas être dans le futur.");
+            valid = false;
+        }
+
+        // --- Date Objectifs ---
+        LocalDate dateObjectif = dpDateObjectif.getValue();
+        if (dateObjectif != null && dateObjectif.isBefore(dateCreation)) {
+            lblDateObjectifError.setText("Doit être postérieure à la date de création.");
+            valid = false;
+        }
+
+        // ✅ VALIDATION COMPTE BANCAIRE
+        if (cmbCompteBancaire.getValue() == null) {
+            if (lblCompteError != null) {
+                lblCompteError.setText("Veuillez sélectionner un compte bancaire.");
+            }
+            valid = false;
+        }
+
+        return valid;
     }
 
-    // Sorting methods
-    @FXML private void trierParNom() { coffresList.sort(Comparator.comparing(CoffreVirtuel::getNom)); }
-    @FXML private void trierParObjectif() { coffresList.sort(Comparator.comparing(CoffreVirtuel::getObjectifMontant).reversed()); }
-    @FXML private void trierParMontantActuel() { coffresList.sort(Comparator.comparing(CoffreVirtuel::getMontantActuel).reversed()); }
-    @FXML private void trierParDateCreation() { coffresList.sort(Comparator.comparing(CoffreVirtuel::getDateCreation)); }
-    @FXML private void trierParStatut() { coffresList.sort(Comparator.comparing(CoffreVirtuel::getStatus)); }
+    private double parseDouble(String s) {
+        if (s == null || s.isEmpty()) return 0.0;
+        return Double.parseDouble(s);
+    }
 
-    @FXML private void exporterPDF() { showInfoAlert("Export PDF", "Fonctionnalité d'export PDF en cours de développement."); }
-    @FXML private void envoyerSMS() { showInfoAlert("SMS", "Fonctionnalité d'envoi SMS en cours de développement."); }
-    @FXML private void pageFirst() { }
-    @FXML private void pagePrev() { }
-    @FXML private void pageNext() { }
-    @FXML private void pageLast() { }
+    // -------------------- Stats --------------------
+    private void updateStats() {
+        int total = coffresList.size();
+        double totalMontants = coffresList.stream().mapToDouble(CoffreVirtuel::getMontantActuel).sum();
+        long actifs = coffresList.stream().filter(c -> "Actif".equalsIgnoreCase(c.getStatus())).count();
+        lblTotalCoffres.setText(String.valueOf(total));
+        lblMontantTotal.setText(String.format(java.util.Locale.US, "%,.2f DT", totalMontants));
+        lblCoffresActifs.setText(String.valueOf(actifs));
+    }
 
-    private void showSuccessAlert(String title, String message) {
+    private void updateTableInfo() {
+        int total = coffresList.size();
+        int filtered = filteredData != null ? filteredData.size() : total;
+        lblTableInfo.setText(String.format("Affichage de %d sur %d coffres", filtered, total));
+    }
+
+    // -------------------- Pagination --------------------
+    @FXML
+    void pageFirst(ActionEvent event) { tableCoffres.scrollTo(0); }
+
+    @FXML
+    void pagePrev(ActionEvent event) {
+        tableCoffres.scrollTo(Math.max(tableCoffres.getSelectionModel().getSelectedIndex() - 10, 0));
+    }
+
+    @FXML
+    void pageNext(ActionEvent event) {
+        tableCoffres.scrollTo(tableCoffres.getSelectionModel().getSelectedIndex() + 10);
+    }
+
+    @FXML
+    void pageLast(ActionEvent event) {
+        tableCoffres.scrollTo(Integer.MAX_VALUE);
+    }
+
+    // -------------------- Messages --------------------
+    private void showInfo(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(title);
         alert.setHeaderText(null);
@@ -422,15 +600,7 @@ public class CoffreVirtuelController implements Initializable {
         alert.showAndWait();
     }
 
-    private void showErrorAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
-    }
-
-    private void showWarningAlert(String title, String message) {
+    private void showWarning(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         alert.setTitle(title);
         alert.setHeaderText(null);
@@ -438,49 +608,69 @@ public class CoffreVirtuelController implements Initializable {
         alert.showAndWait();
     }
 
-    private void showInfoAlert(String title, String message) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
-        alert.setHeaderText(null);
-        alert.setContentText(message);
-        alert.showAndWait();
+    // -------------------- Rafraîchir données --------------------
+    private void refreshData() {
+        coffresList.setAll(service.getAll());
+        updateStats();
+        updateTableInfo();
     }
 
-    // Inner class for CoffreVirtuel
-    public static class CoffreVirtuel {
-        private String nom;
-        private double objectifMontant;
-        private double montantActuel;
-        private LocalDate dateCreation;
-        private LocalDate dateObjectifs;
-        private String status;
-        private boolean estVerrouille;
+    @FXML
+    void envoyerSMS(ActionEvent event) {
+        showInfo("SMS", "Fonctionnalité d'envoi SMS en cours de développement.");
+    }
 
-        public CoffreVirtuel(String nom, double objectifMontant, double montantActuel, 
-                             LocalDate dateCreation, LocalDate dateObjectifs, String status, boolean estVerrouille) {
-            this.nom = nom;
-            this.objectifMontant = objectifMontant;
-            this.montantActuel = montantActuel;
-            this.dateCreation = dateCreation;
-            this.dateObjectifs = dateObjectifs;
-            this.status = status;
-            this.estVerrouille = estVerrouille;
-        }
+    @FXML
+    void exporterPDF(ActionEvent event) {
+        showInfo("Export PDF", "Fonctionnalité d'export PDF en cours de développement.");
+    }
 
-        // Getters and Setters
-        public String getNom() { return nom; }
-        public void setNom(String nom) { this.nom = nom; }
-        public double getObjectifMontant() { return objectifMontant; }
-        public void setObjectifMontant(double objectifMontant) { this.objectifMontant = objectifMontant; }
-        public double getMontantActuel() { return montantActuel; }
-        public void setMontantActuel(double montantActuel) { this.montantActuel = montantActuel; }
-        public LocalDate getDateCreation() { return dateCreation; }
-        public void setDateCreation(LocalDate dateCreation) { this.dateCreation = dateCreation; }
-        public LocalDate getDateObjectifs() { return dateObjectifs; }
-        public void setDateObjectifs(LocalDate dateObjectifs) { this.dateObjectifs = dateObjectifs; }
-        public String getStatus() { return status; }
-        public void setStatus(String status) { this.status = status; }
-        public boolean isEstVerrouille() { return estVerrouille; }
-        public void setEstVerrouille(boolean estVerrouille) { this.estVerrouille = estVerrouille; }
+    // -------------------- trier données --------------------
+    @FXML
+    void trierParDateCreation(ActionEvent event) {
+        tableCoffres.getSortOrder().clear();
+        tableCoffres.getSortOrder().add(colDateCreation);
+        colDateCreation.setSortType(TableColumn.SortType.ASCENDING);
+        tableCoffres.sort();
+    }
+
+    @FXML
+    void trierParId(ActionEvent event) {
+        tableCoffres.getSortOrder().clear();
+        tableCoffres.getSortOrder().add(colID);
+        colID.setSortType(TableColumn.SortType.ASCENDING);
+        tableCoffres.sort();
+    }
+
+    @FXML
+    void trierParMontantActuel(ActionEvent event) {
+        tableCoffres.getSortOrder().clear();
+        tableCoffres.getSortOrder().add(colMontantActuel);
+        colMontantActuel.setSortType(TableColumn.SortType.ASCENDING);
+        tableCoffres.sort();
+    }
+
+    @FXML
+    void trierParNom(ActionEvent event) {
+        tableCoffres.getSortOrder().clear();
+        tableCoffres.getSortOrder().add(colNom);
+        colNom.setSortType(TableColumn.SortType.ASCENDING);
+        tableCoffres.sort();
+    }
+
+    @FXML
+    void trierParObjectif(ActionEvent event) {
+        tableCoffres.getSortOrder().clear();
+        tableCoffres.getSortOrder().add(colObjectif);
+        colObjectif.setSortType(TableColumn.SortType.ASCENDING);
+        tableCoffres.sort();
+    }
+
+    @FXML
+    void trierParStatut(ActionEvent event) {
+        tableCoffres.getSortOrder().clear();
+        tableCoffres.getSortOrder().add(colStatus);
+        colStatus.setSortType(TableColumn.SortType.ASCENDING);
+        tableCoffres.sort();
     }
 }
