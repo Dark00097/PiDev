@@ -1,51 +1,51 @@
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\Utils\EmailTemplates.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\myapp\security\AuthResult.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\controllers\MainController.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\Models\CompteBancaire.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\Service\CashbackService.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\controllers\UserController.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\controllers\UserDashboardCashbackSectionController.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\controllers\AdminSecuritySettingsController.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\controllers\CompteBancaireController.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\controllers\SignupController.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\Utils\PasswordUtils.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\controllers\HomeController.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\controllers\UserDashboardTransactionsSectionController.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\controllers\CreditController.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\SceneRouter.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\controllers\TransactionController.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\controllers\LoginController.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\Utils\MyDB.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\myapp\config\AdminSecuritySettings.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\Models\User.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\Service\CoffreVirtuelService.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\Service\CompteBancaireService.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\controllers\CashbackController.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\controllers\SidebarController.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\controllers\UserDashboardProfileSectionController.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\Service\GarentieCreditService.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\Service\ReclamationService.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\controllers\PartenaireController.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\Service\CreditService.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\Service\UserService.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\Models\Reclamation.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\controllers\GarantieCreditController.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\myapp\security\BiometricVerificationDialog.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\controllers\ReclamationController.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\MainApp.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\controllers\CoffreVirtuelController.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\myapp\config\AdminSecuritySettingsStore.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\Models\CoffreVirtuel.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\controllers\UserDashboardAccountsSectionController.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\myapp\security\WindowsBiometricAuth.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\Models\Transaction.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\controllers\UserDashboardCreditSectionController.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\Models\Partenaire.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\controllers\StatisticsController.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\Models\Credit.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\Service\TransactionService.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\controllers\UserDashboardController.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\Models\Cashback.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\AuthSession.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\Models\GarantieCredit.java
-C:\Users\XPS\Desktop\PiDev-main\src\main\java\com\nexora\bank\Service\PartenaireService.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\controllers\UserDashboardTransactionsSectionController.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\controllers\CreditController.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\controllers\MainController.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\Service\CoffreVirtuelService.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\controllers\UserController.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\Models\Cashback.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\Service\CreditService.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\myapp\security\AuthResult.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\controllers\UserDashboardCreditSectionController.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\controllers\SignupController.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\controllers\StatisticsController.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\Models\User.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\myapp\config\AdminSecuritySettings.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\Models\Credit.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\controllers\PartenaireController.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\controllers\LoginController.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\Service\TransactionService.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\Service\PartenaireService.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\Service\UserService.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\controllers\GarantieCreditController.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\controllers\UserDashboardCashbackSectionController.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\Service\ReclamationService.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\AuthSession.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\controllers\AdminSecuritySettingsController.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\Models\CompteBancaire.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\Utils\MyDB.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\Service\CashbackService.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\controllers\UserDashboardController.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\controllers\UserDashboardAccountsSectionController.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\Models\GarantieCredit.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\controllers\ReclamationController.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\Utils\PasswordUtils.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\myapp\security\WindowsBiometricAuth.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\Service\CompteBancaireService.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\controllers\TransactionController.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\Models\Transaction.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\controllers\CompteBancaireController.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\myapp\security\BiometricVerificationDialog.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\Models\Partenaire.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\SceneRouter.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\myapp\config\AdminSecuritySettingsStore.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\controllers\UserDashboardProfileSectionController.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\controllers\CoffreVirtuelController.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\controllers\HomeController.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\controllers\SidebarController.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\Service\GarentieCreditService.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\Utils\EmailTemplates.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\MainApp.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\Models\CoffreVirtuel.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\Models\Reclamation.java
+c:\Users\User Asus\OneDrive\Desktop\pidev\PiDev\src\main\java\com\nexora\bank\controllers\CashbackController.java
