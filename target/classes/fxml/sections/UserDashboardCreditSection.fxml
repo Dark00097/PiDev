@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import java.lang.String?>
 <?import javafx.collections.FXCollections?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
@@ -8,6 +7,8 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -23,18 +24,17 @@
 <VBox xmlns="http://javafx.com/javafx/17"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.nexora.bank.controllers.UserDashboardCreditSectionController"
+      fx:id="rootCreditSection"
       spacing="0"
       styleClass="credit-section"
       stylesheets="@../../css/sections/UserDashboardCreditSection.css"
       visible="false"
       managed="false">
 
-    
     <VBox styleClass="section-header" spacing="16">
         <padding>
             <Insets top="28" right="32" bottom="24" left="32"/>
         </padding>
-        
         <HBox alignment="CENTER_LEFT" spacing="16">
             <StackPane styleClass="section-icon-container">
                 <FontIcon iconLiteral="fas-hand-holding-usd" styleClass="section-icon"/>
@@ -42,6 +42,7 @@
             <VBox spacing="4" HBox.hgrow="ALWAYS">
                 <Label text="Services de credit" styleClass="section-title"/>
                 <Label text="Demander des prets, gerer les credits et suivre les remboursements" styleClass="section-subtitle"/>
+                <Label fx:id="lblUserCreditInfo" text="Utilisateur: -" styleClass="section-subtitle"/>
             </VBox>
             <HBox spacing="10" alignment="CENTER_RIGHT">
                 <Button styleClass="header-btn-secondary" onAction="#viewPaymentSchedule">
@@ -64,116 +65,38 @@
         </HBox>
     </VBox>
 
-    
     <HBox styleClass="kpi-container" spacing="20">
         <padding>
             <Insets top="0" right="32" bottom="24" left="32"/>
         </padding>
-
-        
-        <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS" spacing="14">
-            <HBox spacing="12" alignment="CENTER_LEFT">
-                <StackPane styleClass="kpi-icon-wrapper kpi-icon-score">
-                    <FontIcon iconLiteral="fas-chart-line" styleClass="kpi-icon"/>
-                </StackPane>
-                <VBox spacing="2">
-                    <Label text="SCORE DE CREDIT" styleClass="kpi-title"/>
-                    <Label text="Excellente note" styleClass="kpi-description"/>
-                </VBox>
-            </HBox>
-            <HBox alignment="CENTER_LEFT" spacing="12">
-                <Label text="750" styleClass="kpi-value kpi-value-score"/>
-                <Label text="/ 900" styleClass="kpi-max-value"/>
-                <StackPane styleClass="score-badge score-excellent">
-                    <Label text="Excellent"/>
-                </StackPane>
-            </HBox>
-            
-            <StackPane styleClass="score-progress-track">
-                <StackPane styleClass="score-progress-fill" StackPane.alignment="CENTER_LEFT"/>
-            </StackPane>
+        <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS" spacing="8">
+            <Label text="PRETS ACTIFS" styleClass="kpi-title"/>
+            <Label text="CRUD utilisateur actif" styleClass="kpi-description"/>
         </VBox>
-
-        
-        <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS" spacing="14">
-            <HBox spacing="12" alignment="CENTER_LEFT">
-                <StackPane styleClass="kpi-icon-wrapper kpi-icon-prets">
-                    <FontIcon iconLiteral="fas-file-invoice-dollar" styleClass="kpi-icon"/>
-                </StackPane>
-                <VBox spacing="2">
-                    <Label text="PRETS ACTIFS" styleClass="kpi-title"/>
-                    <Label text="Actuellement en remboursement" styleClass="kpi-description"/>
-                </VBox>
-            </HBox>
-            <HBox alignment="CENTER_LEFT" spacing="12">
-                <Label text="2" styleClass="kpi-value"/>
-                <Label text="prets" styleClass="kpi-unit"/>
-            </HBox>
-        </VBox>
-
-        
-        <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS" spacing="14">
-            <HBox spacing="12" alignment="CENTER_LEFT">
-                <StackPane styleClass="kpi-icon-wrapper kpi-icon-payment">
-                    <FontIcon iconLiteral="fas-money-check-alt" styleClass="kpi-icon"/>
-                </StackPane>
-                <VBox spacing="2">
-                    <Label text="MENSUALITE" styleClass="kpi-title"/>
-                    <Label text="Prochain paiement : 15 Jan" styleClass="kpi-description"/>
-                </VBox>
-            </HBox>
-            <HBox alignment="CENTER_LEFT" spacing="8">
-                <Label text="\$1,250.00" styleClass="kpi-value"/>
-            </HBox>
-        </VBox>
-
-        
-        <VBox styleClass="kpi-card kpi-card-highlight" HBox.hgrow="ALWAYS" spacing="14">
-            <HBox spacing="12" alignment="CENTER_LEFT">
-                <StackPane styleClass="kpi-icon-wrapper kpi-icon-highlight">
-                    <FontIcon iconLiteral="fas-unlock-alt" styleClass="kpi-icon-light"/>
-                </StackPane>
-                <VBox spacing="2">
-                    <Label text="CREDIT DISPONIBLE" styleClass="kpi-title-light"/>
-                    <Label text="Montant preapprouve" styleClass="kpi-description-light"/>
-                </VBox>
-            </HBox>
-            <HBox alignment="CENTER_LEFT" spacing="10">
-                <Label text="\$25,000" styleClass="kpi-value-light"/>
-                <Button styleClass="apply-quick-btn">
-                    <graphic>
-                        <Label text="Apply Now ->"/>
-                    </graphic>
-                </Button>
-            </HBox>
+        <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS" spacing="8">
+            <Label text="GARANTIES" styleClass="kpi-title"/>
+            <Label text="Formulaire + table integres" styleClass="kpi-description"/>
         </VBox>
     </HBox>
 
-    
     <HBox spacing="24" VBox.vgrow="ALWAYS">
         <padding>
             <Insets top="0" right="32" bottom="32" left="32"/>
         </padding>
 
-        
-        <VBox styleClass="content-card" prefWidth="520" spacing="0">
-            
-            
+        <VBox styleClass="content-card" prefWidth="560" spacing="0">
             <HBox styleClass="card-header" spacing="14" alignment="CENTER_LEFT">
                 <StackPane styleClass="card-header-icon">
                     <FontIcon iconLiteral="fas-file-signature" styleClass="card-header-icon-glyph"/>
                 </StackPane>
                 <VBox spacing="2">
                     <Label text="Demande de credit" styleClass="card-header-title"/>
-                    <Label text="Demander un nouveau pret ou une ligne de credit" styleClass="card-header-subtitle"/>
+                    <Label text="Formulaire CRUD Credit" styleClass="card-header-subtitle"/>
                 </VBox>
             </HBox>
 
-            
             <ScrollPane styleClass="form-scroll" fitToWidth="true" VBox.vgrow="ALWAYS">
                 <VBox styleClass="card-body" spacing="20">
-                    
-                    
                     <VBox spacing="12">
                         <Label text="Selectionner le type de pret" styleClass="form-section-label"/>
                         <FlowPane styleClass="loan-type-grid" hgap="12" vgap="12">
@@ -182,545 +105,217 @@
                                     <FontIcon iconLiteral="fas-home" styleClass="loan-type-icon"/>
                                 </StackPane>
                                 <Label text="Hypotheque" styleClass="loan-type-label"/>
-                                <Label text="A partir de 2.9%" styleClass="loan-type-rate"/>
                             </VBox>
                             <VBox styleClass="loan-type-card" alignment="CENTER" spacing="8" onMouseClicked="#selectLoanType">
                                 <StackPane styleClass="loan-type-icon-wrapper">
                                     <FontIcon iconLiteral="fas-car" styleClass="loan-type-icon"/>
                                 </StackPane>
                                 <Label text="Pret auto" styleClass="loan-type-label"/>
-                                <Label text="A partir de 4.5%" styleClass="loan-type-rate"/>
                             </VBox>
                             <VBox styleClass="loan-type-card" alignment="CENTER" spacing="8" onMouseClicked="#selectLoanType">
                                 <StackPane styleClass="loan-type-icon-wrapper">
                                     <FontIcon iconLiteral="fas-user" styleClass="loan-type-icon"/>
                                 </StackPane>
                                 <Label text="Personnel" styleClass="loan-type-label"/>
-                                <Label text="A partir de 6.9%" styleClass="loan-type-rate"/>
                             </VBox>
                             <VBox styleClass="loan-type-card" alignment="CENTER" spacing="8" onMouseClicked="#selectLoanType">
                                 <StackPane styleClass="loan-type-icon-wrapper">
                                     <FontIcon iconLiteral="fas-briefcase" styleClass="loan-type-icon"/>
                                 </StackPane>
                                 <Label text="Professionnel" styleClass="loan-type-label"/>
-                                <Label text="A partir de 5.5%" styleClass="loan-type-rate"/>
                             </VBox>
                         </FlowPane>
                     </VBox>
 
                     <Separator styleClass="form-separator"/>
 
-                    
-                    <GridPane styleClass="form-grid" hgap="16" vgap="18">
+                    <GridPane styleClass="form-grid" hgap="16" vgap="14">
                         <columnConstraints>
                             <ColumnConstraints percentWidth="50"/>
                             <ColumnConstraints percentWidth="50"/>
                         </columnConstraints>
 
-                        
                         <VBox spacing="8" GridPane.rowIndex="0" GridPane.columnIndex="0">
-                            <Label text="Montant demande" styleClass="form-label"/>
-                            <HBox styleClass="input-group">
-                                <StackPane styleClass="input-prefix input-prefix-currency">
-                                    <Label text="\$" styleClass="input-prefix-text"/>
-                                </StackPane>
-                                <TextField fx:id="txtRequestedAmount" promptText="0.00" styleClass="text-field input-with-prefix" HBox.hgrow="ALWAYS"/>
-                            </HBox>
+                            <Label text="Compte" styleClass="form-label"/>
+                            <ComboBox fx:id="cmbCompte" promptText="Choisir compte" styleClass="combo-box" maxWidth="Infinity"/>
                         </VBox>
 
-                        
                         <VBox spacing="8" GridPane.rowIndex="0" GridPane.columnIndex="1">
-                            <Label text="Duree" styleClass="form-label"/>
-                            <ComboBox fx:id="cbDuree" promptText="Selectionner la duree" styleClass="combo-box" maxWidth="Infinity">
-                                <items>
-                                    <FXCollections fx:factory="observableArrayList">
-                                        <String fx:value="12 months"/>
-                                        <String fx:value="24 months"/>
-                                        <String fx:value="36 months"/>
-                                        <String fx:value="48 months"/>
-                                        <String fx:value="60 months"/>
-                                        <String fx:value="120 months"/>
-                                        <String fx:value="240 months"/>
-                                        <String fx:value="360 months"/>
-                                    </FXCollections>
-                                </items>
-                            </ComboBox>
+                            <Label text="Duree (mois)" styleClass="form-label"/>
+                            <ComboBox fx:id="cbDuree" promptText="Selectionner la duree" styleClass="combo-box" maxWidth="Infinity"/>
                         </VBox>
 
-                        
                         <VBox spacing="8" GridPane.rowIndex="1" GridPane.columnIndex="0">
-                            <Label text="Taux d interet (TAEG)" styleClass="form-label"/>
-                            <HBox styleClass="input-group">
-                                <TextField fx:id="txtInterestRate" text="3.5" styleClass="text-field" HBox.hgrow="ALWAYS" editable="true"/>
-                                <StackPane styleClass="input-suffix">
-                                    <Label text="\%" styleClass="input-suffix-text"/>
-                                </StackPane>
-                            </HBox>
+                            <Label text="Montant demande" styleClass="form-label"/>
+                            <TextField fx:id="txtRequestedAmount" promptText="0.00" styleClass="text-field"/>
                         </VBox>
 
-                        
                         <VBox spacing="8" GridPane.rowIndex="1" GridPane.columnIndex="1">
+                            <Label text="Montant accorde" styleClass="form-label"/>
+                            <TextField fx:id="txtApprovedAmount" promptText="0.00" styleClass="text-field"/>
+                        </VBox>
+
+                        <VBox spacing="8" GridPane.rowIndex="2" GridPane.columnIndex="0">
+                            <Label text="Taux d interet (TAEG)" styleClass="form-label"/>
+                            <TextField fx:id="txtInterestRate" text="3.5" styleClass="text-field"/>
+                        </VBox>
+
+                        <VBox spacing="8" GridPane.rowIndex="2" GridPane.columnIndex="1">
                             <Label text="Mensualite estimee" styleClass="form-label"/>
-                            <HBox styleClass="input-group calculated-field">
-                                <StackPane styleClass="input-prefix input-prefix-currency">
-                                    <Label text="\$" styleClass="input-prefix-text"/>
-                                </StackPane>
-                                <TextField fx:id="txtMonthlyPayment" text="1,250.00" styleClass="text-field input-with-prefix" HBox.hgrow="ALWAYS" editable="true"/>
-                            </HBox>
+                            <TextField fx:id="txtMonthlyPayment" promptText="0.00" styleClass="text-field"/>
                         </VBox>
 
-                        
-                        <VBox spacing="8" GridPane.rowIndex="2" GridPane.columnIndex="0" GridPane.columnSpan="2">
+                        <VBox spacing="8" GridPane.rowIndex="3" GridPane.columnIndex="0">
+                            <Label text="Montant restant" styleClass="form-label"/>
+                            <TextField fx:id="txtRemainingAmount" promptText="0.00" styleClass="text-field"/>
+                        </VBox>
+
+                        <VBox spacing="8" GridPane.rowIndex="3" GridPane.columnIndex="1">
+                            <Label text="Date demande" styleClass="form-label"/>
+                            <DatePicker fx:id="dpCreditDate" styleClass="date-picker" maxWidth="Infinity"/>
+                        </VBox>
+
+                        <VBox spacing="8" GridPane.rowIndex="4" GridPane.columnIndex="0" GridPane.columnSpan="2">
                             <Label text="Objet du pret" styleClass="form-label"/>
-                            <ComboBox fx:id="cbPurpose" promptText="Selectionner le motif" styleClass="combo-box" maxWidth="Infinity">
-                                <items>
-                                    <FXCollections fx:factory="observableArrayList">
-                                        <String fx:value="Home Purchase"/>
-                                        <String fx:value="Home Renovation"/>
-                                        <String fx:value="Vehicle Purchase"/>
-                                        <String fx:value="Debt Consolidation"/>
-                                        <String fx:value="Education"/>
-                                        <String fx:value="Medical Expenses"/>
-                                        <String fx:value="Professionnel Investment"/>
-                                        <String fx:value="Other"/>
-                                    </FXCollections>
-                                </items>
-                            </ComboBox>
+                            <ComboBox fx:id="cbPurpose" promptText="Selectionner le motif" styleClass="combo-box" maxWidth="Infinity"/>
                         </VBox>
 
-                        
-                        <VBox spacing="8" GridPane.rowIndex="3" GridPane.columnIndex="0" GridPane.columnSpan="2">
+                        <VBox spacing="8" GridPane.rowIndex="5" GridPane.columnIndex="0" GridPane.columnSpan="2">
                             <Label text="Informations complementaires" styleClass="form-label"/>
-                            <TextArea fx:id="txtNotes" promptText="Tout detail supplementaire sur votre demande..." prefRowCount="3" styleClass="text-area"/>
+                            <TextArea fx:id="txtNotes" promptText="Notes..." prefRowCount="2" styleClass="text-area"/>
                         </VBox>
                     </GridPane>
 
-                    
-                    <VBox styleClass="loan-summary-card" spacing="12">
-                        <Label text="Resume du pret" styleClass="summary-title"/>
-                        <HBox spacing="24">
-                            <VBox spacing="4" HBox.hgrow="ALWAYS">
-                                <Label text="Montant total" styleClass="summary-label"/>
-                                    <Label text="\$180,000.00" styleClass="summary-value"/>
-                            </VBox>
-                            <VBox spacing="4" HBox.hgrow="ALWAYS">
-                                <Label text="Interets totaux" styleClass="summary-label"/>
-                                    <Label text="\$32,456.00" styleClass="summary-value"/>
-                            </VBox>
-                            <VBox spacing="4" HBox.hgrow="ALWAYS">
-                                <Label text="Remboursement total" styleClass="summary-label"/>
-                                    <Label text="\$212,456.00" styleClass="summary-value-highlight"/>
-                            </VBox>
-                        </HBox>
-                    </VBox>
-
-                    
-                    <HBox spacing="12" alignment="CENTER_RIGHT" styleClass="form-actions">
-                        <Button styleClass="btn-outline" onAction="#clearForm">
-                            <graphic>
-                                <HBox spacing="8" alignment="CENTER">
-                                    <FontIcon iconLiteral="fas-eraser" styleClass="btn-icon"/>
-                                    <Label text="Vider" styleClass="btn-label"/>
-                                </HBox>
-                            </graphic>
-                        </Button>
-                        <Button styleClass="btn-secondary" onAction="#saveAsDraft">
-                            <graphic>
-                                <HBox spacing="8" alignment="CENTER">
-                                    <FontIcon iconLiteral="fas-save" styleClass="btn-icon"/>
-                                    <Label text="Enregistrer brouillon" styleClass="btn-label"/>
-                                </HBox>
-                            </graphic>
-                        </Button>
-                        <Button styleClass="btn-primary" onAction="#submitApplication">
-                            <graphic>
-                                <HBox spacing="8" alignment="CENTER">
-                                    <FontIcon iconLiteral="fas-paper-plane" styleClass="btn-icon-light"/>
-                                    <Label text="Soumettre la demande" styleClass="btn-label-light"/>
-                                </HBox>
-                            </graphic>
-                        </Button>
+                    <HBox spacing="10" alignment="CENTER_RIGHT" styleClass="form-actions">
+                        <Button text="Vider" styleClass="btn-outline" onAction="#clearForm"/>
+                        <Button text="Enregistrer brouillon" styleClass="btn-secondary" onAction="#saveAsDraft"/>
+                        <Button fx:id="btnDeleteCredit" text="Supprimer" styleClass="btn-danger" onAction="#deleteSelectedCredit"/>
+                        <Button fx:id="btnSubmitCredit" text="Soumettre la demande" styleClass="btn-primary" onAction="#submitApplication"/>
                     </HBox>
                 </VBox>
             </ScrollPane>
         </VBox>
 
-        
         <VBox styleClass="content-card" HBox.hgrow="ALWAYS" spacing="0">
-            
-            
             <HBox styleClass="card-header" spacing="14" alignment="CENTER_LEFT">
                 <StackPane styleClass="card-header-icon">
                     <FontIcon iconLiteral="fas-credit-card" styleClass="card-header-icon-glyph"/>
                 </StackPane>
                 <VBox spacing="2">
                     <Label text="Credits actifs" styleClass="card-header-title"/>
-                    <Label text="Your current prets and credit lines" styleClass="card-header-subtitle"/>
+                    <Label text="Table CRUD utilisateur" styleClass="card-header-subtitle"/>
                 </VBox>
                 <Region HBox.hgrow="ALWAYS"/>
-                <ComboBox promptText="Tous les credits" styleClass="filter-dropdown" prefWidth="140">
-                    <items>
-                        <FXCollections fx:factory="observableArrayList">
-                            <String fx:value="Tous les credits"/>
-                            <String fx:value="Active"/>
-                            <String fx:value="En attente"/>
-                            <String fx:value="Completed"/>
-                        </FXCollections>
-                    </items>
-                </ComboBox>
+                <Button text="Ajouter garantie" styleClass="credit-action-btn" onAction="#openGarantiePage"/>
             </HBox>
 
-            
-            <ScrollPane styleClass="credits-scroll" fitToWidth="true" VBox.vgrow="ALWAYS">
-                <VBox styleClass="credits-list" spacing="16">
-                    <padding>
-                        <Insets top="20" right="20" bottom="20" left="20"/>
-                    </padding>
+            <VBox styleClass="card-body" spacing="14">
+                <TableView fx:id="tblCredits" prefHeight="230">
+                    <columns>
+                        <TableColumn fx:id="colCreditId" text="ID" prefWidth="70"/>
+                        <TableColumn fx:id="colCreditCompte" text="Compte" prefWidth="90"/>
+                        <TableColumn fx:id="colCreditType" text="Type" prefWidth="170"/>
+                        <TableColumn fx:id="colCreditAmount" text="Montant" prefWidth="130"/>
+                        <TableColumn fx:id="colCreditStatus" text="Statut" prefWidth="120"/>
+                        <TableColumn fx:id="colCreditDate" text="Date" prefWidth="120"/>
+                    </columns>
+                </TableView>
+            </VBox>
 
-                    
-                    <VBox styleClass="credit-card" spacing="0">
-                        <HBox styleClass="credit-card-header credit-card-header-mortgage" spacing="12" alignment="CENTER_LEFT">
-                            <StackPane styleClass="credit-type-icon">
-                                <FontIcon iconLiteral="fas-home" styleClass="credit-type-icon-glyph"/>
-                            </StackPane>
-                            <VBox spacing="2" HBox.hgrow="ALWAYS">
-                                <Label text="Home Hypotheque" styleClass="credit-type-label"/>
-                                <Label text="CR-0011" styleClass="credit-id"/>
-                            </VBox>
-                            <StackPane styleClass="credit-status-badge status-active">
-                                <Label text="Active"/>
-                            </StackPane>
-                        </HBox>
-                        <VBox styleClass="credit-card-body" spacing="16">
-                            <HBox spacing="24">
-                                <VBox spacing="4" HBox.hgrow="ALWAYS">
-                                    <Label text="Montant initial" styleClass="credit-detail-label"/>
-                                        <Label text="\$180,000.00" styleClass="credit-detail-value"/>
-                                </VBox>
-                                <VBox spacing="4" HBox.hgrow="ALWAYS">
-                                    <Label text="Taux d interet" styleClass="credit-detail-label"/>
-                                    <Label text="3.5% APR" styleClass="credit-detail-value"/>
-                                </VBox>
-                                <VBox spacing="4" HBox.hgrow="ALWAYS">
-                                    <Label text="Mensualite" styleClass="credit-detail-label"/>
-                                        <Label text="\$850.00" styleClass="credit-detail-value"/>
-                                </VBox>
-                            </HBox>
-                            
-                            
-                            <VBox spacing="8">
-                                <HBox alignment="CENTER_LEFT">
-                                    <Label text="Progression du remboursement" styleClass="credit-progress-label"/>
-                                    <Region HBox.hgrow="ALWAYS"/>
-                                    <Label text="75% complete" styleClass="credit-progress-percent"/>
-                                </HBox>
-                                <StackPane styleClass="credit-progress-track">
-                                    <StackPane styleClass="credit-progress-fill" style="-fx-max-width: 75%;"/>
-                                </StackPane>
-                                <HBox alignment="CENTER_LEFT">
-                                        <Label text="\$45,000.00 restant" styleClass="credit-restant"/>
-                                    <Region HBox.hgrow="ALWAYS"/>
-                                    <Label text="Fin estimee : Dec 2028" styleClass="credit-payoff-date"/>
-                                </HBox>
-                            </VBox>
-
-                            
-                            <HBox spacing="10" alignment="CENTER_LEFT">
-                                <Button styleClass="credit-action-btn" onAction="#showGarantieForm">
-                                    <graphic>
-                                        <HBox spacing="6" alignment="CENTER">
-                                            <FontIcon iconLiteral="fas-shield-alt" styleClass="credit-action-icon"/>
-                                            <Label text="Ajouter garantie"/>
-                                        </HBox>
-                                    </graphic>
-                                </Button>
-                                <Button styleClass="credit-action-btn">
-                                    <graphic>
-                                        <HBox spacing="6" alignment="CENTER">
-                                            <FontIcon iconLiteral="fas-calculator" styleClass="credit-action-icon"/>
-                                            <Label text="Calculateur de paiement"/>
-                                        </HBox>
-                                    </graphic>
-                                </Button>
-                                <Button styleClass="credit-action-btn">
-                                    <graphic>
-                                        <HBox spacing="6" alignment="CENTER">
-                                            <FontIcon iconLiteral="fas-file-pdf" styleClass="credit-action-icon"/>
-                                            <Label text="Releve"/>
-                                        </HBox>
-                                    </graphic>
-                                </Button>
-                            </HBox>
-                        </VBox>
-                    </VBox>
-
-                    
-                    <VBox styleClass="credit-card" spacing="0">
-                        <HBox styleClass="credit-card-header credit-card-header-auto" spacing="12" alignment="CENTER_LEFT">
-                            <StackPane styleClass="credit-type-icon">
-                                <FontIcon iconLiteral="fas-car" styleClass="credit-type-icon-glyph"/>
-                            </StackPane>
-                            <VBox spacing="2" HBox.hgrow="ALWAYS">
-                                <Label text="Pret auto" styleClass="credit-type-label"/>
-                                <Label text="CR-0023" styleClass="credit-id"/>
-                            </VBox>
-                            <StackPane styleClass="credit-status-badge status-active">
-                                <Label text="Active"/>
-                            </StackPane>
-                        </HBox>
-                        <VBox styleClass="credit-card-body" spacing="16">
-                            <HBox spacing="24">
-                                <VBox spacing="4" HBox.hgrow="ALWAYS">
-                                    <Label text="Montant initial" styleClass="credit-detail-label"/>
-                                        <Label text="\$35,000.00" styleClass="credit-detail-value"/>
-                                </VBox>
-                                <VBox spacing="4" HBox.hgrow="ALWAYS">
-                                    <Label text="Taux d interet" styleClass="credit-detail-label"/>
-                                    <Label text="4.9% TAEG" styleClass="credit-detail-value"/>
-                                </VBox>
-                                <VBox spacing="4" HBox.hgrow="ALWAYS">
-                                    <Label text="Mensualite" styleClass="credit-detail-label"/>
-                                        <Label text="\$400.00" styleClass="credit-detail-value"/>
-                                </VBox>
-                            </HBox>
-                            
-                            <VBox spacing="8">
-                                <HBox alignment="CENTER_LEFT">
-                                    <Label text="Progression du remboursement" styleClass="credit-progress-label"/>
-                                    <Region HBox.hgrow="ALWAYS"/>
-                                    <Label text="42% complete" styleClass="credit-progress-percent"/>
-                                </HBox>
-                                <StackPane styleClass="credit-progress-track">
-                                    <StackPane styleClass="credit-progress-fill credit-progress-fill-auto" style="-fx-max-width: 42%;"/>
-                                </StackPane>
-                                <HBox alignment="CENTER_LEFT">
-                                        <Label text="\$20,300.00 restant" styleClass="credit-restant"/>
-                                    <Region HBox.hgrow="ALWAYS"/>
-                                    <Label text="Fin estimee : Aout 2026" styleClass="credit-payoff-date"/>
-                                </HBox>
-                            </VBox>
-
-                            <HBox spacing="10" alignment="CENTER_LEFT">
-                                <Button styleClass="credit-action-btn" onAction="#showGarantieForm">
-                                    <graphic>
-                                        <HBox spacing="6" alignment="CENTER">
-                                            <FontIcon iconLiteral="fas-shield-alt" styleClass="credit-action-icon"/>
-                                            <Label text="Ajouter garantie"/>
-                                        </HBox>
-                                    </graphic>
-                                </Button>
-                                <Button styleClass="credit-action-btn">
-                                    <graphic>
-                                        <HBox spacing="6" alignment="CENTER">
-                                            <FontIcon iconLiteral="fas-money-bill-wave" styleClass="credit-action-icon"/>
-                                            <Label text="Payer"/>
-                                        </HBox>
-                                    </graphic>
-                                </Button>
-                            </HBox>
-                        </VBox>
-                    </VBox>
-
-                    
-                    <VBox styleClass="credit-card credit-card-pending" spacing="0">
-                        <HBox styleClass="credit-card-header credit-card-header-pending" spacing="12" alignment="CENTER_LEFT">
-                            <StackPane styleClass="credit-type-icon">
-                                <FontIcon iconLiteral="fas-clock" styleClass="credit-type-icon-glyph"/>
-                            </StackPane>
-                            <VBox spacing="2" HBox.hgrow="ALWAYS">
-                                <Label text="Personnel Loan Application" styleClass="credit-type-label"/>
-                                <Label text="CR-0031" styleClass="credit-id"/>
-                            </VBox>
-                            <StackPane styleClass="credit-status-badge status-pending">
-                                <Label text="En cours d examen"/>
-                            </StackPane>
-                        </HBox>
-                        <VBox styleClass="credit-card-body" spacing="12">
-                            <HBox spacing="24">
-                                <VBox spacing="4" HBox.hgrow="ALWAYS">
-                                    <Label text="Montant demande" styleClass="credit-detail-label"/>
-                                        <Label text="\$15,000.00" styleClass="credit-detail-value"/>
-                                </VBox>
-                                <VBox spacing="4" HBox.hgrow="ALWAYS">
-                                    <Label text="Depose le" styleClass="credit-detail-label"/>
-                                    <Label text="Dec 18, 2024" styleClass="credit-detail-value"/>
-                                </VBox>
-                                <VBox spacing="4" HBox.hgrow="ALWAYS">
-                                    <Label text="Decision estimee" styleClass="credit-detail-label"/>
-                                    <Label text="Dec 25, 2024" styleClass="credit-detail-value"/>
-                                </VBox>
-                            </HBox>
-                            <HBox styleClass="pending-notice" spacing="10" alignment="CENTER_LEFT">
-                                <FontIcon iconLiteral="fas-info-circle" styleClass="pending-notice-icon"/>
-                                <Label text="Votre demande est en cours d examen. Nous vous notifierons des qu une decision sera prise." styleClass="pending-notice-text"/>
-                            </HBox>
-                        </VBox>
-                    </VBox>
-                </VBox>
-            </ScrollPane>
-
-            
             <VBox fx:id="garantieFormContainer" styleClass="guarantee-form-container" spacing="0" visible="false" managed="false">
                 <Separator styleClass="section-divider"/>
-                
                 <HBox styleClass="guarantee-form-header" spacing="12" alignment="CENTER_LEFT">
                     <StackPane styleClass="guarantee-form-icon">
                         <FontIcon iconLiteral="fas-shield-alt" styleClass="guarantee-form-icon-glyph"/>
                     </StackPane>
                     <VBox spacing="2" HBox.hgrow="ALWAYS">
-                        <Label text="Ajouter une garantie de credit" styleClass="guarantee-form-title"/>
-                        <Label text="Fournir un collateral ou une garantie pour votre credit" styleClass="guarantee-form-subtitle"/>
+                        <Label text="Ajouter / Modifier garantie" styleClass="guarantee-form-title"/>
+                        <Label text="Formulaire base sur GarantieCredit.java" styleClass="guarantee-form-subtitle"/>
                     </VBox>
                     <Button styleClass="btn-icon-close" onAction="#hideGarantieForm">
-                        <graphic>
-                            <FontIcon iconLiteral="fas-times" styleClass="close-icon"/>
-                        </graphic>
+                        <graphic><FontIcon iconLiteral="fas-times" styleClass="close-icon"/></graphic>
                     </Button>
                 </HBox>
 
-                <VBox styleClass="guarantee-form-body" spacing="16">
-                    <GridPane hgap="16" vgap="14">
+                <VBox styleClass="guarantee-form-body" spacing="14">
+                    <GridPane hgap="16" vgap="12">
                         <columnConstraints>
                             <ColumnConstraints percentWidth="50"/>
                             <ColumnConstraints percentWidth="50"/>
                         </columnConstraints>
 
-                        <VBox spacing="8" GridPane.rowIndex="0" GridPane.columnIndex="0">
-                            <Label text="Type de garantie" styleClass="form-label"/>
-                            <ComboBox promptText="Selectionner le type" styleClass="combo-box" maxWidth="Infinity">
-                                <items>
-                                    <FXCollections fx:factory="observableArrayList">
-                                        <String fx:value="Real Estate Hypotheque"/>
-                                        <String fx:value="Vehicle Title"/>
-                                        <String fx:value="Personnel Guarantee"/>
-                                        <String fx:value="Bank Guarantee"/>
-                                        <String fx:value="Insurance Policy"/>
-                                        <String fx:value="Other Collateral"/>
-                                    </FXCollections>
-                                </items>
-                            </ComboBox>
+                        <VBox spacing="6" GridPane.rowIndex="0" GridPane.columnIndex="0">
+                            <Label text="ID Credit" styleClass="form-label"/>
+                            <ComboBox fx:id="cbGarantieCreditId" promptText="Credit" styleClass="combo-box" maxWidth="Infinity"/>
                         </VBox>
-
-                        <VBox spacing="8" GridPane.rowIndex="0" GridPane.columnIndex="1">
+                        <VBox spacing="6" GridPane.rowIndex="0" GridPane.columnIndex="1">
+                            <Label text="Type garantie" styleClass="form-label"/>
+                            <ComboBox fx:id="cbGarantieType" promptText="Type" styleClass="combo-box" maxWidth="Infinity"/>
+                        </VBox>
+                        <VBox spacing="6" GridPane.rowIndex="1" GridPane.columnIndex="0">
                             <Label text="Valeur estimee" styleClass="form-label"/>
-                            <HBox styleClass="input-group">
-                                <StackPane styleClass="input-prefix input-prefix-currency">
-                                    <Label text="\$" styleClass="input-prefix-text"/>
-                                </StackPane>
-                                <TextField promptText="0.00" styleClass="text-field input-with-prefix" HBox.hgrow="ALWAYS"/>
-                            </HBox>
+                            <TextField fx:id="txtGarantieEstimatedValue" promptText="0.00" styleClass="text-field"/>
                         </VBox>
-
-                        <VBox spacing="8" GridPane.rowIndex="1" GridPane.columnIndex="0" GridPane.columnSpan="2">
-                            <Label text="Adresse du bien/actif" styleClass="form-label"/>
-                            <TextField promptText="Saisir l adresse complete" styleClass="text-field"/>
+                        <VBox spacing="6" GridPane.rowIndex="1" GridPane.columnIndex="1">
+                            <Label text="Valeur retenue" styleClass="form-label"/>
+                            <TextField fx:id="txtGarantieRetainedValue" promptText="0.00" styleClass="text-field"/>
                         </VBox>
-
-                        <VBox spacing="8" GridPane.rowIndex="2" GridPane.columnIndex="0">
-                            <Label text="Nom du garant" styleClass="form-label"/>
-                            <TextField promptText="Nom legal complet" styleClass="text-field"/>
+                        <VBox spacing="6" GridPane.rowIndex="2" GridPane.columnIndex="0">
+                            <Label text="Adresse bien" styleClass="form-label"/>
+                            <TextField fx:id="txtGarantieAddress" promptText="Adresse" styleClass="text-field"/>
                         </VBox>
-
-                        <VBox spacing="8" GridPane.rowIndex="2" GridPane.columnIndex="1">
-                            <Label text="Date d evaluation" styleClass="form-label"/>
-                            <DatePicker promptText="Select date" styleClass="date-picker" maxWidth="Infinity"/>
+                        <VBox spacing="6" GridPane.rowIndex="2" GridPane.columnIndex="1">
+                            <Label text="Nom garant" styleClass="form-label"/>
+                            <TextField fx:id="txtGarantieNomGarant" promptText="Nom" styleClass="text-field"/>
                         </VBox>
-
-                        <VBox spacing="8" GridPane.rowIndex="3" GridPane.columnIndex="0" GridPane.columnSpan="2">
+                        <VBox spacing="6" GridPane.rowIndex="3" GridPane.columnIndex="0">
+                            <Label text="Date evaluation" styleClass="form-label"/>
+                            <DatePicker fx:id="dpGarantieDateEvaluation" styleClass="date-picker" maxWidth="Infinity"/>
+                        </VBox>
+                        <VBox spacing="6" GridPane.rowIndex="3" GridPane.columnIndex="1">
+                            <Label text="Document justificatif" styleClass="form-label"/>
+                            <TextField fx:id="txtGarantieDocument" promptText="Document" styleClass="text-field"/>
+                        </VBox>
+                        <VBox spacing="6" GridPane.rowIndex="4" GridPane.columnIndex="0" GridPane.columnSpan="2">
                             <Label text="Description" styleClass="form-label"/>
-                            <TextArea promptText="Decrire les details de la garantie..." prefRowCount="2" styleClass="text-area"/>
+                            <TextArea fx:id="txtGarantieDescription" prefRowCount="2" styleClass="text-area"/>
                         </VBox>
                     </GridPane>
-
-                    <HBox spacing="12" alignment="CENTER_RIGHT">
-                        <Button styleClass="btn-outline" onAction="#hideGarantieForm">
-                            <graphic>
-                                <Label text="Annuler" styleClass="btn-label"/>
-                            </graphic>
-                        </Button>
-                        <Button styleClass="btn-primary" onAction="#submitGuarantee">
-                            <graphic>
-                                <HBox spacing="8" alignment="CENTER">
-                                    <FontIcon iconLiteral="fas-check" styleClass="btn-icon-light"/>
-                                    <Label text="Soumettre la garantie" styleClass="btn-label-light"/>
-                                </HBox>
-                            </graphic>
-                        </Button>
+                    <HBox spacing="10" alignment="CENTER_RIGHT">
+                        <Button text="Vider" styleClass="btn-outline" onAction="#clearGarantie"/>
+                        <Button fx:id="btnDeleteGarantie" text="Supprimer" styleClass="btn-danger" onAction="#deleteSelectedGarantie"/>
+                        <Button fx:id="btnSubmitGarantie" text="Soumettre la garantie" styleClass="btn-primary" onAction="#submitGuarantee"/>
                     </HBox>
                 </VBox>
             </VBox>
 
-            
-            <VBox fx:id="garantiesDisplayContainer" styleClass="guarantees-list-container" spacing="0" visible="false" managed="false">
+            <VBox fx:id="garantiesDisplayContainer" styleClass="guarantees-list-container" spacing="0">
                 <Separator styleClass="section-divider"/>
-                
                 <HBox styleClass="guarantees-list-header" spacing="12" alignment="CENTER_LEFT">
                     <StackPane styleClass="guarantees-list-icon">
                         <FontIcon iconLiteral="fas-list-alt" styleClass="guarantees-list-icon-glyph"/>
                     </StackPane>
                     <VBox spacing="2" HBox.hgrow="ALWAYS">
                         <Label text="Garanties de credit" styleClass="guarantees-list-title"/>
-                        <Label text="Collateraux et garanties de vos credits" styleClass="guarantees-list-subtitle"/>
+                        <Label text="Table garanties (CRUD)" styleClass="guarantees-list-subtitle"/>
                     </VBox>
                     <Button styleClass="btn-outline-small" onAction="#hideGaranties">
-                        <graphic>
-                            <HBox spacing="4" alignment="CENTER">
-                                <FontIcon iconLiteral="fas-times" styleClass="btn-icon-small"/>
-                                <Label text="Close"/>
-                            </HBox>
-                        </graphic>
+                        <graphic><Label text="Close"/></graphic>
                     </Button>
                 </HBox>
-
-                <VBox styleClass="guarantees-list-body" spacing="12">
-                    
-                    <HBox styleClass="guarantee-item" spacing="14" alignment="CENTER_LEFT">
-                        <StackPane styleClass="guarantee-item-icon guarantee-icon-property">
-                            <FontIcon iconLiteral="fas-home" styleClass="guarantee-item-icon-glyph"/>
-                        </StackPane>
-                        <VBox spacing="4" HBox.hgrow="ALWAYS">
-                            <HBox spacing="8" alignment="CENTER_LEFT">
-                                <Label text="GAR-0004" styleClass="guarantee-item-id"/>
-                                <StackPane styleClass="guarantee-badge badge-verified">
-                                    <Label text="Verifiee"/>
-                                </StackPane>
-                            </HBox>
-                            <Label text="Real Estate Hypotheque - 123 Main St" styleClass="guarantee-item-title"/>
-                            <Label text="Valeur : $220,000.00" styleClass="guarantee-item-value"/>
-                        </VBox>
-                        <Button styleClass="guarantee-view-btn">
-                            <graphic>
-                                <FontIcon iconLiteral="fas-chevron-right" styleClass="guarantee-view-icon"/>
-                            </graphic>
-                        </Button>
-                    </HBox>
-
-                    
-                    <HBox styleClass="guarantee-item" spacing="14" alignment="CENTER_LEFT">
-                        <StackPane styleClass="guarantee-item-icon guarantee-icon-vehicle">
-                            <FontIcon iconLiteral="fas-car" styleClass="guarantee-item-icon-glyph"/>
-                        </StackPane>
-                        <VBox spacing="4" HBox.hgrow="ALWAYS">
-                            <HBox spacing="8" alignment="CENTER_LEFT">
-                                <Label text="GAR-0005" styleClass="guarantee-item-id"/>
-                                <StackPane styleClass="guarantee-badge badge-pending">
-                                    <Label text="En attente"/>
-                                </StackPane>
-                            </HBox>
-                            <Label text="Titre vehicule - Tesla Model 3 2023" styleClass="guarantee-item-title"/>
-                            <Label text="Valeur : $42,000.00" styleClass="guarantee-item-value"/>
-                        </VBox>
-                        <Button styleClass="guarantee-view-btn">
-                            <graphic>
-                                <FontIcon iconLiteral="fas-chevron-right" styleClass="guarantee-view-icon"/>
-                            </graphic>
-                        </Button>
-                    </HBox>
+                <VBox styleClass="guarantees-list-body" spacing="10">
+                    <TableView fx:id="tblGaranties" prefHeight="210">
+                        <columns>
+                            <TableColumn fx:id="colGarantieId" text="ID" prefWidth="70"/>
+                            <TableColumn fx:id="colGarantieCreditId" text="ID Credit" prefWidth="90"/>
+                            <TableColumn fx:id="colGarantieType" text="Type" prefWidth="170"/>
+                            <TableColumn fx:id="colGarantieValue" text="Valeur" prefWidth="130"/>
+                            <TableColumn fx:id="colGarantieStatus" text="Statut" prefWidth="110"/>
+                            <TableColumn fx:id="colGarantieDate" text="Date" prefWidth="120"/>
+                        </columns>
+                    </TableView>
                 </VBox>
             </VBox>
         </VBox>
     </HBox>
 </VBox>
-
-
-

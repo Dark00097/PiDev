@@ -1,9 +1,11 @@
 C:\xampp\htdocs\PiDev\src\main\java\com\nexora\bank\controllers\StatisticsController.java
+C:\xampp\htdocs\PiDev\src\main\java\com\nexora\bank\Utils\PdfReportUtil.java
 C:\xampp\htdocs\PiDev\src\main\java\com\nexora\bank\controllers\UserDashboardTransactionsSectionController.java
 C:\xampp\htdocs\PiDev\src\main\java\com\nexora\bank\Models\Credit.java
 C:\xampp\htdocs\PiDev\src\main\java\com\nexora\bank\controllers\CoffreVirtuelController.java
 C:\xampp\htdocs\PiDev\src\main\java\com\nexora\bank\controllers\CompteBancaireController.java
 C:\xampp\htdocs\PiDev\src\main\java\com\nexora\bank\Utils\EmailTemplates.java
+C:\xampp\htdocs\PiDev\src\main\java\com\nexora\bank\controllers\UserDashboardGarantieFormPageController.java
 C:\xampp\htdocs\PiDev\src\main\java\com\nexora\bank\controllers\UserDashboardCreditSectionController.java
 C:\xampp\htdocs\PiDev\src\main\java\com\nexora\bank\controllers\PartenaireController.java
 C:\xampp\htdocs\PiDev\src\main\java\com\myapp\security\WindowsBiometricAuth.java
@@ -23,7 +25,6 @@ C:\xampp\htdocs\PiDev\src\main\java\com\nexora\bank\controllers\MainController.j
 C:\xampp\htdocs\PiDev\src\main\java\com\nexora\bank\controllers\UserController.java
 C:\xampp\htdocs\PiDev\src\main\java\com\nexora\bank\Utils\MyDB.java
 C:\xampp\htdocs\PiDev\src\main\java\com\nexora\bank\controllers\TransactionController.java
-C:\xampp\htdocs\PiDev\src\main\java\com\nexora\bank\controllers\CompteCoffresDialog.java
 C:\xampp\htdocs\PiDev\src\main\java\com\nexora\bank\Service\CashbackService.java
 C:\xampp\htdocs\PiDev\src\main\java\com\myapp\security\BiometricVerificationDialog.java
 C:\xampp\htdocs\PiDev\src\main\java\com\nexora\bank\controllers\UserDashboardCashbackSectionController.java
@@ -43,7 +44,6 @@ C:\xampp\htdocs\PiDev\src\main\java\com\nexora\bank\controllers\ReclamationContr
 C:\xampp\htdocs\PiDev\src\main\java\com\nexora\bank\controllers\SidebarController.java
 C:\xampp\htdocs\PiDev\src\main\java\com\nexora\bank\controllers\LoginController.java
 C:\xampp\htdocs\PiDev\src\main\java\com\nexora\bank\Models\Reclamation.java
-C:\xampp\htdocs\PiDev\src\main\java\com\nexora\bank\Service\ICrud.java
 C:\xampp\htdocs\PiDev\src\main\java\com\nexora\bank\Service\TransactionService.java
 C:\xampp\htdocs\PiDev\src\main\java\com\nexora\bank\Service\UserService.java
 C:\xampp\htdocs\PiDev\src\main\java\com\nexora\bank\MainApp.java

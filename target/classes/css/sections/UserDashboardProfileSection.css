@@ -1,0 +1,247 @@
+.profile-section .section-header {
+    -fx-background-color: linear-gradient(to right, -nx-navy-800 0%, -nx-navy-700 64%, -nx-teal-500 100%);
+    -fx-background-radius: 18;
+    -fx-effect: dropshadow(gaussian, rgba(6, 20, 37, 0.2), 20, 0, 0, 8);
+}
+
+.profile-section .section-icon-container {
+    -fx-min-width: 52;
+    -fx-min-height: 52;
+    -fx-max-width: 52;
+    -fx-max-height: 52;
+    -fx-background-color: rgba(255, 255, 255, 0.15);
+    -fx-background-radius: 14;
+    -fx-alignment: center;
+}
+
+.profile-section .section-icon {
+    -fx-icon-size: 20;
+    -fx-icon-color: white;
+    -fx-fill: white;
+}
+
+.profile-section .section-title {
+    -fx-font-size: 25;
+    -fx-font-weight: 700;
+    -fx-text-fill: white;
+}
+
+.profile-section .section-subtitle {
+    -fx-font-size: 13;
+    -fx-text-fill: rgba(255, 255, 255, 0.76);
+}
+
+.profile-section .header-btn-secondary {
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+    -fx-background-radius: 12;
+    -fx-border-color: rgba(255, 255, 255, 0.35);
+    -fx-border-radius: 12;
+    -fx-padding: 10 16;
+    -fx-cursor: hand;
+}
+
+.profile-section .header-btn-secondary:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.28);
+}
+
+.profile-section .header-btn-icon {
+    -fx-icon-size: 14;
+    -fx-icon-color: white;
+    -fx-fill: white;
+}
+
+.profile-section .header-btn-label {
+    -fx-text-fill: white;
+    -fx-font-size: 12;
+    -fx-font-weight: 600;
+}
+
+.profile-section .info-card,
+.profile-section .content-card {
+    -fx-background-color: rgba(255, 255, 255, 0.96);
+    -fx-background-radius: 16;
+    -fx-border-color: rgba(15, 23, 42, 0.1);
+    -fx-border-radius: 16;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.12), 14, 0, 0, 3);
+    -fx-padding: 18;
+}
+
+.profile-section .content-card {
+    -fx-padding: 0;
+}
+
+.profile-section .card-icon,
+.profile-section .card-header-icon {
+    -fx-min-width: 42;
+    -fx-min-height: 42;
+    -fx-max-width: 42;
+    -fx-max-height: 42;
+    -fx-background-color: linear-gradient(to bottom right, #14c9b3, #00b4a0);
+    -fx-background-radius: 12;
+    -fx-alignment: center;
+}
+
+.profile-section .card-icon-security,
+.profile-section .card-header-icon-warning {
+    -fx-background-color: linear-gradient(to bottom right, #0d2e4d, #133d66);
+}
+
+.profile-section .card-icon-glyph,
+.profile-section .card-header-icon-glyph {
+    -fx-icon-size: 16;
+    -fx-icon-color: white;
+    -fx-fill: white;
+}
+
+.profile-section .card-title,
+.profile-section .card-header-title {
+    -fx-font-size: 18;
+    -fx-font-weight: 700;
+    -fx-text-fill: #0a2540;
+}
+
+.profile-section .card-subtitle,
+.profile-section .card-header-subtitle {
+    -fx-font-size: 12;
+    -fx-text-fill: #64748b;
+}
+
+.profile-section .avatar-wrap {
+    -fx-min-width: 54;
+    -fx-min-height: 54;
+    -fx-max-width: 54;
+    -fx-max-height: 54;
+    -fx-background-color: linear-gradient(to bottom right, #0d2e4d, #133d66);
+    -fx-background-radius: 14;
+    -fx-alignment: center;
+}
+
+.profile-section .avatar-icon {
+    -fx-icon-size: 20;
+    -fx-icon-color: #14c9b3;
+    -fx-fill: #14c9b3;
+}
+
+.profile-section .profile-name {
+    -fx-font-size: 18;
+    -fx-font-weight: 700;
+    -fx-text-fill: #0f172a;
+}
+
+.profile-section .profile-email {
+    -fx-font-size: 13;
+    -fx-text-fill: #334155;
+}
+
+.profile-section .meta-label {
+    -fx-font-size: 12;
+    -fx-font-weight: 600;
+    -fx-text-fill: #64748b;
+}
+
+.profile-section .meta-value {
+    -fx-font-size: 12;
+    -fx-text-fill: #0f172a;
+}
+
+.profile-section .bio-check {
+    -fx-text-fill: #0f172a;
+    -fx-font-size: 13;
+}
+
+.profile-section .card-header {
+    -fx-background-color: linear-gradient(to right, #0a2540, #133d66);
+    -fx-background-radius: 16 16 0 0;
+    -fx-padding: 14 16;
+}
+
+.profile-section .card-header-title,
+.profile-section .card-header-subtitle {
+    -fx-text-fill: white;
+}
+
+.profile-section .card-body {
+    -fx-padding: 16;
+}
+
+.profile-section .form-label {
+    -fx-font-size: 12;
+    -fx-font-weight: 600;
+    -fx-text-fill: #334155;
+}
+
+.profile-section .text-field {
+    -fx-background-color: #f8fafc;
+    -fx-border-color: #cbd5e1;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 10 12;
+}
+
+.profile-section .text-field:focused {
+    -fx-border-color: #00b4a0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 180, 160, 0.2), 8, 0, 0, 0);
+}
+
+.profile-section .btn-primary,
+.profile-section .btn-accent,
+.profile-section .btn-secondary {
+    -fx-background-radius: 10;
+    -fx-padding: 10 16;
+    -fx-cursor: hand;
+}
+
+.profile-section .btn-primary {
+    -fx-background-color: linear-gradient(to right, #00b4a0, #14c9b3);
+}
+
+.profile-section .btn-accent {
+    -fx-background-color: linear-gradient(to right, #0a2540, #133d66);
+}
+
+.profile-section .btn-secondary {
+    -fx-background-color: #eef2f7;
+    -fx-border-color: #cbd5e1;
+    -fx-border-radius: 10;
+}
+
+.profile-section .btn-label,
+.profile-section .btn-label-light {
+    -fx-font-size: 12;
+    -fx-font-weight: 600;
+}
+
+.profile-section .btn-label {
+    -fx-text-fill: #0f172a;
+}
+
+.profile-section .btn-label-light {
+    -fx-text-fill: white;
+}
+
+.profile-section .btn-icon,
+.profile-section .btn-icon-light {
+    -fx-icon-size: 13;
+}
+
+.profile-section .btn-icon {
+    -fx-icon-color: #334155;
+    -fx-fill: #334155;
+}
+
+.profile-section .btn-icon-light {
+    -fx-icon-color: white;
+    -fx-fill: white;
+}
+
+.profile-section .status-label {
+    -fx-font-size: 12;
+    -fx-text-fill: #64748b;
+}
+
+.profile-section .helper-label {
+    -fx-font-size: 12;
+    -fx-text-fill: #64748b;
+}

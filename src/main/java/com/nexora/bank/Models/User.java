@@ -10,6 +10,11 @@ public class User {
     private String role;
     private String status;
     private String password;
+    private String createdAt;
+    private String accountOpenedFrom;
+    private String lastOnlineAt;
+    private String lastOnlineFrom;
+    private boolean biometricEnabled;
 
 
     public User() {
@@ -101,6 +106,46 @@ public class User {
         this.password = password;
     }
 
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getAccountOpenedFrom() {
+        return accountOpenedFrom;
+    }
+
+    public void setAccountOpenedFrom(String accountOpenedFrom) {
+        this.accountOpenedFrom = accountOpenedFrom;
+    }
+
+    public String getLastOnlineAt() {
+        return lastOnlineAt;
+    }
+
+    public void setLastOnlineAt(String lastOnlineAt) {
+        this.lastOnlineAt = lastOnlineAt;
+    }
+
+    public String getLastOnlineFrom() {
+        return lastOnlineFrom;
+    }
+
+    public void setLastOnlineFrom(String lastOnlineFrom) {
+        this.lastOnlineFrom = lastOnlineFrom;
+    }
+
+    public boolean isBiometricEnabled() {
+        return biometricEnabled;
+    }
+
+    public void setBiometricEnabled(boolean biometricEnabled) {
+        this.biometricEnabled = biometricEnabled;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -111,6 +156,11 @@ public class User {
                 ", telephone='" + telephone + '\'' +
                 ", role='" + role + '\'' +
                 ", status='" + status + '\'' +
+                ", createdAt='" + createdAt + '\'' +
+                ", accountOpenedFrom='" + accountOpenedFrom + '\'' +
+                ", lastOnlineAt='" + lastOnlineAt + '\'' +
+                ", lastOnlineFrom='" + lastOnlineFrom + '\'' +
+                ", biometricEnabled=" + biometricEnabled +
                 '}';
     }
 }
