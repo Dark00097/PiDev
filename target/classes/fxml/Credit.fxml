@@ -279,9 +279,9 @@
                 <Button text="Statistiques"
                         styleClass="nx-btn, nx-btn-secondary"
                         onAction="#ouvrirStatistiques"/>
-                <Button text="Envoyer SMS"
+                <Button text="Envoyer Email"
                         styleClass="nx-btn, nx-btn-gold"
-                        onAction="#envoyerSMS"/>
+                        onAction="#envoyerEmail"/>
             </HBox>
 
         </VBox>

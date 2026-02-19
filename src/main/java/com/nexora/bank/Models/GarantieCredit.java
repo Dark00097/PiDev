@@ -17,6 +17,7 @@ public class GarantieCredit {
     private String dateEvaluation;
     private String nomGarant;
     private String statut;
+    private int idUser;
 
     public GarantieCredit() {
     }
@@ -32,9 +33,14 @@ public class GarantieCredit {
         this.dateEvaluation = dateEvaluation;
         this.nomGarant = nomGarant;
         this.statut = statut;
+        this.idUser = 0;
     }
 
     public GarantieCredit(int idGarantie, int idCredit, String typeGarantie, String description, String adresseBien, double valeurEstimee, double valeurRetenue, String documentJustificatif, String dateEvaluation, String nomGarant, String statut) {
+        this(idGarantie, idCredit, typeGarantie, description, adresseBien, valeurEstimee, valeurRetenue, documentJustificatif, dateEvaluation, nomGarant, statut, 0);
+    }
+
+    public GarantieCredit(int idGarantie, int idCredit, String typeGarantie, String description, String adresseBien, double valeurEstimee, double valeurRetenue, String documentJustificatif, String dateEvaluation, String nomGarant, String statut, int idUser) {
         this.idGarantie = idGarantie;
         this.idCredit = idCredit;
         this.typeGarantie = typeGarantie;
@@ -46,6 +52,7 @@ public class GarantieCredit {
         this.dateEvaluation = dateEvaluation;
         this.nomGarant = nomGarant;
         this.statut = statut;
+        this.idUser = idUser;
     }
 
     public int getIdGarantie() {
@@ -135,8 +142,13 @@ public class GarantieCredit {
     public void setStatut(String statut) {
         this.statut = statut;
     }
-
+    public int getIdUser(){
+        return this.idUser;
+    }
+    public void setIdUser(int idUser){
+        this.idUser = idUser;
+    }
     public String toString() {
-        return "GarantieCredit{idGarantie=" + this.idGarantie + ", idCredit=" + this.idCredit + ", typeGarantie='" + this.typeGarantie + "', description='" + this.description + "', adresseBien='" + this.adresseBien + "', valeurEstimee=" + this.valeurEstimee + ", valeurRetenue=" + this.valeurRetenue + ", documentJustificatif='" + this.documentJustificatif + "', dateEvaluation='" + this.dateEvaluation + "', nomGarant='" + this.nomGarant + "', statut='" + this.statut + "'}";
+        return "GarantieCredit{idGarantie=" + this.idGarantie + ", idCredit=" + this.idCredit + ", typeGarantie='" + this.typeGarantie + "', description='" + this.description + "', adresseBien='" + this.adresseBien + "', valeurEstimee=" + this.valeurEstimee + ", valeurRetenue=" + this.valeurRetenue + ", documentJustificatif='" + this.documentJustificatif + "', dateEvaluation='" + this.dateEvaluation + "', nomGarant='" + this.nomGarant + "', statut='" + this.statut + "', idUser=" + this.idUser + "'}";
     }
 }

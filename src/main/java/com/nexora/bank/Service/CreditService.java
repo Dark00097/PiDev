@@ -1,120 +1,163 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by FernFlower decompiler)
-//
-
 package com.nexora.bank.Service;
 
 import com.nexora.bank.Models.Credit;
 import com.nexora.bank.Utils.MyDB;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CreditService {
     private final Connection connection = MyDB.getInstance().getConn();
 
+    public CreditService() {
+        ensureUserColumnExists();
+    }
+
     public List<Credit> getAllCredits() {
-        String sql = "SELECT idCredit, idCompte, typeCredit, montantDemande, montantAccord,\n       duree, tauxInteret, mensualite, montantRestant, dateDemande, statut\nFROM credit\nORDER BY idCredit DESC\n";
-        List<Credit> credits = new ArrayList();
-
-        try {
-            Object var5;
-            try (
-                PreparedStatement statement = this.requireConnection().prepareStatement(sql);
-                ResultSet resultSet = statement.executeQuery();
-            ) {
-                while(resultSet.next()) {
-                    credits.add(this.mapCredit(resultSet));
-                }
-
-                var5 = credits;
+        String sql = """
+                SELECT idCredit, idCompte, typeCredit, montantDemande, montantAccord,
+                       duree, tauxInteret, mensualite, montantRestant, dateDemande, statut, idUser
+                FROM credit
+                ORDER BY idCredit DESC
+                """;
+        List<Credit> credits = new ArrayList<>();
+        try (PreparedStatement statement = requireConnection().prepareStatement(sql);
+             ResultSet resultSet = statement.executeQuery()) {
+            while (resultSet.next()) {
+                credits.add(mapCredit(resultSet));
             }
-
-            return (List<Credit>)var5;
+            return credits;
         } catch (SQLException ex) {
             throw new RuntimeException("Failed to fetch credits.", ex);
         }
     }
 
-    public Credit addCredit(Credit credit) {
-        String sql = "INSERT INTO credit (\n    idCompte, typeCredit, montantDemande, montantAccord, duree,\n    tauxInteret, mensualite, montantRestant, dateDemande, statut\n)\nVALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)\n";
-
-        try {
-            Credit var12;
-            try (PreparedStatement statement = this.requireConnection().prepareStatement(sql, 1)) {
-                this.fillCreditStatement(statement, credit);
-                statement.executeUpdate();
-
-                try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
-                    if (generatedKeys.next()) {
-                        credit.setIdCredit(generatedKeys.getInt(1));
-                    }
+    public List<Credit> getCreditsByUser(int idUser) {
+        String sql = """
+                SELECT idCredit, idCompte, typeCredit, montantDemande, montantAccord,
+                       duree, tauxInteret, mensualite, montantRestant, dateDemande, statut, idUser
+                FROM credit
+                WHERE idUser = ?
+                ORDER BY idCredit DESC
+                """;
+        List<Credit> credits = new ArrayList<>();
+        try (PreparedStatement statement = requireConnection().prepareStatement(sql)) {
+            statement.setInt(1, idUser);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    credits.add(mapCredit(resultSet));
                 }
-
-                var12 = credit;
             }
+            return credits;
+        } catch (SQLException ex) {
+            throw new RuntimeException("Failed to fetch user credits.", ex);
+        }
+    }
 
-            return var12;
+    public Credit addCredit(Credit credit) {
+        return addCreditInternal(credit, false);
+    }
+
+    public Credit addCreditForUser(Credit credit, int idUser) {
+        credit.setIdUser(idUser);
+        return addCreditInternal(credit, true);
+    }
+
+    private Credit addCreditInternal(Credit credit, boolean forceUser) {
+        String sql = """
+                INSERT INTO credit (
+                    idCompte, typeCredit, montantDemande, montantAccord, duree,
+                    tauxInteret, mensualite, montantRestant, dateDemande, statut, idUser
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """;
+        try (PreparedStatement statement = requireConnection().prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            fillCreditStatement(statement, credit);
+            statement.setInt(11, forceUser ? credit.getIdUser() : Math.max(credit.getIdUser(), 0));
+            statement.executeUpdate();
+            try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    credit.setIdCredit(generatedKeys.getInt(1));
+                }
+            }
+            return credit;
         } catch (SQLException ex) {
             throw new RuntimeException("Failed to add credit.", ex);
         }
     }
 
     public boolean updateCredit(Credit credit) {
-        String sql = "UPDATE credit\nSET idCompte = ?, typeCredit = ?, montantDemande = ?, montantAccord = ?,\n    duree = ?, tauxInteret = ?, mensualite = ?, montantRestant = ?,\n    dateDemande = ?, statut = ?\nWHERE idCredit = ?\n";
-
-        try {
-            boolean var4;
-            try (PreparedStatement statement = this.requireConnection().prepareStatement(sql)) {
-                this.fillCreditStatement(statement, credit);
-                statement.setInt(11, credit.getIdCredit());
-                var4 = statement.executeUpdate() > 0;
-            }
-
-            return var4;
+        String sql = """
+                UPDATE credit
+                SET idCompte = ?, typeCredit = ?, montantDemande = ?, montantAccord = ?,
+                    duree = ?, tauxInteret = ?, mensualite = ?, montantRestant = ?,
+                    dateDemande = ?, statut = ?, idUser = ?
+                WHERE idCredit = ?
+                """;
+        try (PreparedStatement statement = requireConnection().prepareStatement(sql)) {
+            fillCreditStatement(statement, credit);
+            statement.setInt(11, Math.max(credit.getIdUser(), 0));
+            statement.setInt(12, credit.getIdCredit());
+            return statement.executeUpdate() > 0;
         } catch (SQLException ex) {
             throw new RuntimeException("Failed to update credit.", ex);
         }
     }
 
+    public boolean updateCreditForUser(Credit credit, int idUser) {
+        String sql = """
+                UPDATE credit
+                SET idCompte = ?, typeCredit = ?, montantDemande = ?, montantAccord = ?,
+                    duree = ?, tauxInteret = ?, mensualite = ?, montantRestant = ?,
+                    dateDemande = ?, statut = ?, idUser = ?
+                WHERE idCredit = ? AND idUser = ?
+                """;
+        try (PreparedStatement statement = requireConnection().prepareStatement(sql)) {
+            fillCreditStatement(statement, credit);
+            statement.setInt(11, idUser);
+            statement.setInt(12, credit.getIdCredit());
+            statement.setInt(13, idUser);
+            return statement.executeUpdate() > 0;
+        } catch (SQLException ex) {
+            throw new RuntimeException("Failed to update user credit.", ex);
+        }
+    }
+
     public boolean deleteCredit(int idCredit) {
         String sql = "DELETE FROM credit WHERE idCredit = ?";
-
-        try {
-            boolean var4;
-            try (PreparedStatement statement = this.requireConnection().prepareStatement(sql)) {
-                statement.setInt(1, idCredit);
-                var4 = statement.executeUpdate() > 0;
-            }
-
-            return var4;
+        try (PreparedStatement statement = requireConnection().prepareStatement(sql)) {
+            statement.setInt(1, idCredit);
+            return statement.executeUpdate() > 0;
         } catch (SQLException ex) {
             throw new RuntimeException("Failed to delete credit.", ex);
         }
     }
 
+    public boolean deleteCreditForUser(int idCredit, int idUser) {
+        String sql = "DELETE FROM credit WHERE idCredit = ? AND idUser = ?";
+        try (PreparedStatement statement = requireConnection().prepareStatement(sql)) {
+            statement.setInt(1, idCredit);
+            statement.setInt(2, idUser);
+            return statement.executeUpdate() > 0;
+        } catch (SQLException ex) {
+            throw new RuntimeException("Failed to delete user credit.", ex);
+        }
+    }
+
     public List<Integer> getCompteIds() {
         String sql = "SELECT idCompte FROM compte ORDER BY idCompte";
-        List<Integer> ids = new ArrayList();
-
-        try {
-            Object var5;
-            try (
-                PreparedStatement statement = this.requireConnection().prepareStatement(sql);
-                ResultSet resultSet = statement.executeQuery();
-            ) {
-                while(resultSet.next()) {
-                    ids.add(resultSet.getInt("idCompte"));
-                }
-
-                var5 = ids;
+        List<Integer> ids = new ArrayList<>();
+        try (PreparedStatement statement = requireConnection().prepareStatement(sql);
+             ResultSet resultSet = statement.executeQuery()) {
+            while (resultSet.next()) {
+                ids.add(resultSet.getInt("idCompte"));
             }
-
-            return (List<Integer>)var5;
+            return ids;
         } catch (SQLException ex) {
             throw new RuntimeException("Failed to fetch account IDs.", ex);
         }
@@ -122,25 +165,58 @@ public class CreditService {
 
     public List<Integer> getCreditIds() {
         String sql = "SELECT idCredit FROM credit ORDER BY idCredit DESC";
-        List<Integer> ids = new ArrayList();
-
-        try {
-            Object var5;
-            try (
-                PreparedStatement statement = this.requireConnection().prepareStatement(sql);
-                ResultSet resultSet = statement.executeQuery();
-            ) {
-                while(resultSet.next()) {
-                    ids.add(resultSet.getInt("idCredit"));
-                }
-
-                var5 = ids;
+        List<Integer> ids = new ArrayList<>();
+        try (PreparedStatement statement = requireConnection().prepareStatement(sql);
+             ResultSet resultSet = statement.executeQuery()) {
+            while (resultSet.next()) {
+                ids.add(resultSet.getInt("idCredit"));
             }
-
-            return (List<Integer>)var5;
+            return ids;
         } catch (SQLException ex) {
             throw new RuntimeException("Failed to fetch credit IDs.", ex);
         }
+    }
+
+    public List<Integer> getCreditIdsByUser(int idUser) {
+        String sql = "SELECT idCredit FROM credit WHERE idUser = ? ORDER BY idCredit DESC";
+        List<Integer> ids = new ArrayList<>();
+        try (PreparedStatement statement = requireConnection().prepareStatement(sql)) {
+            statement.setInt(1, idUser);
+            try (ResultSet resultSet = statement.executeQuery()) {
+                while (resultSet.next()) {
+                    ids.add(resultSet.getInt("idCredit"));
+                }
+            }
+            return ids;
+        } catch (SQLException ex) {
+            throw new RuntimeException("Failed to fetch user credit IDs.", ex);
+        }
+    }
+
+    public int getTotalCredits() {
+        String sql = "SELECT COUNT(*) FROM credit";
+        try (PreparedStatement ps = requireConnection().prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to count credits.", e);
+        }
+        return 0;
+    }
+
+    public double getTotalMontantAccorde() {
+        String sql = "SELECT SUM(montantAccord) FROM credit";
+        try (PreparedStatement ps = requireConnection().prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getDouble(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to sum granted amount.", e);
+        }
+        return 0;
     }
 
     private void fillCreditStatement(PreparedStatement statement, Credit credit) throws SQLException {
@@ -148,11 +224,10 @@ public class CreditService {
         statement.setString(2, credit.getTypeCredit());
         statement.setDouble(3, credit.getMontantDemande());
         if (credit.getMontantAccord() == null) {
-            statement.setNull(4, 8);
+            statement.setNull(4, Types.DOUBLE);
         } else {
             statement.setDouble(4, credit.getMontantAccord());
         }
-
         statement.setInt(5, credit.getDuree());
         statement.setDouble(6, credit.getTauxInteret());
         statement.setDouble(7, credit.getMensualite());
@@ -162,43 +237,50 @@ public class CreditService {
     }
 
     private Credit mapCredit(ResultSet resultSet) throws SQLException {
-        Double montantAccord = resultSet.getObject("montantAccord") != null ? resultSet.getDouble("montantAccord") : null;
-        return new Credit(resultSet.getInt("idCredit"), resultSet.getInt("idCompte"), resultSet.getString("typeCredit"), resultSet.getDouble("montantDemande"), montantAccord, resultSet.getInt("duree"), resultSet.getDouble("tauxInteret"), resultSet.getDouble("mensualite"), resultSet.getDouble("montantRestant"), resultSet.getString("dateDemande"), resultSet.getString("statut"));
+        Double montantAccord = resultSet.getObject("montantAccord") != null
+                ? resultSet.getDouble("montantAccord")
+                : null;
+        int idUser = resultSet.getInt("idUser");
+        return new Credit(
+                resultSet.getInt("idCredit"),
+                resultSet.getInt("idCompte"),
+                resultSet.getString("typeCredit"),
+                resultSet.getDouble("montantDemande"),
+                montantAccord,
+                resultSet.getInt("duree"),
+                resultSet.getDouble("tauxInteret"),
+                resultSet.getDouble("mensualite"),
+                resultSet.getDouble("montantRestant"),
+                resultSet.getString("dateDemande"),
+                resultSet.getString("statut"),
+                idUser
+        );
     }
 
     private Connection requireConnection() {
-        if (this.connection == null) {
+        if (connection == null) {
             throw new IllegalStateException("Database connection is unavailable.");
-        } else {
-            return this.connection;
+        }
+        return connection;
+    }
+
+    private void ensureUserColumnExists() {
+        Connection conn = requireConnection();
+        try {
+            if (!hasColumn(conn, "credit", "idUser")) {
+                try (PreparedStatement ps = conn.prepareStatement(
+                        "ALTER TABLE credit ADD COLUMN idUser INT NOT NULL DEFAULT 0")) {
+                    ps.executeUpdate();
+                }
+            }
+        } catch (SQLException ex) {
+            throw new RuntimeException("Failed to ensure credit.idUser column.", ex);
         }
     }
-    public int getTotalCredits() {
-    String sql = "SELECT COUNT(*) FROM credit";
-    try (PreparedStatement ps = connection.prepareStatement(sql);
-         ResultSet rs = ps.executeQuery()) {
 
-        if (rs.next()) {
-            return rs.getInt(1);
+    private boolean hasColumn(Connection conn, String tableName, String columnName) throws SQLException {
+        try (ResultSet rs = conn.getMetaData().getColumns(conn.getCatalog(), null, tableName, columnName)) {
+            return rs.next();
         }
-    } catch (SQLException e) {
-        e.printStackTrace();
     }
-    return 0;
-}
-public double getTotalMontantAccorde() {
-   String sql = "SELECT SUM(montantAccord) FROM credit";
-    try  (PreparedStatement ps = connection.prepareStatement(sql);
-         ResultSet rs = ps.executeQuery()) {
-
-        if (rs.next()) {
-            return rs.getDouble(1);
-        }
-    } catch (SQLException e) {
-        e.printStackTrace();
-    }
-    return 0;
-}
-
-
 }

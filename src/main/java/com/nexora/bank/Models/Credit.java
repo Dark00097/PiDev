@@ -17,11 +17,12 @@ public class Credit {
     private double montantRestant;
     private String dateDemande;
     private String statut;
+    private int idUser;
 
     public Credit() {
     }
 
-    public Credit(String typeCredit, double montantDemande, Double montantAccord, int duree, double tauxInteret, double mensualite, double montantRestant, String dateDemande, String statut) {
+    public Credit(String typeCredit, double montantDemande, Double montantAccord, int duree, double tauxInteret, double mensualite, double montantRestant, String dateDemande, String statut, int idUser) {
         this.idCompte = 0;
         this.typeCredit = typeCredit;
         this.montantDemande = montantDemande;
@@ -32,6 +33,7 @@ public class Credit {
         this.montantRestant = montantRestant;
         this.dateDemande = dateDemande;
         this.statut = statut;
+        this.idUser = idUser;
     }
 
     public Credit(int idCredit, String typeCredit, double montantDemande, Double montantAccord, int duree, double tauxInteret, double mensualite, double montantRestant, String dateDemande, String statut) {
@@ -46,9 +48,14 @@ public class Credit {
         this.montantRestant = montantRestant;
         this.dateDemande = dateDemande;
         this.statut = statut;
+        this.idUser = 0;
     }
 
     public Credit(int idCredit, int idCompte, String typeCredit, double montantDemande, Double montantAccord, int duree, double tauxInteret, double mensualite, double montantRestant, String dateDemande, String statut) {
+        this(idCredit, idCompte, typeCredit, montantDemande, montantAccord, duree, tauxInteret, mensualite, montantRestant, dateDemande, statut, 0);
+    }
+
+    public Credit(int idCredit, int idCompte, String typeCredit, double montantDemande, Double montantAccord, int duree, double tauxInteret, double mensualite, double montantRestant, String dateDemande, String statut, int idUser) {
         this.idCredit = idCredit;
         this.idCompte = idCompte;
         this.typeCredit = typeCredit;
@@ -60,6 +67,7 @@ public class Credit {
         this.montantRestant = montantRestant;
         this.dateDemande = dateDemande;
         this.statut = statut;
+        this.idUser = idUser;
     }
 
     public int getIdCredit() {
@@ -150,8 +158,15 @@ public class Credit {
         this.statut = statut;
     }
 
+    public int getIdUser() {
+        return this.idUser;
+    }
+    public void setIdUser(int idUser) {
+        this.idUser = idUser;
+    }
+
     public String toString() {
-        return "Credit{idCredit=" + this.idCredit + ", idCompte=" + this.idCompte + ", typeCredit='" + this.typeCredit + "', montantDemande=" + this.montantDemande + ", montantAccord=" + this.montantAccord + ", duree=" + this.duree + ", tauxInteret=" + this.tauxInteret + ", mensualite=" + this.mensualite + ", montantRestant=" + this.montantRestant + ", dateDemande='" + this.dateDemande + "', statut='" + this.statut + "'}";
+        return "Credit{idCredit=" + idCredit + ", idCompte=" + idCompte + ", typeCredit='" + typeCredit + "', montantDemande=" + montantDemande + ", montantAccord=" + montantAccord + ", duree=" + this.duree + ", tauxInteret=" + this.tauxInteret + ", mensualite=" + this.mensualite + ", montantRestant=" + this.montantRestant + ", dateDemande='" + dateDemande + "', statut='" + statut + ", idUser="  + idUser + "'}";
     }
     
 }

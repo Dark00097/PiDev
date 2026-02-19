@@ -5,6 +5,7 @@ C:\xampp\htdocs\PiDev\src\main\java\com\nexora\bank\Models\Credit.java
 C:\xampp\htdocs\PiDev\src\main\java\com\nexora\bank\controllers\CoffreVirtuelController.java
 C:\xampp\htdocs\PiDev\src\main\java\com\nexora\bank\controllers\CompteBancaireController.java
 C:\xampp\htdocs\PiDev\src\main\java\com\nexora\bank\Utils\EmailTemplates.java
+C:\xampp\htdocs\PiDev\src\main\java\com\nexora\bank\controllers\UserDashboardGarantieFormPageController.java
 C:\xampp\htdocs\PiDev\src\main\java\com\nexora\bank\controllers\UserDashboardCreditSectionController.java
 C:\xampp\htdocs\PiDev\src\main\java\com\nexora\bank\controllers\PartenaireController.java
 C:\xampp\htdocs\PiDev\src\main\java\com\myapp\security\WindowsBiometricAuth.java
