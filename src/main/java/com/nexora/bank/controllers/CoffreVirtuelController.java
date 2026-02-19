@@ -28,6 +28,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import com.nexora.bank.Service.UserService;
 
 public class CoffreVirtuelController implements Initializable {
 
@@ -78,6 +79,7 @@ public class CoffreVirtuelController implements Initializable {
 
     private final CoffreVirtuelService service = new CoffreVirtuelService();
     private CompteBancaireService compteService;  // ✅ NOUVEAU
+    private final UserService userService = new UserService();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -334,7 +336,7 @@ public class CoffreVirtuelController implements Initializable {
         String status = cmbStatus.getValue();
         boolean estVerrouille = chkEstVerrouille.isSelected();
 
-        // ✅ RÉCUPÉRER L'ID DU COMPTE SÉLECTIONNÉ
+        // Récupérer le compte sélectionné
         CompteBancaire compteSelectionne = cmbCompteBancaire.getValue();
         int idCompte = compteSelectionne.getIdCompte();
 
@@ -346,25 +348,28 @@ public class CoffreVirtuelController implements Initializable {
             selectedCoffre.setDateObjectifs(dateObjectifs);
             selectedCoffre.setStatus(status);
             selectedCoffre.setEstVerrouille(estVerrouille);
-            selectedCoffre.setIdCompte(idCompte);  // ✅ NOUVEAU
-            // ★ On préserve l'idUser existant (on ne le réécrase pas à chaque édition)
+            selectedCoffre.setIdCompte(idCompte);
+            // On préserve l'idUser existant
 
             service.edit(selectedCoffre);
             tableCoffres.refresh();
             showInfo("Succès", "Coffre virtuel modifié avec succès");
 
         } else {
-            // ★ Récupération automatique du user connecté via AuthSession
-            int idUserConnecte = 0;
-            if (AuthSession.getCurrentUser() != null) {
-                idUserConnecte = AuthSession.getCurrentUser().getIdUser();
-            }
+            // ✅ CORRECTION : on prend l'idUser du CLIENT depuis le compte,
+            //                 PAS l'idUser de l'admin connecté
+            int idUserClient = compteSelectionne.getIdUser();
+
             CoffreVirtuel nouveau = new CoffreVirtuel(
                     nom, objectif, montant, dateCreation, dateObjectifs,
-                    status, estVerrouille, idCompte, idUserConnecte  // ★ idUser injecté automatiquement
+                    status, estVerrouille, idCompte, idUserClient
             );
+
             service.add(nouveau);
             showInfo("Succès", "Coffre virtuel ajouté avec succès");
+
+            // ✅ ENVOI EMAIL au client lié au compte sélectionné
+            envoyerEmailCoffre(nouveau, compteSelectionne);
         }
 
         clearForm();
@@ -672,5 +677,211 @@ public class CoffreVirtuelController implements Initializable {
         tableCoffres.getSortOrder().add(colStatus);
         colStatus.setSortType(TableColumn.SortType.ASCENDING);
         tableCoffres.sort();
+    }
+
+    private void envoyerEmailCoffre(CoffreVirtuel coffre, CompteBancaire compte) {
+
+        // ÉTAPE 1 : Récupérer l'idUser du client depuis le compte
+        int idUser = compte.getIdUser();
+        if (idUser <= 0) {
+            System.out.println("Email non envoyé : aucun utilisateur lié à ce compte.");
+            return;
+        }
+
+        // ÉTAPE 2 : Récupérer l'utilisateur depuis la table users
+        var userOptional = userService.findByIdPublic(idUser);
+        if (userOptional.isEmpty()) {
+            System.out.println("Email non envoyé : utilisateur introuvable (idUser=" + idUser + ")");
+            return;
+        }
+
+        var user = userOptional.get();
+
+        // ÉTAPE 3 : Vérifier que l'email existe
+        if (user.getEmail() == null || user.getEmail().isBlank()) {
+            System.out.println("Email non envoyé : adresse email vide pour idUser=" + idUser);
+            return;
+        }
+
+        // ÉTAPE 4 : Préparer les données
+        String fullName = ((user.getPrenom() == null ? "" : user.getPrenom().trim()) + " "
+                + (user.getNom() == null ? "" : user.getNom().trim())).trim();
+        if (fullName.isBlank()) fullName = user.getEmail();
+
+        String numCompte = compte.getNumeroCompte() + " - " + compte.getTypeCompte();
+
+        double progression = coffre.getObjectifMontant() > 0
+                ? (coffre.getMontantActuel() / coffre.getObjectifMontant()) * 100
+                : 0;
+        String progressionTxt = String.format("%.1f%%", Math.min(progression, 100.0));
+
+        String dateCreation  = (coffre.getDateCreation() == null  || coffre.getDateCreation().isBlank())  ? "-" : coffre.getDateCreation();
+        String dateObjectifs = (coffre.getDateObjectifs() == null || coffre.getDateObjectifs().isBlank()) ? "-" : coffre.getDateObjectifs();
+        String status        = coffre.getStatus() == null ? "-" : coffre.getStatus();
+        String verrouille    = coffre.isEstVerrouille() ? "🔒 Oui" : "🗝 Non";
+
+        String subject = "NEXORA – Un coffre virtuel a été créé pour vous : \"" + coffre.getNom() + "\"";
+
+        // ÉTAPE 5 : Construire le HTML
+        String html = """
+            <html>
+            <body style='font-family:Segoe UI,Arial,sans-serif;color:#1f2937;
+                         margin:0;padding:0;background:#f3f4f6;'>
+
+              <table width='100%%' cellpadding='0' cellspacing='0'
+                     style='background:#f3f4f6;padding:32px 0;'>
+                <tr><td align='center'>
+
+                  <table width='600' cellpadding='0' cellspacing='0'
+                         style='background:#ffffff;border-radius:12px;
+                                box-shadow:0 4px 16px rgba(0,0,0,0.08);'>
+
+                    <!-- HEADER -->
+                    <tr>
+                      <td style='background:linear-gradient(135deg,#0A2540 0%%,#0B6E6E 100%%);
+                                 padding:32px 40px;text-align:center;border-radius:12px 12px 0 0;'>
+                        <h1 style='color:#ffffff;margin:0;font-size:22px;letter-spacing:1px;'>
+                          🏦 NEXORA BANK
+                        </h1>
+                        <p style='color:#A5F3FC;margin:8px 0 0;font-size:13px;'>
+                          Création d'un Coffre Virtuel
+                        </p>
+                      </td>
+                    </tr>
+
+                    <!-- SALUTATION -->
+                    <tr>
+                      <td style='padding:32px 40px 16px;'>
+                        <p style='font-size:16px;margin:0;'>
+                          Bonjour <strong>%s</strong>,
+                        </p>
+                        <p style='font-size:14px;color:#6b7280;margin:12px 0 0;'>
+                          Votre conseiller NEXORA a créé un coffre virtuel sur votre compte.
+                          Voici le récapitulatif complet :
+                        </p>
+                      </td>
+                    </tr>
+
+                    <!-- TABLEAU DES INFOS -->
+                    <tr>
+                      <td style='padding:8px 40px 24px;'>
+                        <table width='100%%' cellpadding='10' cellspacing='0'
+                               style='border-collapse:collapse;font-size:14px;
+                                      border:1px solid #e5e7eb;'>
+
+                          <tr style='background:#f0fdf4;'>
+                            <td style='border:1px solid #e5e7eb;color:#6b7280;width:45%%;'>
+                              <b>Nom du coffre</b>
+                            </td>
+                            <td style='border:1px solid #e5e7eb;'>
+                              <b style='color:#0A2540;font-size:15px;'>%s</b>
+                            </td>
+                          </tr>
+
+                          <tr>
+                            <td style='border:1px solid #e5e7eb;color:#6b7280;'>
+                              Compte bancaire lié
+                            </td>
+                            <td style='border:1px solid #e5e7eb;'>%s</td>
+                          </tr>
+
+                          <tr style='background:#f9fafb;'>
+                            <td style='border:1px solid #e5e7eb;color:#6b7280;'>
+                              Objectif d'épargne
+                            </td>
+                            <td style='border:1px solid #e5e7eb;'>
+                              <b style='color:#0B6E6E;'>%,.2f DT</b>
+                            </td>
+                          </tr>
+
+                          <tr>
+                            <td style='border:1px solid #e5e7eb;color:#6b7280;'>
+                              Montant initial
+                            </td>
+                            <td style='border:1px solid #e5e7eb;'>%,.2f DT</td>
+                          </tr>
+
+                          <tr style='background:#f9fafb;'>
+                            <td style='border:1px solid #e5e7eb;color:#6b7280;'>
+                              Progression
+                            </td>
+                            <td style='border:1px solid #e5e7eb;'>
+                              <span style='background:#DCFCE7;color:#15803D;
+                                           padding:2px 12px;border-radius:12px;
+                                           font-weight:600;'>%s</span>
+                            </td>
+                          </tr>
+
+                          <tr>
+                            <td style='border:1px solid #e5e7eb;color:#6b7280;'>
+                              Date de création
+                            </td>
+                            <td style='border:1px solid #e5e7eb;'>%s</td>
+                          </tr>
+
+                          <tr style='background:#f9fafb;'>
+                            <td style='border:1px solid #e5e7eb;color:#6b7280;'>
+                              Date objectif
+                            </td>
+                            <td style='border:1px solid #e5e7eb;'>%s</td>
+                          </tr>
+
+                          <tr>
+                            <td style='border:1px solid #e5e7eb;color:#6b7280;'>Statut</td>
+                            <td style='border:1px solid #e5e7eb;'>
+                              <span style='background:#DBEAFE;color:#1D4ED8;
+                                           padding:2px 12px;border-radius:12px;
+                                           font-weight:600;'>%s</span>
+                            </td>
+                          </tr>
+
+                          <tr style='background:#f9fafb;'>
+                            <td style='border:1px solid #e5e7eb;color:#6b7280;'>Verrouillé</td>
+                            <td style='border:1px solid #e5e7eb;'>%s</td>
+                          </tr>
+
+                        </table>
+                      </td>
+                    </tr>
+
+                    <!-- FOOTER -->
+                    <tr>
+                      <td style='background:#f9fafb;padding:24px 40px;text-align:center;
+                                 border-top:1px solid #e5e7eb;border-radius:0 0 12px 12px;'>
+                        <p style='margin:0;font-size:13px;color:#6b7280;'>
+                          Merci de votre confiance —
+                          <strong style='color:#0A2540;'>NEXORA BANK</strong>
+                        </p>
+                        <p style='margin:6px 0 0;font-size:11px;color:#9ca3af;'>
+                          Cet e-mail est généré automatiquement, merci de ne pas y répondre.
+                        </p>
+                      </td>
+                    </tr>
+
+                  </table>
+                </td></tr>
+              </table>
+            </body>
+            </html>
+            """.formatted(
+                fullName,
+                coffre.getNom(),
+                numCompte,
+                coffre.getObjectifMontant(),
+                coffre.getMontantActuel(),
+                progressionTxt,
+                dateCreation,
+                dateObjectifs,
+                status,
+                verrouille
+        );
+
+        // ÉTAPE 6 : Envoyer
+        try {
+            userService.sendCustomEmail(user.getEmail(), subject, html);
+            System.out.println("✅ Email envoyé à " + user.getEmail() + " (client: " + fullName + ")");
+        } catch (RuntimeException ex) {
+            System.out.println("❌ Echec envoi email : " + ex.getMessage());
+        }
     }
 }

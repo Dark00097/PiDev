@@ -932,4 +932,6 @@ public class CompteBancaireController implements Initializable {
         CompteCoffresDialog dialog = new CompteCoffresDialog(compte);
         dialog.show(ownerStage);
     }
+
+
 }
