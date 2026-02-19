@@ -1,22 +1,29 @@
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by FernFlower decompiler)
+//
+
 package com.nexora.bank.Models;
 
 public class Credit {
-
     private int idCredit;
+    private int idCompte;
     private String typeCredit;
     private double montantDemande;
-    private Double montantAccord; // nullable
+    private Double montantAccord;
     private int duree;
     private double tauxInteret;
     private double mensualite;
     private double montantRestant;
     private String dateDemande;
     private String statut;
+    private int idUser;
 
     public Credit() {
     }
 
-    public Credit(String typeCredit, double montantDemande, Double montantAccord, int duree, double tauxInteret, double mensualite, double montantRestant, String dateDemande, String statut) {
+    public Credit(String typeCredit, double montantDemande, Double montantAccord, int duree, double tauxInteret, double mensualite, double montantRestant, String dateDemande, String statut, int idUser) {
+        this.idCompte = 0;
         this.typeCredit = typeCredit;
         this.montantDemande = montantDemande;
         this.montantAccord = montantAccord;
@@ -26,10 +33,12 @@ public class Credit {
         this.montantRestant = montantRestant;
         this.dateDemande = dateDemande;
         this.statut = statut;
+        this.idUser = idUser;
     }
 
     public Credit(int idCredit, String typeCredit, double montantDemande, Double montantAccord, int duree, double tauxInteret, double mensualite, double montantRestant, String dateDemande, String statut) {
         this.idCredit = idCredit;
+        this.idCompte = 0;
         this.typeCredit = typeCredit;
         this.montantDemande = montantDemande;
         this.montantAccord = montantAccord;
@@ -39,18 +48,46 @@ public class Credit {
         this.montantRestant = montantRestant;
         this.dateDemande = dateDemande;
         this.statut = statut;
+        this.idUser = 0;
+    }
+
+    public Credit(int idCredit, int idCompte, String typeCredit, double montantDemande, Double montantAccord, int duree, double tauxInteret, double mensualite, double montantRestant, String dateDemande, String statut) {
+        this(idCredit, idCompte, typeCredit, montantDemande, montantAccord, duree, tauxInteret, mensualite, montantRestant, dateDemande, statut, 0);
+    }
+
+    public Credit(int idCredit, int idCompte, String typeCredit, double montantDemande, Double montantAccord, int duree, double tauxInteret, double mensualite, double montantRestant, String dateDemande, String statut, int idUser) {
+        this.idCredit = idCredit;
+        this.idCompte = idCompte;
+        this.typeCredit = typeCredit;
+        this.montantDemande = montantDemande;
+        this.montantAccord = montantAccord;
+        this.duree = duree;
+        this.tauxInteret = tauxInteret;
+        this.mensualite = mensualite;
+        this.montantRestant = montantRestant;
+        this.dateDemande = dateDemande;
+        this.statut = statut;
+        this.idUser = idUser;
     }
 
     public int getIdCredit() {
-        return idCredit;
+        return this.idCredit;
     }
 
     public void setIdCredit(int idCredit) {
         this.idCredit = idCredit;
     }
 
+    public int getIdCompte() {
+        return this.idCompte;
+    }
+
+    public void setIdCompte(int idCompte) {
+        this.idCompte = idCompte;
+    }
+
     public String getTypeCredit() {
-        return typeCredit;
+        return this.typeCredit;
     }
 
     public void setTypeCredit(String typeCredit) {
@@ -58,7 +95,7 @@ public class Credit {
     }
 
     public double getMontantDemande() {
-        return montantDemande;
+        return this.montantDemande;
     }
 
     public void setMontantDemande(double montantDemande) {
@@ -66,7 +103,7 @@ public class Credit {
     }
 
     public Double getMontantAccord() {
-        return montantAccord;
+        return this.montantAccord;
     }
 
     public void setMontantAccord(Double montantAccord) {
@@ -74,7 +111,7 @@ public class Credit {
     }
 
     public int getDuree() {
-        return duree;
+        return this.duree;
     }
 
     public void setDuree(int duree) {
@@ -82,7 +119,7 @@ public class Credit {
     }
 
     public double getTauxInteret() {
-        return tauxInteret;
+        return this.tauxInteret;
     }
 
     public void setTauxInteret(double tauxInteret) {
@@ -90,7 +127,7 @@ public class Credit {
     }
 
     public double getMensualite() {
-        return mensualite;
+        return this.mensualite;
     }
 
     public void setMensualite(double mensualite) {
@@ -98,7 +135,7 @@ public class Credit {
     }
 
     public double getMontantRestant() {
-        return montantRestant;
+        return this.montantRestant;
     }
 
     public void setMontantRestant(double montantRestant) {
@@ -106,7 +143,7 @@ public class Credit {
     }
 
     public String getDateDemande() {
-        return dateDemande;
+        return this.dateDemande;
     }
 
     public void setDateDemande(String dateDemande) {
@@ -114,26 +151,22 @@ public class Credit {
     }
 
     public String getStatut() {
-        return statut;
+        return this.statut;
     }
 
     public void setStatut(String statut) {
         this.statut = statut;
     }
 
-    @Override
-    public String toString() {
-        return "Credit{" +
-                "idCredit=" + idCredit +
-                ", typeCredit='" + typeCredit + '\'' +
-                ", montantDemande=" + montantDemande +
-                ", montantAccord=" + montantAccord +
-                ", duree=" + duree +
-                ", tauxInteret=" + tauxInteret +
-                ", mensualite=" + mensualite +
-                ", montantRestant=" + montantRestant +
-                ", dateDemande='" + dateDemande + '\'' +
-                ", statut='" + statut + '\'' +
-                '}';
+    public int getIdUser() {
+        return this.idUser;
     }
+    public void setIdUser(int idUser) {
+        this.idUser = idUser;
+    }
+
+    public String toString() {
+        return "Credit{idCredit=" + idCredit + ", idCompte=" + idCompte + ", typeCredit='" + typeCredit + "', montantDemande=" + montantDemande + ", montantAccord=" + montantAccord + ", duree=" + this.duree + ", tauxInteret=" + this.tauxInteret + ", mensualite=" + this.mensualite + ", montantRestant=" + this.montantRestant + ", dateDemande='" + dateDemande + "', statut='" + statut + ", idUser="  + idUser + "'}";
+    }
+    
 }
