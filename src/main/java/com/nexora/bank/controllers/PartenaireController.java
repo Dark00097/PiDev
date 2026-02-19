@@ -1,5 +1,7 @@
 package com.nexora.bank.controllers;
 
+import com.nexora.bank.Models.Partenaire;
+import com.nexora.bank.Service.PartenaireService;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -7,11 +9,22 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.shape.SVGPath;
-import javafx.geometry.Pos;
 
 import java.net.URL;
 import java.util.Comparator;
@@ -20,12 +33,10 @@ import java.util.ResourceBundle;
 
 public class PartenaireController implements Initializable {
 
-    // Stat Labels
     @FXML private Label lblPartenairesActifs;
     @FXML private Label lblOffresDisponibles;
     @FXML private Label lblPartenairesPremium;
 
-    // Form Fields
     @FXML private TextField txtNom;
     @FXML private ComboBox<String> cmbCategorie;
     @FXML private TextArea txtDescription;
@@ -35,12 +46,8 @@ public class PartenaireController implements Initializable {
     @FXML private TextArea txtConditions;
     @FXML private ComboBox<String> cmbStatut;
 
-    // Buttons
     @FXML private Button btnAjouter;
-    @FXML private Button btnSupprimer;
-    @FXML private Button btnAnnuler;
 
-    // Table
     @FXML private TableView<Partenaire> tablePartenaires;
     @FXML private TableColumn<Partenaire, String> colNom;
     @FXML private TableColumn<Partenaire, String> colCategorie;
@@ -51,73 +58,68 @@ public class PartenaireController implements Initializable {
     @FXML private TableColumn<Partenaire, String> colStatut;
     @FXML private TableColumn<Partenaire, Void> colActions;
 
-    // Search and Info
     @FXML private TextField txtRecherche;
     @FXML private Label lblTableInfo;
 
-    private ObservableList<Partenaire> partenairesList = FXCollections.observableArrayList();
+    private final ObservableList<Partenaire> partenairesList = FXCollections.observableArrayList();
     private FilteredList<Partenaire> filteredData;
-    private Partenaire selectedPartenaire = null;
-    private boolean isEditMode = false;
+    private Partenaire selectedPartenaire;
+    private boolean isEditMode;
+
+    private final PartenaireService partenaireService = new PartenaireService();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initializeTable();
         initializeSearch();
-        loadSampleData();
-        updateStats();
         setupTableSelection();
+        reloadPartenaires();
     }
 
     private void initializeTable() {
         colNom.setCellValueFactory(new PropertyValueFactory<>("nom"));
         colCategorie.setCellValueFactory(new PropertyValueFactory<>("categorie"));
-        colTaux.setCellValueFactory(cellData -> 
-            new SimpleStringProperty(cellData.getValue().getTauxCashback() + "%"));
-        colTauxMax.setCellValueFactory(cellData -> 
-            new SimpleStringProperty(cellData.getValue().getTauxCashbackMax() + "%"));
-        colPlafond.setCellValueFactory(cellData -> 
-            new SimpleStringProperty(String.format("%.2f DT", cellData.getValue().getPlafondMensuel())));
+        colTaux.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getTauxCashback() + "%"));
+        colTauxMax.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getTauxCashbackMax() + "%"));
+        colPlafond.setCellValueFactory(c -> new SimpleStringProperty(String.format("%.2f DT", c.getValue().getPlafondMensuel())));
         colDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
-        colStatut.setCellValueFactory(new PropertyValueFactory<>("statut"));
+        colStatut.setCellValueFactory(c -> new SimpleStringProperty(safe(c.getValue().getStatus())));
 
-        // Categorie with colored badge
         colCategorie.setCellFactory(column -> new TableCell<>() {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setGraphic(null);
-                } else {
-                    Label badge = new Label(item);
-                    badge.getStyleClass().addAll("nx-badge", "nx-badge-category");
-                    setGraphic(badge);
+                    return;
                 }
+                Label badge = new Label(item);
+                badge.getStyleClass().addAll("nx-badge", "nx-badge-category");
+                setGraphic(badge);
             }
         });
 
-        // Status column with badge styling
         colStatut.setCellFactory(column -> new TableCell<>() {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setGraphic(null);
-                } else {
-                    Label badge = new Label(item);
-                    badge.getStyleClass().add("nx-badge");
-                    switch (item) {
-                        case "Actif": badge.getStyleClass().add("nx-badge-success"); break;
-                        case "Premium": badge.getStyleClass().add("nx-badge-purple"); break;
-                        case "Inactif": badge.getStyleClass().add("nx-badge-warning"); break;
-                        case "Suspendu": badge.getStyleClass().add("nx-badge-error"); break;
-                    }
-                    setGraphic(badge);
+                    return;
                 }
+                Label badge = new Label(item);
+                badge.getStyleClass().add("nx-badge");
+                switch (item) {
+                    case "Actif" -> badge.getStyleClass().add("nx-badge-success");
+                    case "Premium" -> badge.getStyleClass().add("nx-badge-purple");
+                    case "Inactif" -> badge.getStyleClass().add("nx-badge-warning");
+                    case "Suspendu" -> badge.getStyleClass().add("nx-badge-error");
+                    default -> { }
+                }
+                setGraphic(badge);
             }
         });
 
-        // Taux with visual indicator
         colTaux.setCellFactory(column -> new TableCell<>() {
             @Override
             protected void updateItem(String item, boolean empty) {
@@ -125,26 +127,26 @@ public class PartenaireController implements Initializable {
                 if (empty || item == null) {
                     setGraphic(null);
                     setText(null);
-                } else {
-                    Partenaire p = getTableView().getItems().get(getIndex());
-                    HBox hbox = new HBox(8);
-                    hbox.setAlignment(Pos.CENTER_LEFT);
-                    
-                    ProgressBar progress = new ProgressBar(p.getTauxCashback() / 20.0);
-                    progress.setPrefWidth(50);
-                    progress.setPrefHeight(8);
-                    progress.getStyleClass().add("nx-mini-progress");
-                    
-                    Label label = new Label(item);
-                    label.getStyleClass().add("nx-taux-label");
-                    
-                    hbox.getChildren().addAll(progress, label);
-                    setGraphic(hbox);
+                    return;
                 }
+
+                Partenaire p = getTableView().getItems().get(getIndex());
+                HBox hbox = new HBox(8);
+                hbox.setAlignment(Pos.CENTER_LEFT);
+
+                ProgressBar progress = new ProgressBar(p.getTauxCashback() / 20.0);
+                progress.setPrefWidth(50);
+                progress.setPrefHeight(8);
+                progress.getStyleClass().add("nx-mini-progress");
+
+                Label label = new Label(item);
+                label.getStyleClass().add("nx-taux-label");
+
+                hbox.getChildren().addAll(progress, label);
+                setGraphic(hbox);
             }
         });
 
-        // Actions column
         colActions.setCellFactory(column -> new TableCell<>() {
             private final Button btnEdit = new Button();
             private final Button btnDelete = new Button();
@@ -168,15 +170,8 @@ public class PartenaireController implements Initializable {
                 hbox.setAlignment(Pos.CENTER);
                 hbox.getChildren().addAll(btnEdit, btnDelete);
 
-                btnEdit.setOnAction(event -> {
-                    Partenaire partenaire = getTableView().getItems().get(getIndex());
-                    editPartenaire(partenaire);
-                });
-
-                btnDelete.setOnAction(event -> {
-                    Partenaire partenaire = getTableView().getItems().get(getIndex());
-                    deletePartenaire(partenaire);
-                });
+                btnEdit.setOnAction(event -> editPartenaire(getTableView().getItems().get(getIndex())));
+                btnDelete.setOnAction(event -> deletePartenaire(getTableView().getItems().get(getIndex())));
             }
 
             @Override
@@ -192,13 +187,13 @@ public class PartenaireController implements Initializable {
 
         txtRecherche.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredData.setPredicate(partenaire -> {
-                if (newValue == null || newValue.isEmpty()) {
+                if (newValue == null || newValue.isBlank()) {
                     return true;
                 }
-                String lowerCaseFilter = newValue.toLowerCase();
-                return partenaire.getNom().toLowerCase().contains(lowerCaseFilter) ||
-                       partenaire.getCategorie().toLowerCase().contains(lowerCaseFilter) ||
-                       partenaire.getStatut().toLowerCase().contains(lowerCaseFilter);
+                String filter = newValue.trim().toLowerCase();
+                return safe(partenaire.getNom()).toLowerCase().contains(filter)
+                        || safe(partenaire.getCategorie()).toLowerCase().contains(filter)
+                        || safe(partenaire.getStatus()).toLowerCase().contains(filter);
             });
             updateTableInfo();
         });
@@ -210,46 +205,38 @@ public class PartenaireController implements Initializable {
 
     private void setupTableSelection() {
         tablePartenaires.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
-            if (newSelection != null) {
-                selectedPartenaire = newSelection;
-                populateForm(newSelection);
-                isEditMode = true;
-                btnAjouter.setText("Modifier");
+            if (newSelection == null) {
+                return;
             }
+            selectedPartenaire = newSelection;
+            populateForm(newSelection);
+            isEditMode = true;
+            btnAjouter.setText("Modifier");
         });
     }
 
-    private void loadSampleData() {
-        partenairesList.addAll(
-            new Partenaire("Carrefour", "Grande Distribution", "Supermarche et produits alimentaires", 3.0, 8.0, 50.0, "Valable sur tous les achats", "Premium"),
-            new Partenaire("Zara", "Mode et Vetements", "Pret-a-porter et accessoires", 5.0, 15.0, 100.0, "Hors soldes", "Actif"),
-            new Partenaire("Technopolis", "Electronique", "Electromenager et high-tech", 2.0, 5.0, 75.0, "Sur produits selectionnes", "Actif"),
-            new Partenaire("Pizza Hut", "Restauration", "Restaurants et livraison", 10.0, 20.0, 30.0, "Commandes en ligne uniquement", "Premium"),
-            new Partenaire("Tunisair", "Voyage et Tourisme", "Billets d'avion et packages", 1.5, 3.0, 200.0, "Vols reguliers uniquement", "Actif"),
-            new Partenaire("Pharmacie Centrale", "Sante et Bien-etre", "Produits parapharmaceutiques", 4.0, 10.0, 40.0, "Hors medicaments", "Inactif"),
-            new Partenaire("Decathlon", "Sport et Loisirs", "Equipements sportifs et outdoor", 3.5, 9.0, 60.0, "Hors promotions", "Actif"),
-            new Partenaire("Orange", "Telecoms", "Forfaits mobile et internet", 2.0, 6.0, 35.0, "Forfaits hors subventions", "Actif"),
-            new Partenaire("Marriott", "Hotellerie", "Sejours et services", 2.5, 7.0, 150.0, "Reservation directe", "Premium")
-        );
+    private void reloadPartenaires() {
+        partenairesList.setAll(partenaireService.getAllPartenaires());
+        updateStats();
         updateTableInfo();
     }
 
     private void updateStats() {
         long actifs = partenairesList.stream()
-            .filter(p -> p.getStatut().equals("Actif") || p.getStatut().equals("Premium")).count();
-        int offres = partenairesList.size();
+                .filter(p -> "Actif".equalsIgnoreCase(p.getStatus()) || "Premium".equalsIgnoreCase(p.getStatus()))
+                .count();
         long premium = partenairesList.stream()
-            .filter(p -> p.getStatut().equals("Premium")).count();
+                .filter(p -> "Premium".equalsIgnoreCase(p.getStatus()))
+                .count();
 
         lblPartenairesActifs.setText(String.valueOf(actifs));
-        lblOffresDisponibles.setText(String.valueOf(offres));
+        lblOffresDisponibles.setText(String.valueOf(partenairesList.size()));
         lblPartenairesPremium.setText(String.valueOf(premium));
     }
 
     private void updateTableInfo() {
-        int total = partenairesList.size();
-        int filtered = filteredData.size();
-        lblTableInfo.setText(String.format("Affichage de %d sur %d entrees", filtered, total));
+        int filtered = filteredData == null ? 0 : filteredData.size();
+        lblTableInfo.setText(String.format("Affichage de %d sur %d entrees", filtered, partenairesList.size()));
     }
 
     private void populateForm(Partenaire partenaire) {
@@ -260,7 +247,7 @@ public class PartenaireController implements Initializable {
         txtTauxCashbackMax.setText(String.valueOf(partenaire.getTauxCashbackMax()));
         txtPlafondMensuel.setText(String.valueOf(partenaire.getPlafondMensuel()));
         txtConditions.setText(partenaire.getConditions());
-        cmbStatut.setValue(partenaire.getStatut());
+        cmbStatut.setValue(partenaire.getStatus());
     }
 
     private void clearForm() {
@@ -272,6 +259,7 @@ public class PartenaireController implements Initializable {
         txtPlafondMensuel.clear();
         txtConditions.clear();
         cmbStatut.setValue(null);
+
         selectedPartenaire = null;
         isEditMode = false;
         btnAjouter.setText("Ajouter");
@@ -287,35 +275,46 @@ public class PartenaireController implements Initializable {
         try {
             String nom = txtNom.getText().trim();
             String categorie = cmbCategorie.getValue();
-            String description = txtDescription.getText();
+            String description = safe(txtDescription.getText());
             double taux = Double.parseDouble(txtTauxCashback.getText().trim());
-            double tauxMax = txtTauxCashbackMax.getText().isEmpty() ? taux : Double.parseDouble(txtTauxCashbackMax.getText().trim());
-            double plafond = txtPlafondMensuel.getText().isEmpty() ? 0 : Double.parseDouble(txtPlafondMensuel.getText().trim());
-            String conditions = txtConditions.getText();
-            String statut = cmbStatut.getValue();
+            double tauxMax = txtTauxCashbackMax.getText().isBlank() ? taux : Double.parseDouble(txtTauxCashbackMax.getText().trim());
+            double plafond = txtPlafondMensuel.getText().isBlank() ? 0 : Double.parseDouble(txtPlafondMensuel.getText().trim());
+            String conditions = safe(txtConditions.getText());
+            String status = cmbStatut.getValue();
+
+            Partenaire partenaire = new Partenaire();
+            partenaire.setNom(nom);
+            partenaire.setCategorie(categorie);
+            partenaire.setDescription(description);
+            partenaire.setTauxCashback(taux);
+            partenaire.setTauxCashbackMax(tauxMax);
+            partenaire.setPlafondMensuel(plafond);
+            partenaire.setConditions(conditions);
+            partenaire.setStatus(status);
 
             if (isEditMode && selectedPartenaire != null) {
-                selectedPartenaire.setNom(nom);
-                selectedPartenaire.setCategorie(categorie);
-                selectedPartenaire.setDescription(description);
-                selectedPartenaire.setTauxCashback(taux);
-                selectedPartenaire.setTauxCashbackMax(tauxMax);
-                selectedPartenaire.setPlafondMensuel(plafond);
-                selectedPartenaire.setConditions(conditions);
-                selectedPartenaire.setStatut(statut);
-                tablePartenaires.refresh();
-                showSuccessAlert("Succes", "Le partenaire a ete modifie avec succes!");
+                partenaire.setIdPartenaire(selectedPartenaire.getIdPartenaire());
+                boolean updated = partenaireService.updatePartenaire(partenaire);
+                if (!updated) {
+                    showErrorAlert("Erreur", "Modification impossible.");
+                    return;
+                }
+                showSuccessAlert("Succes", "Le partenaire a ete modifie avec succes.");
             } else {
-                Partenaire newPartenaire = new Partenaire(nom, categorie, description, taux, tauxMax, plafond, conditions, statut);
-                partenairesList.add(newPartenaire);
-                showSuccessAlert("Succes", "Le partenaire a ete ajoute avec succes!");
+                int createdId = partenaireService.createPartenaire(partenaire);
+                if (createdId <= 0) {
+                    showErrorAlert("Erreur", "Ajout impossible.");
+                    return;
+                }
+                showSuccessAlert("Succes", "Le partenaire a ete ajoute avec succes.");
             }
 
             clearForm();
-            updateStats();
-            updateTableInfo();
-        } catch (NumberFormatException e) {
+            reloadPartenaires();
+        } catch (NumberFormatException ex) {
             showErrorAlert("Erreur", "Veuillez entrer des valeurs numeriques valides.");
+        } catch (RuntimeException ex) {
+            showErrorAlert("Erreur", ex.getMessage());
         }
     }
 
@@ -343,16 +342,26 @@ public class PartenaireController implements Initializable {
     private void deletePartenaire(Partenaire partenaire) {
         Alert confirmDialog = new Alert(Alert.AlertType.CONFIRMATION);
         confirmDialog.setTitle("Confirmation de suppression");
-        confirmDialog.setHeaderText("Supprimer le partenaire \"" + partenaire.getNom() + "\"x");
+        confirmDialog.setHeaderText("Supprimer le partenaire \"" + partenaire.getNom() + "\" ?");
         confirmDialog.setContentText("Cette action est irreversible.");
 
         Optional<ButtonType> result = confirmDialog.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
-            partenairesList.remove(partenaire);
+        if (result.isEmpty() || result.get() != ButtonType.OK) {
+            return;
+        }
+
+        try {
+            boolean deleted = partenaireService.deletePartenaire(partenaire.getIdPartenaire());
+            if (!deleted) {
+                showErrorAlert("Erreur", "Suppression impossible.");
+                return;
+            }
+
             clearForm();
-            updateStats();
-            updateTableInfo();
-            showSuccessAlert("Succes", "Le partenaire a ete supprime avec succes!");
+            reloadPartenaires();
+            showSuccessAlert("Succes", "Le partenaire a ete supprime avec succes.");
+        } catch (RuntimeException ex) {
+            showErrorAlert("Erreur", ex.getMessage());
         }
     }
 
@@ -372,21 +381,48 @@ public class PartenaireController implements Initializable {
             errors.append("- Le statut est obligatoire\n");
         }
 
-        if (errors.length() > 0) {
-            showErrorAlert("Validation", "Veuillez corriger les erreurs suivantes:\n" + errors.toString());
+        if (!txtTauxCashback.getText().trim().isEmpty()) {
+            try {
+                Double.parseDouble(txtTauxCashback.getText().trim());
+            } catch (NumberFormatException ex) {
+                errors.append("- Taux cashback invalide\n");
+            }
+        }
+
+        if (!txtTauxCashbackMax.getText().trim().isEmpty()) {
+            try {
+                Double.parseDouble(txtTauxCashbackMax.getText().trim());
+            } catch (NumberFormatException ex) {
+                errors.append("- Taux cashback max invalide\n");
+            }
+        }
+
+        if (!txtPlafondMensuel.getText().trim().isEmpty()) {
+            try {
+                Double.parseDouble(txtPlafondMensuel.getText().trim());
+            } catch (NumberFormatException ex) {
+                errors.append("- Plafond mensuel invalide\n");
+            }
+        }
+
+        if (!errors.isEmpty()) {
+            showErrorAlert("Validation", "Veuillez corriger les erreurs suivantes:\n" + errors);
             return false;
         }
         return true;
     }
 
-    // Sorting methods
-    @FXML private void trierParNom() { partenairesList.sort(Comparator.comparing(Partenaire::getNom)); }
-    @FXML private void trierParCategorie() { partenairesList.sort(Comparator.comparing(Partenaire::getCategorie)); }
+    @FXML private void trierParNom() { partenairesList.sort(Comparator.comparing(p -> safe(p.getNom()))); }
+    @FXML private void trierParCategorie() { partenairesList.sort(Comparator.comparing(p -> safe(p.getCategorie()))); }
     @FXML private void trierParTaux() { partenairesList.sort(Comparator.comparing(Partenaire::getTauxCashback).reversed()); }
-    @FXML private void trierParStatut() { partenairesList.sort(Comparator.comparing(Partenaire::getStatut)); }
+    @FXML private void trierParStatut() { partenairesList.sort(Comparator.comparing(p -> safe(p.getStatus()))); }
 
     @FXML private void exporterPDF() { showInfoAlert("Export PDF", "Fonctionnalite en cours de developpement."); }
     @FXML private void envoyerSMS() { showInfoAlert("SMS", "Fonctionnalite en cours de developpement."); }
+
+    private String safe(String value) {
+        return value == null ? "" : value;
+    }
 
     private void showSuccessAlert(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -418,47 +454,5 @@ public class PartenaireController implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
-    }
-
-    // Inner class for Partenaire
-    public static class Partenaire {
-        private String nom;
-        private String categorie;
-        private String description;
-        private double tauxCashback;
-        private double tauxCashbackMax;
-        private double plafondMensuel;
-        private String conditions;
-        private String statut;
-
-        public Partenaire(String nom, String categorie, String description, double tauxCashback, 
-                         double tauxCashbackMax, double plafondMensuel, String conditions, String statut) {
-            this.nom = nom;
-            this.categorie = categorie;
-            this.description = description;
-            this.tauxCashback = tauxCashback;
-            this.tauxCashbackMax = tauxCashbackMax;
-            this.plafondMensuel = plafondMensuel;
-            this.conditions = conditions;
-            this.statut = statut;
-        }
-
-        // Getters and Setters
-        public String getNom() { return nom; }
-        public void setNom(String nom) { this.nom = nom; }
-        public String getCategorie() { return categorie; }
-        public void setCategorie(String categorie) { this.categorie = categorie; }
-        public String getDescription() { return description; }
-        public void setDescription(String description) { this.description = description; }
-        public double getTauxCashback() { return tauxCashback; }
-        public void setTauxCashback(double tauxCashback) { this.tauxCashback = tauxCashback; }
-        public double getTauxCashbackMax() { return tauxCashbackMax; }
-        public void setTauxCashbackMax(double tauxCashbackMax) { this.tauxCashbackMax = tauxCashbackMax; }
-        public double getPlafondMensuel() { return plafondMensuel; }
-        public void setPlafondMensuel(double plafondMensuel) { this.plafondMensuel = plafondMensuel; }
-        public String getConditions() { return conditions; }
-        public void setConditions(String conditions) { this.conditions = conditions; }
-        public String getStatut() { return statut; }
-        public void setStatut(String statut) { this.statut = statut; }
     }
 }

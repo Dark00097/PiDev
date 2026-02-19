@@ -1,47 +1,31 @@
 package com.nexora.bank.Models;
 
+import java.time.LocalDate;
+
 public class Cashback {
     private int idCashback;
-    private int idPartenaire;
-    private int idTransaction;
     private int idUser;
+    private String userDisplayName;
+    private Integer idPartenaire;
+    private String partenaireNom;
     private double montantAchat;
     private double tauxApplique;
     private double montantCashback;
-    private String dateAchat;
-    private String dateCredit;
-    private String dateExpiration;
+    private LocalDate dateAchat;
+    private LocalDate dateCredit;
+    private LocalDate dateExpiration;
     private String statut;
-
-    // Transient display fields (not persisted, populated via JOINs)
-    private String partenaireNom;
-    private String partenaireCategorie;
+    private String transactionRef;
 
     public Cashback() {
     }
 
-    public Cashback(int idPartenaire, int idTransaction, int idUser,
-                    double montantAchat, double tauxApplique, double montantCashback,
-                    String dateAchat, String dateCredit, String dateExpiration, String statut) {
-        this.idPartenaire = idPartenaire;
-        this.idTransaction = idTransaction;
+    public Cashback(int idUser, Integer idPartenaire, String partenaireNom, double montantAchat, double tauxApplique,
+                    double montantCashback, LocalDate dateAchat, LocalDate dateCredit, LocalDate dateExpiration,
+                    String statut, String transactionRef) {
         this.idUser = idUser;
-        this.montantAchat = montantAchat;
-        this.tauxApplique = tauxApplique;
-        this.montantCashback = montantCashback;
-        this.dateAchat = dateAchat;
-        this.dateCredit = dateCredit;
-        this.dateExpiration = dateExpiration;
-        this.statut = statut;
-    }
-
-    public Cashback(int idCashback, int idPartenaire, int idTransaction, int idUser,
-                    double montantAchat, double tauxApplique, double montantCashback,
-                    String dateAchat, String dateCredit, String dateExpiration, String statut) {
-        this.idCashback = idCashback;
         this.idPartenaire = idPartenaire;
-        this.idTransaction = idTransaction;
-        this.idUser = idUser;
+        this.partenaireNom = partenaireNom;
         this.montantAchat = montantAchat;
         this.tauxApplique = tauxApplique;
         this.montantCashback = montantCashback;
@@ -49,19 +33,7 @@ public class Cashback {
         this.dateCredit = dateCredit;
         this.dateExpiration = dateExpiration;
         this.statut = statut;
-    }
-
-    // Legacy constructor for backward compatibility with admin controller
-    public Cashback(int idPartenaire, double montantAchat, double tauxApplique, double montantCashback,
-                    String dateAchat, String dateCredit, String dateExpiration, String statut) {
-        this.idPartenaire = idPartenaire;
-        this.montantAchat = montantAchat;
-        this.tauxApplique = tauxApplique;
-        this.montantCashback = montantCashback;
-        this.dateAchat = dateAchat;
-        this.dateCredit = dateCredit;
-        this.dateExpiration = dateExpiration;
-        this.statut = statut;
+        this.transactionRef = transactionRef;
     }
 
     public int getIdCashback() {
@@ -72,28 +44,36 @@ public class Cashback {
         this.idCashback = idCashback;
     }
 
-    public int getIdPartenaire() {
-        return idPartenaire;
-    }
-
-    public void setIdPartenaire(int idPartenaire) {
-        this.idPartenaire = idPartenaire;
-    }
-
-    public int getIdTransaction() {
-        return idTransaction;
-    }
-
-    public void setIdTransaction(int idTransaction) {
-        this.idTransaction = idTransaction;
-    }
-
     public int getIdUser() {
         return idUser;
     }
 
     public void setIdUser(int idUser) {
         this.idUser = idUser;
+    }
+
+    public String getUserDisplayName() {
+        return userDisplayName;
+    }
+
+    public void setUserDisplayName(String userDisplayName) {
+        this.userDisplayName = userDisplayName;
+    }
+
+    public Integer getIdPartenaire() {
+        return idPartenaire;
+    }
+
+    public void setIdPartenaire(Integer idPartenaire) {
+        this.idPartenaire = idPartenaire;
+    }
+
+    public String getPartenaireNom() {
+        return partenaireNom;
+    }
+
+    public void setPartenaireNom(String partenaireNom) {
+        this.partenaireNom = partenaireNom;
     }
 
     public double getMontantAchat() {
@@ -120,27 +100,27 @@ public class Cashback {
         this.montantCashback = montantCashback;
     }
 
-    public String getDateAchat() {
+    public LocalDate getDateAchat() {
         return dateAchat;
     }
 
-    public void setDateAchat(String dateAchat) {
+    public void setDateAchat(LocalDate dateAchat) {
         this.dateAchat = dateAchat;
     }
 
-    public String getDateCredit() {
+    public LocalDate getDateCredit() {
         return dateCredit;
     }
 
-    public void setDateCredit(String dateCredit) {
+    public void setDateCredit(LocalDate dateCredit) {
         this.dateCredit = dateCredit;
     }
 
-    public String getDateExpiration() {
+    public LocalDate getDateExpiration() {
         return dateExpiration;
     }
 
-    public void setDateExpiration(String dateExpiration) {
+    public void setDateExpiration(LocalDate dateExpiration) {
         this.dateExpiration = dateExpiration;
     }
 
@@ -152,37 +132,30 @@ public class Cashback {
         this.statut = statut;
     }
 
-    public String getPartenaireNom() {
-        return partenaireNom;
+    public String getTransactionRef() {
+        return transactionRef;
     }
 
-    public void setPartenaireNom(String partenaireNom) {
-        this.partenaireNom = partenaireNom;
-    }
-
-    public String getPartenaireCategorie() {
-        return partenaireCategorie;
-    }
-
-    public void setPartenaireCategorie(String partenaireCategorie) {
-        this.partenaireCategorie = partenaireCategorie;
+    public void setTransactionRef(String transactionRef) {
+        this.transactionRef = transactionRef;
     }
 
     @Override
     public String toString() {
         return "Cashback{" +
                 "idCashback=" + idCashback +
-                ", idPartenaire=" + idPartenaire +
-                ", idTransaction=" + idTransaction +
                 ", idUser=" + idUser +
+                ", userDisplayName='" + userDisplayName + '\'' +
+                ", idPartenaire=" + idPartenaire +
+                ", partenaireNom='" + partenaireNom + '\'' +
                 ", montantAchat=" + montantAchat +
                 ", tauxApplique=" + tauxApplique +
                 ", montantCashback=" + montantCashback +
-                ", dateAchat='" + dateAchat + '\'' +
-                ", dateCredit='" + dateCredit + '\'' +
-                ", dateExpiration='" + dateExpiration + '\'' +
+                ", dateAchat=" + dateAchat +
+                ", dateCredit=" + dateCredit +
+                ", dateExpiration=" + dateExpiration +
                 ", statut='" + statut + '\'' +
-                ", partenaireNom='" + partenaireNom + '\'' +
+                ", transactionRef='" + transactionRef + '\'' +
                 '}';
     }
 }

@@ -1,415 +1,363 @@
 package com.nexora.bank.Service;
 
 import com.nexora.bank.Models.Cashback;
-import com.nexora.bank.Models.Partenaire;
 import com.nexora.bank.Utils.MyDB;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-/**
- * Shared service for cashback operations used by both admin and user-facing controllers.
- * Encapsulates all database queries, calculations, and business logic for cashback rewards.
- */
 public class CashbackService {
 
-    private final Connection conn;
+    private final Connection connection;
 
     public CashbackService() {
-        this.conn = MyDB.getInstance().getConn();
+        this.connection = MyDB.getInstance().getConn();
+        ensureCashbackTable();
     }
 
-    // ═══════════════════ CASHBACK CRUD ═══════════════════
+    public List<Cashback> getAllCashbacks() {
+        String sql = baseSelect() + " ORDER BY c.date_achat DESC, c.id_cashback DESC";
+        return queryList(sql, null);
+    }
 
-    /**
-     * Insert a new cashback record into the database.
-     */
-    public boolean addCashback(Cashback cashback) {
-        String sql = "INSERT INTO cashback (idPartenaire, idTransaction, idUser, montantAchat, tauxApplique, " +
-                     "montantCashback, dateAchat, dateCredit, dateExpiration, statut) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setInt(1, cashback.getIdPartenaire());
-            ps.setInt(2, cashback.getIdTransaction());
-            ps.setInt(3, cashback.getIdUser());
-            ps.setDouble(4, cashback.getMontantAchat());
-            ps.setDouble(5, cashback.getTauxApplique());
-            ps.setDouble(6, cashback.getMontantCashback());
-            ps.setString(7, cashback.getDateAchat());
-            ps.setString(8, cashback.getDateCredit());
-            ps.setString(9, cashback.getDateExpiration());
-            ps.setString(10, cashback.getStatut());
-            int rows = ps.executeUpdate();
-            if (rows > 0) {
-                ResultSet keys = ps.getGeneratedKeys();
-                if (keys.next()) {
-                    cashback.setIdCashback(keys.getInt(1));
+    public List<Cashback> getCashbacksByUser(int idUser) {
+        String sql = baseSelect() + " WHERE c.id_user = ? ORDER BY c.date_achat DESC, c.id_cashback DESC";
+        return queryList(sql, ps -> ps.setInt(1, idUser));
+    }
+
+    public Optional<Cashback> findById(int idCashback) {
+        String sql = baseSelect() + " WHERE c.id_cashback = ? LIMIT 1";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, idCashback);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return Optional.of(mapCashback(rs));
                 }
-                return true;
             }
-        } catch (SQLException e) {
-            System.err.println("Error adding cashback: " + e.getMessage());
+            return Optional.empty();
+        } catch (SQLException ex) {
+            throw new RuntimeException("Failed to find cashback.", ex);
         }
-        return false;
     }
 
-    /**
-     * Update an existing cashback record.
-     */
-    public boolean updateCashback(Cashback cashback) {
-        String sql = "UPDATE cashback SET idPartenaire=?, idTransaction=?, idUser=?, montantAchat=?, " +
-                     "tauxApplique=?, montantCashback=?, dateAchat=?, dateCredit=?, dateExpiration=?, statut=? " +
-                     "WHERE idCashback=?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, cashback.getIdPartenaire());
-            ps.setInt(2, cashback.getIdTransaction());
-            ps.setInt(3, cashback.getIdUser());
-            ps.setDouble(4, cashback.getMontantAchat());
-            ps.setDouble(5, cashback.getTauxApplique());
-            ps.setDouble(6, cashback.getMontantCashback());
-            ps.setString(7, cashback.getDateAchat());
-            ps.setString(8, cashback.getDateCredit());
-            ps.setString(9, cashback.getDateExpiration());
-            ps.setString(10, cashback.getStatut());
-            ps.setInt(11, cashback.getIdCashback());
+    public int createCashback(Cashback cashback) {
+        String sql = """
+            INSERT INTO cashback_entries
+                (id_user, id_partenaire, partenaire_nom, montant_achat, taux_applique, montant_cashback,
+                 date_achat, date_credit, date_expiration, statut, transaction_ref)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """;
+
+        try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            fillForWrite(ps, cashback);
+            ps.executeUpdate();
+
+            try (ResultSet keys = ps.getGeneratedKeys()) {
+                if (keys.next()) {
+                    return keys.getInt(1);
+                }
+            }
+            return 0;
+        } catch (SQLException ex) {
+            throw new RuntimeException("Failed to create cashback.", ex);
+        }
+    }
+
+    public boolean updateCashbackAsAdmin(Cashback cashback) {
+        String sql = """
+            UPDATE cashback_entries
+            SET id_user = ?, id_partenaire = ?, partenaire_nom = ?, montant_achat = ?, taux_applique = ?,
+                montant_cashback = ?, date_achat = ?, date_credit = ?, date_expiration = ?, statut = ?, transaction_ref = ?
+            WHERE id_cashback = ?
+            """;
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            fillForWrite(ps, cashback);
+            ps.setInt(12, cashback.getIdCashback());
             return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.err.println("Error updating cashback: " + e.getMessage());
+        } catch (SQLException ex) {
+            throw new RuntimeException("Failed to update cashback.", ex);
         }
-        return false;
     }
 
-    /**
-     * Delete a cashback record by ID.
-     */
-    public boolean deleteCashback(int idCashback) {
-        String sql = "DELETE FROM cashback WHERE idCashback=?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+    public boolean updateCashbackForUser(Cashback cashback, int idUser) {
+        String sql = """
+            UPDATE cashback_entries
+            SET id_partenaire = ?, partenaire_nom = ?, montant_achat = ?, taux_applique = ?,
+                montant_cashback = ?, date_achat = ?, date_credit = ?, date_expiration = ?, statut = ?, transaction_ref = ?
+            WHERE id_cashback = ? AND id_user = ?
+            """;
+
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            setNullableInt(ps, 1, cashback.getIdPartenaire());
+            ps.setString(2, safeText(cashback.getPartenaireNom()));
+            ps.setDouble(3, cashback.getMontantAchat());
+            ps.setDouble(4, cashback.getTauxApplique());
+            ps.setDouble(5, cashback.getMontantCashback());
+            ps.setDate(6, toSqlDate(cashback.getDateAchat()));
+            ps.setDate(7, toSqlDate(cashback.getDateCredit()));
+            ps.setDate(8, toSqlDate(cashback.getDateExpiration()));
+            ps.setString(9, safeText(cashback.getStatut()));
+            ps.setString(10, safeText(cashback.getTransactionRef()));
+            ps.setInt(11, cashback.getIdCashback());
+            ps.setInt(12, idUser);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException ex) {
+            throw new RuntimeException("Failed to update cashback for user.", ex);
+        }
+    }
+
+    public boolean deleteCashbackAsAdmin(int idCashback) {
+        String sql = "DELETE FROM cashback_entries WHERE id_cashback = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setInt(1, idCashback);
             return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            System.err.println("Error deleting cashback: " + e.getMessage());
+        } catch (SQLException ex) {
+            throw new RuntimeException("Failed to delete cashback.", ex);
         }
-        return false;
     }
 
-    // ═══════════════════ ADMIN QUERIES (ALL RECORDS) ═══════════════════
+    public boolean deleteCashbackForUser(int idCashback, int idUser) {
+        String sql = "DELETE FROM cashback_entries WHERE id_cashback = ? AND id_user = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, idCashback);
+            ps.setInt(2, idUser);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException ex) {
+            throw new RuntimeException("Failed to delete cashback for user.", ex);
+        }
+    }
 
-    /**
-     * Retrieve all cashback records with partner names (admin view).
-     */
-    public List<Cashback> getAllCashbacks() {
-        List<Cashback> list = new ArrayList<>();
-        String sql = "SELECT c.*, p.nom AS partenaireNom, p.categorie AS partenaireCategorie " +
-                     "FROM cashback c LEFT JOIN partenaire p ON c.idPartenaire = p.idPartenaire " +
-                     "ORDER BY c.dateAchat DESC";
-        try (Statement st = conn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
-            while (rs.next()) {
-                list.add(mapResultSetToCashback(rs));
+    public double getCreditedTotalByUser(int idUser) {
+        String sql = "SELECT COALESCE(SUM(montant_cashback), 0) FROM cashback_entries WHERE id_user = ? AND statut = 'Credite'";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, idUser);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getDouble(1);
+                }
+                return 0;
             }
-        } catch (SQLException e) {
-            System.err.println("Error fetching all cashbacks: " + e.getMessage());
+        } catch (SQLException ex) {
+            throw new RuntimeException("Failed to calculate credited total.", ex);
         }
-        return list;
     }
 
-    /**
-     * Get total cashback amount across all users (admin stat).
-     */
-    public double getTotalCashbackAll() {
-        String sql = "SELECT COALESCE(SUM(montantCashback), 0) FROM cashback WHERE statut = 'Credite'";
-        return querySingleDouble(sql);
-    }
-
-    /**
-     * Get count of unique beneficiaries (admin stat).
-     */
-    public long getBeneficiaryCount() {
-        String sql = "SELECT COUNT(DISTINCT idUser) FROM cashback WHERE statut IN ('Credite', 'Valide')";
-        return querySingleLong(sql);
-    }
-
-    /**
-     * Get total cashback for the current month (admin stat).
-     */
-    public double getCurrentMonthCashbackAll() {
-        String sql = "SELECT COALESCE(SUM(montantCashback), 0) FROM cashback " +
-                     "WHERE dateAchat LIKE CONCAT(DATE_FORMAT(CURDATE(), '%Y-%m'), '%')";
-        return querySingleDouble(sql);
-    }
-
-    // ═══════════════════ USER QUERIES (FILTERED BY USER) ═══════════════════
-
-    /**
-     * Retrieve cashback records for a specific user with partner details.
-     * This is the primary query for the user-facing rewards page.
-     */
-    public List<Cashback> getCashbacksByUserId(int userId) {
-        List<Cashback> list = new ArrayList<>();
-        String sql = "SELECT c.*, p.nom AS partenaireNom, p.categorie AS partenaireCategorie " +
-                     "FROM cashback c LEFT JOIN partenaire p ON c.idPartenaire = p.idPartenaire " +
-                     "WHERE c.idUser = ? ORDER BY c.dateAchat DESC";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, userId);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                list.add(mapResultSetToCashback(rs));
+    public double getPendingTotalByUser(int idUser) {
+        String sql = "SELECT COALESCE(SUM(montant_cashback), 0) FROM cashback_entries WHERE id_user = ? AND statut IN ('En attente', 'Valide')";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, idUser);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getDouble(1);
+                }
+                return 0;
             }
-        } catch (SQLException e) {
-            System.err.println("Error fetching user cashbacks: " + e.getMessage());
+        } catch (SQLException ex) {
+            throw new RuntimeException("Failed to calculate pending total.", ex);
         }
-        return list;
     }
 
-    /**
-     * Get total earned cashback for a user (only credited/approved).
-     */
-    public double getTotalEarnedByUser(int userId) {
-        String sql = "SELECT COALESCE(SUM(montantCashback), 0) FROM cashback " +
-                     "WHERE idUser = ? AND statut = 'Credite'";
-        return querySingleDoubleParam(sql, userId);
-    }
+    public double getCurrentMonthTotalByUser(int idUser) {
+        String sql = """
+            SELECT COALESCE(SUM(montant_cashback), 0)
+            FROM cashback_entries
+            WHERE id_user = ?
+              AND YEAR(date_achat) = YEAR(CURRENT_DATE())
+              AND MONTH(date_achat) = MONTH(CURRENT_DATE())
+            """;
 
-    /**
-     * Get available (redeemable) cashback balance for a user.
-     * Available = Credited and not expired.
-     */
-    public double getAvailableBalanceByUser(int userId) {
-        String sql = "SELECT COALESCE(SUM(montantCashback), 0) FROM cashback " +
-                     "WHERE idUser = ? AND statut = 'Credite' " +
-                     "AND (dateExpiration IS NULL OR dateExpiration >= DATE_FORMAT(CURDATE(), '%Y-%m-%d'))";
-        return querySingleDoubleParam(sql, userId);
-    }
-
-    /**
-     * Get pending cashback amount for a user.
-     */
-    public double getPendingByUser(int userId) {
-        String sql = "SELECT COALESCE(SUM(montantCashback), 0) FROM cashback " +
-                     "WHERE idUser = ? AND statut IN ('En attente', 'Valide')";
-        return querySingleDoubleParam(sql, userId);
-    }
-
-    /**
-     * Get cashback earned this month for a user.
-     */
-    public double getCurrentMonthByUser(int userId) {
-        String sql = "SELECT COALESCE(SUM(montantCashback), 0) FROM cashback " +
-                     "WHERE idUser = ? AND dateAchat LIKE CONCAT(DATE_FORMAT(CURDATE(), '%Y-%m'), '%')";
-        return querySingleDoubleParam(sql, userId);
-    }
-
-    /**
-     * Get count of pending transactions for a user.
-     */
-    public int getPendingCountByUser(int userId) {
-        String sql = "SELECT COUNT(*) FROM cashback WHERE idUser = ? AND statut IN ('En attente', 'Valide')";
-        return (int) querySingleLongParam(sql, userId);
-    }
-
-    /**
-     * Get total redeemed cashback for a user.
-     */
-    public double getRedeemedByUser(int userId) {
-        String sql = "SELECT COALESCE(SUM(montantCashback), 0) FROM cashback " +
-                     "WHERE idUser = ? AND statut = 'Echange'";
-        return querySingleDoubleParam(sql, userId);
-    }
-
-    /**
-     * Get count of active partners the user has earned cashback from.
-     */
-    public int getActivePartnerCountByUser(int userId) {
-        String sql = "SELECT COUNT(DISTINCT idPartenaire) FROM cashback " +
-                     "WHERE idUser = ? AND statut IN ('Credite', 'Valide', 'En attente')";
-        return (int) querySingleLongParam(sql, userId);
-    }
-
-    // ═══════════════════ PARTNER QUERIES ═══════════════════
-
-    /**
-     * Get all active partners.
-     */
-    public List<Partenaire> getAllPartners() {
-        List<Partenaire> list = new ArrayList<>();
-        String sql = "SELECT * FROM partenaire ORDER BY nom";
-        try (Statement st = conn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
-            while (rs.next()) {
-                Partenaire p = new Partenaire();
-                p.setIdPartenaire(rs.getInt("idPartenaire"));
-                p.setNom(rs.getString("nom"));
-                p.setCategorie(rs.getString("categorie"));
-                p.setDescription(rs.getString("description"));
-                p.setTauxCashback(rs.getDouble("tauxCashback"));
-                p.setTauxCashbackMax(rs.getDouble("tauxCashbackMax"));
-                p.setPlafondMensuel(rs.getDouble("plafondMensuel"));
-                p.setConditions(rs.getString("conditions"));
-                list.add(p);
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setInt(1, idUser);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getDouble(1);
+                }
+                return 0;
             }
-        } catch (SQLException e) {
-            System.err.println("Error fetching partners: " + e.getMessage());
+        } catch (SQLException ex) {
+            throw new RuntimeException("Failed to calculate monthly total.", ex);
         }
-        return list;
     }
 
-    /**
-     * Get partner name by ID.
-     */
-    public String getPartnerNameById(int idPartenaire) {
-        String sql = "SELECT nom FROM partenaire WHERE idPartenaire = ?";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, idPartenaire);
-            ResultSet rs = ps.executeQuery();
+    public long countActiveUsersWithCashback() {
+        String sql = "SELECT COUNT(DISTINCT id_user) FROM cashback_entries";
+        try (PreparedStatement ps = connection.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
-                return rs.getString("nom");
+                return rs.getLong(1);
             }
-        } catch (SQLException e) {
-            System.err.println("Error fetching partner name: " + e.getMessage());
+            return 0;
+        } catch (SQLException ex) {
+            throw new RuntimeException("Failed to count users with cashback.", ex);
         }
-        return "Unknown";
     }
 
-    /**
-     * Get earnings per partner for a specific user.
-     * Returns a list of Object[] where [0]=partnerName, [1]=category, [2]=totalEarned, [3]=cashbackRate
-     */
-    public List<Object[]> getEarningsPerPartnerByUser(int userId) {
-        List<Object[]> list = new ArrayList<>();
-        String sql = "SELECT p.nom, p.categorie, COALESCE(SUM(c.montantCashback), 0) AS totalEarned, " +
-                     "p.tauxCashbackMax " +
-                     "FROM cashback c JOIN partenaire p ON c.idPartenaire = p.idPartenaire " +
-                     "WHERE c.idUser = ? AND c.statut IN ('Credite', 'Valide') " +
-                     "GROUP BY p.idPartenaire, p.nom, p.categorie, p.tauxCashbackMax " +
-                     "ORDER BY totalEarned DESC";
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, userId);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                list.add(new Object[]{
-                    rs.getString("nom"),
-                    rs.getString("categorie"),
-                    rs.getDouble("totalEarned"),
-                    rs.getDouble("tauxCashbackMax")
-                });
+    public double getTotalCreditedGlobal() {
+        String sql = "SELECT COALESCE(SUM(montant_cashback), 0) FROM cashback_entries WHERE statut = 'Credite'";
+        try (PreparedStatement ps = connection.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getDouble(1);
             }
-        } catch (SQLException e) {
-            System.err.println("Error fetching earnings per partner: " + e.getMessage());
-        }
-        return list;
-    }
-
-    // ═══════════════════ CALCULATION HELPERS ═══════════════════
-
-    /**
-     * Calculate cashback amount from purchase amount and rate.
-     * Shared between admin and user controllers.
-     */
-    public static double calculateCashbackAmount(double purchaseAmount, double rate) {
-        return purchaseAmount * rate / 100.0;
-    }
-
-    /**
-     * Determine the membership tier based on total earned cashback.
-     */
-    public static String getMembershipTier(double totalEarned) {
-        if (totalEarned >= 500) return "Platine";
-        if (totalEarned >= 200) return "Or";
-        if (totalEarned >= 50) return "Argent";
-        return "Bronze";
-    }
-
-    /**
-     * Get the icon name for a membership tier.
-     */
-    public static String getMembershipTierIcon(String tier) {
-        switch (tier) {
-            case "Platine": return "fas-gem";
-            case "Or": return "fas-star";
-            case "Argent": return "fas-medal";
-            default: return "fas-award";
+            return 0;
+        } catch (SQLException ex) {
+            throw new RuntimeException("Failed to calculate global credited cashback.", ex);
         }
     }
 
-    /**
-     * Get icon literal for a partner category.
-     */
-    public static String getCategoryIcon(String category) {
-        if (category == null) return "fas-store";
-        switch (category.toLowerCase()) {
-            case "voyage": return "fas-plane";
-            case "shopping": return "fas-shopping-cart";
-            case "restauration": return "fas-utensils";
-            case "carburant": return "fas-gas-pump";
-            case "divertissement": return "fas-film";
-            case "technologie": return "fas-laptop";
-            case "sante": return "fas-heartbeat";
-            default: return "fas-store";
+    public double getCurrentMonthTotalGlobal() {
+        String sql = """
+            SELECT COALESCE(SUM(montant_cashback), 0)
+            FROM cashback_entries
+            WHERE YEAR(date_achat) = YEAR(CURRENT_DATE())
+              AND MONTH(date_achat) = MONTH(CURRENT_DATE())
+            """;
+
+        try (PreparedStatement ps = connection.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getDouble(1);
+            }
+            return 0;
+        } catch (SQLException ex) {
+            throw new RuntimeException("Failed to calculate global month cashback.", ex);
         }
     }
 
-    // ═══════════════════ PRIVATE HELPERS ═══════════════════
-
-    private Cashback mapResultSetToCashback(ResultSet rs) throws SQLException {
-        Cashback c = new Cashback();
-        c.setIdCashback(rs.getInt("idCashback"));
-        c.setIdPartenaire(rs.getInt("idPartenaire"));
-        c.setIdTransaction(rs.getInt("idTransaction"));
-        c.setIdUser(rs.getInt("idUser"));
-        c.setMontantAchat(rs.getDouble("montantAchat"));
-        c.setTauxApplique(rs.getDouble("tauxApplique"));
-        c.setMontantCashback(rs.getDouble("montantCashback"));
-        c.setDateAchat(rs.getString("dateAchat"));
-        c.setDateCredit(rs.getString("dateCredit"));
-        c.setDateExpiration(rs.getString("dateExpiration"));
-        c.setStatut(rs.getString("statut"));
-        // Joined fields
-        try {
-            c.setPartenaireNom(rs.getString("partenaireNom"));
-            c.setPartenaireCategorie(rs.getString("partenaireCategorie"));
-        } catch (SQLException ignored) {
-            // These columns may not be present in all queries
-        }
-        return c;
+    private interface StatementConfigurer {
+        void configure(PreparedStatement ps) throws SQLException;
     }
 
-    private double querySingleDouble(String sql) {
-        try (Statement st = conn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
-            if (rs.next()) return rs.getDouble(1);
-        } catch (SQLException e) {
-            System.err.println("Error in query: " + e.getMessage());
+    private List<Cashback> queryList(String sql, StatementConfigurer configurer) {
+        List<Cashback> result = new ArrayList<>();
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            if (configurer != null) {
+                configurer.configure(ps);
+            }
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    result.add(mapCashback(rs));
+                }
+            }
+            return result;
+        } catch (SQLException ex) {
+            throw new RuntimeException("Failed to query cashback list.", ex);
         }
-        return 0.0;
     }
 
-    private double querySingleDoubleParam(String sql, int param) {
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, param);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) return rs.getDouble(1);
-        } catch (SQLException e) {
-            System.err.println("Error in parameterized query: " + e.getMessage());
-        }
-        return 0.0;
+    private String baseSelect() {
+        return """
+            SELECT c.id_cashback, c.id_user, CONCAT(COALESCE(u.prenom, ''), ' ', COALESCE(u.nom, '')) AS user_name,
+                   c.id_partenaire, c.partenaire_nom, c.montant_achat, c.taux_applique, c.montant_cashback,
+                   c.date_achat, c.date_credit, c.date_expiration, c.statut, c.transaction_ref
+            FROM cashback_entries c
+            LEFT JOIN users u ON u.idUser = c.id_user
+            """;
     }
 
-    private long querySingleLong(String sql) {
-        try (Statement st = conn.createStatement(); ResultSet rs = st.executeQuery(sql)) {
-            if (rs.next()) return rs.getLong(1);
-        } catch (SQLException e) {
-            System.err.println("Error in query: " + e.getMessage());
-        }
-        return 0;
+    private Cashback mapCashback(ResultSet rs) throws SQLException {
+        Cashback cashback = new Cashback();
+        cashback.setIdCashback(rs.getInt("id_cashback"));
+        cashback.setIdUser(rs.getInt("id_user"));
+        cashback.setUserDisplayName(safeText(rs.getString("user_name")).trim());
+
+        int idPartenaire = rs.getInt("id_partenaire");
+        cashback.setIdPartenaire(rs.wasNull() ? null : idPartenaire);
+
+        cashback.setPartenaireNom(rs.getString("partenaire_nom"));
+        cashback.setMontantAchat(rs.getDouble("montant_achat"));
+        cashback.setTauxApplique(rs.getDouble("taux_applique"));
+        cashback.setMontantCashback(rs.getDouble("montant_cashback"));
+
+        Date dateAchat = rs.getDate("date_achat");
+        Date dateCredit = rs.getDate("date_credit");
+        Date dateExpiration = rs.getDate("date_expiration");
+        cashback.setDateAchat(dateAchat == null ? null : dateAchat.toLocalDate());
+        cashback.setDateCredit(dateCredit == null ? null : dateCredit.toLocalDate());
+        cashback.setDateExpiration(dateExpiration == null ? null : dateExpiration.toLocalDate());
+
+        cashback.setStatut(rs.getString("statut"));
+        cashback.setTransactionRef(rs.getString("transaction_ref"));
+        return cashback;
     }
 
-    private long querySingleLongParam(String sql, int param) {
-        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, param);
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) return rs.getLong(1);
-        } catch (SQLException e) {
-            System.err.println("Error in parameterized query: " + e.getMessage());
+    private void fillForWrite(PreparedStatement ps, Cashback cashback) throws SQLException {
+        ps.setInt(1, cashback.getIdUser());
+        setNullableInt(ps, 2, cashback.getIdPartenaire());
+        ps.setString(3, safeText(cashback.getPartenaireNom()));
+        ps.setDouble(4, cashback.getMontantAchat());
+        ps.setDouble(5, cashback.getTauxApplique());
+        ps.setDouble(6, cashback.getMontantCashback());
+        ps.setDate(7, toSqlDate(cashback.getDateAchat()));
+        ps.setDate(8, toSqlDate(cashback.getDateCredit()));
+        ps.setDate(9, toSqlDate(cashback.getDateExpiration()));
+        ps.setString(10, safeText(cashback.getStatut()));
+        ps.setString(11, safeText(cashback.getTransactionRef()));
+    }
+
+    private void setNullableInt(PreparedStatement ps, int index, Integer value) throws SQLException {
+        if (value == null || value <= 0) {
+            ps.setNull(index, java.sql.Types.INTEGER);
+            return;
         }
-        return 0;
+        ps.setInt(index, value);
+    }
+
+    private Date toSqlDate(LocalDate localDate) {
+        return localDate == null ? null : Date.valueOf(localDate);
+    }
+
+    private void ensureCashbackTable() {
+        String createSql = """
+            CREATE TABLE IF NOT EXISTS cashback_entries (
+                id_cashback INT AUTO_INCREMENT PRIMARY KEY,
+                id_user INT NOT NULL,
+                id_partenaire INT NULL,
+                partenaire_nom VARCHAR(120) NOT NULL,
+                montant_achat DOUBLE NOT NULL,
+                taux_applique DOUBLE NOT NULL,
+                montant_cashback DOUBLE NOT NULL,
+                date_achat DATE NOT NULL,
+                date_credit DATE NULL,
+                date_expiration DATE NULL,
+                statut VARCHAR(30) NOT NULL,
+                transaction_ref VARCHAR(120) NULL,
+                created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                CONSTRAINT fk_cashback_entries_user FOREIGN KEY (id_user) REFERENCES users(idUser) ON DELETE CASCADE,
+                CONSTRAINT fk_cashback_entries_partenaire FOREIGN KEY (id_partenaire) REFERENCES partenaire(idPartenaire) ON DELETE SET NULL
+            )
+            """;
+
+        try (Statement st = connection.createStatement()) {
+            st.execute(createSql);
+            ensureColumn("transaction_ref", "ALTER TABLE cashback_entries ADD COLUMN transaction_ref VARCHAR(120) NULL");
+        } catch (SQLException ex) {
+            throw new RuntimeException("Failed to ensure cashback table.", ex);
+        }
+    }
+
+    private void ensureColumn(String columnName, String alterSql) throws SQLException {
+        DatabaseMetaData metaData = connection.getMetaData();
+        try (ResultSet columns = metaData.getColumns(connection.getCatalog(), null, "cashback_entries", columnName)) {
+            if (!columns.next()) {
+                try (Statement st = connection.createStatement()) {
+                    st.execute(alterSql);
+                }
+            }
+        }
+    }
+
+    private String safeText(String value) {
+        return value == null ? "" : value.trim();
     }
 }

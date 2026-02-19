@@ -38,7 +38,7 @@ public final class PdfReportUtil {
                     writer = startPage(document, "Credits Report (continued)", "");
                 }
 
-                String row = String.format("%-3s %-6s %-19s %-12s %-12s %-6s %-7s %-10s %-10s", credit.getIdCredit(), credit.getIdCompte(), truncate(safeText(credit.getTypeCredit()), 19), formatMoney(credit.getMontantDemande()), credit.getMontantAccord() == null ? "-" : formatMoney(credit.getMontantAccord()), credit.getDuree(), String.format("%.2f%%", credit.getTauxInteret()), truncate(safeText(credit.getStatut()), 10), truncate(safeText(credit.getDateDemande()), 10));
+                String row = String.format("%-3s %-6s %-19s %-12s %-12s %-6s %-7s %-10s %-10s", credit.getIdCredit(), "N/A", truncate(safeText(credit.getTypeCredit()), 19), formatMoney(credit.getMontantDemande()), credit.getMontantAccord() == null ? "-" : formatMoney(credit.getMontantAccord()), credit.getDuree(), String.format("%.2f%%", credit.getTauxInteret()), truncate(safeText(credit.getStatut()), 10), truncate(safeText(credit.getDateDemande()), 10));
                 writer.y = writeLine(writer.stream, writer.y, row);
             }
 

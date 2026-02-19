@@ -653,6 +653,33 @@
     -fx-background-color: -nx-teal;
 }
 
+/* Ensure ComboBox popup list is always visible/readable in Cashback form */
+.combo-box-popup > .list-view{
+    -fx-pref-height: 220px;
+    -fx-min-height: 140px;
+    -fx-background-color: white;
+    -fx-border-color: -nx-gray-200;
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
+    -fx-padding: 6px;
+}
+
+.combo-box-popup .list-cell{
+    -fx-padding: 10px 14px;
+    -fx-text-fill: -nx-gray-700;
+    -fx-background-radius: 8px;
+}
+
+.combo-box-popup .list-cell:hover{
+    -fx-background-color: -nx-gray-100;
+}
+
+.combo-box-popup .list-cell:selected{
+    -fx-background-color: -nx-teal-subtle;
+    -fx-text-fill: -nx-teal-dark;
+    -fx-font-weight: 600;
+}
+
 /* DatePicker */
 .nx-datepicker{
     -fx-background-color: transparent;

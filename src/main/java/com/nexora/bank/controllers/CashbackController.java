@@ -3,7 +3,7 @@ package com.nexora.bank.controllers;
 import com.nexora.bank.Models.Cashback;
 import com.nexora.bank.Models.Partenaire;
 import com.nexora.bank.Service.CashbackService;
-
+import com.nexora.bank.Service.PartenaireService;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -11,31 +11,37 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.geometry.Pos;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.shape.SVGPath;
-import javafx.geometry.Pos;
 
 import java.net.URL;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.Comparator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.Set;
 
-/**
- * Admin controller for managing cashback records.
- * Uses the shared CashbackService for database operations and calculations.
- */
 public class CashbackController implements Initializable {
 
     @FXML private Label lblTotalCashback;
     @FXML private Label lblNombreBeneficiaires;
     @FXML private Label lblCashbackMois;
 
+    @FXML private TextField txtUserId;
     @FXML private TextField txtMontantAchat;
     @FXML private TextField txtTauxApplique;
     @FXML private TextField txtMontantCashback;
@@ -47,9 +53,9 @@ public class CashbackController implements Initializable {
 
     @FXML private Button btnAjouter;
     @FXML private Button btnSupprimer;
-    @FXML private Button btnAnnuler;
 
     @FXML private TableView<Cashback> tableCashbacks;
+    @FXML private TableColumn<Cashback, String> colUser;
     @FXML private TableColumn<Cashback, String> colPartenaire;
     @FXML private TableColumn<Cashback, String> colMontantAchat;
     @FXML private TableColumn<Cashback, String> colTaux;
@@ -64,89 +70,44 @@ public class CashbackController implements Initializable {
     @FXML private Label lblTableInfo;
 
     private final CashbackService cashbackService = new CashbackService();
-    private ObservableList<Cashback> cashbacksList = FXCollections.observableArrayList();
-    private FilteredList<Cashback> filteredData;
-    private Cashback selectedCashback = null;
-    private boolean isEditMode = false;
+    private final PartenaireService partenaireService = new PartenaireService();
 
-    // Map partner names to IDs for the combo box
-    private List<Partenaire> partners;
+    private final ObservableList<Cashback> cashbacksList = FXCollections.observableArrayList();
+    private FilteredList<Cashback> filteredData;
+    private Cashback selectedCashback;
+    private boolean isEditMode;
+
+    private static final DateTimeFormatter DISPLAY_DATE_FORMAT = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initializeTable();
         initializeSearch();
-        loadData();
-        updateStats();
-        setupTableSelection();
         setupAutoCalculation();
-        loadPartnerCombo();
-    }
-
-    private void setupAutoCalculation() {
-        txtMontantAchat.textProperty().addListener((obs, old, newVal) -> calculateCashback());
-        txtTauxApplique.textProperty().addListener((obs, old, newVal) -> calculateCashback());
-    }
-
-    private void calculateCashback() {
-        try {
-            double montant = Double.parseDouble(txtMontantAchat.getText().isEmpty() ? "0" : txtMontantAchat.getText());
-            double taux = Double.parseDouble(txtTauxApplique.getText().isEmpty() ? "0" : txtTauxApplique.getText());
-            double cashback = CashbackService.calculateCashbackAmount(montant, taux);
-            txtMontantCashback.setText(String.format("%.2f", cashback));
-        } catch (NumberFormatException e) {
-            txtMontantCashback.setText("0.00");
-        }
-    }
-
-    private void loadPartnerCombo() {
-        partners = cashbackService.getAllPartners();
-        if (cmbPartenaire != null) {
-            ObservableList<String> partnerNames = FXCollections.observableArrayList();
-            for (Partenaire p : partners) {
-                partnerNames.add(p.getNom());
-            }
-            cmbPartenaire.setItems(partnerNames);
-        }
-    }
-
-    private int getPartnerIdByName(String name) {
-        if (partners != null && name != null) {
-            for (Partenaire p : partners) {
-                if (p.getNom().equals(name)) return p.getIdPartenaire();
-            }
-        }
-        return 0;
-    }
-
-    private String getPartnerNameById(int id) {
-        if (partners != null) {
-            for (Partenaire p : partners) {
-                if (p.getIdPartenaire() == id) return p.getNom();
-            }
-        }
-        return cashbackService.getPartnerNameById(id);
+        setupTableSelection();
+        cmbPartenaire.setVisibleRowCount(8);
+        cmbStatut.setVisibleRowCount(6);
+        loadPartenaires();
+        reloadCashbacks();
     }
 
     private void initializeTable() {
-        colPartenaire.setCellValueFactory(c -> {
-            String name = c.getValue().getPartenaireNom();
-            if (name == null || name.isEmpty()) {
-                name = getPartnerNameById(c.getValue().getIdPartenaire());
-            }
-            return new SimpleStringProperty(name);
+        colUser.setCellValueFactory(c -> {
+            Cashback cashback = c.getValue();
+            String displayName = cashback.getUserDisplayName() == null || cashback.getUserDisplayName().isBlank()
+                    ? "User #" + cashback.getIdUser()
+                    : cashback.getUserDisplayName().trim() + " (#" + cashback.getIdUser() + ")";
+            return new SimpleStringProperty(displayName);
         });
+        colPartenaire.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getPartenaireNom()));
         colMontantAchat.setCellValueFactory(c -> new SimpleStringProperty(String.format("%.2f DT", c.getValue().getMontantAchat())));
         colTaux.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getTauxApplique() + "%"));
         colMontantCashback.setCellValueFactory(c -> new SimpleStringProperty(String.format("%.2f DT", c.getValue().getMontantCashback())));
         colDateAchat.setCellValueFactory(c -> new SimpleStringProperty(formatDate(c.getValue().getDateAchat())));
-        colDateCredit.setCellValueFactory(c -> new SimpleStringProperty(
-            c.getValue().getDateCredit() != null ? formatDate(c.getValue().getDateCredit()) : "-"));
-        colDateExpiration.setCellValueFactory(c -> new SimpleStringProperty(
-            c.getValue().getDateExpiration() != null ? formatDate(c.getValue().getDateExpiration()) : "-"));
-        colStatut.setCellValueFactory(new PropertyValueFactory<>("statut"));
+        colDateCredit.setCellValueFactory(c -> new SimpleStringProperty(formatDate(c.getValue().getDateCredit())));
+        colDateExpiration.setCellValueFactory(c -> new SimpleStringProperty(formatDate(c.getValue().getDateExpiration())));
+        colStatut.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getStatut()));
 
-        // Cashback amount with gold styling
         colMontantCashback.setCellFactory(column -> new TableCell<>() {
             @Override
             protected void updateItem(String item, boolean empty) {
@@ -154,35 +115,34 @@ public class CashbackController implements Initializable {
                 if (empty || item == null) {
                     setText(null);
                     setStyle("");
-                } else {
-                    setText("+ " + item);
-                    setStyle("-fx-text-fill: #D4A82A; -fx-font-weight: 700;");
+                    return;
                 }
+                setText("+ " + item);
+                setStyle("-fx-text-fill: #D4A82A; -fx-font-weight: 700;");
             }
         });
 
-        // Status column with badge
         colStatut.setCellFactory(column -> new TableCell<>() {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
                 if (empty || item == null) {
                     setGraphic(null);
-                } else {
-                    Label badge = new Label(item);
-                    badge.getStyleClass().add("nx-badge");
-                    switch (item) {
-                        case "Credite": badge.getStyleClass().add("nx-badge-success"); break;
-                        case "Valide": badge.getStyleClass().add("nx-badge-info"); break;
-                        case "En attente": badge.getStyleClass().add("nx-badge-warning"); break;
-                        case "Expire": case "Annule": badge.getStyleClass().add("nx-badge-error"); break;
-                    }
-                    setGraphic(badge);
+                    return;
                 }
+                Label badge = new Label(item);
+                badge.getStyleClass().add("nx-badge");
+                switch (item) {
+                    case "Credite" -> badge.getStyleClass().add("nx-badge-success");
+                    case "Valide" -> badge.getStyleClass().add("nx-badge-info");
+                    case "En attente" -> badge.getStyleClass().add("nx-badge-warning");
+                    case "Expire", "Annule" -> badge.getStyleClass().add("nx-badge-error");
+                    default -> { }
+                }
+                setGraphic(badge);
             }
         });
 
-        // Actions column
         colActions.setCellFactory(column -> new TableCell<>() {
             private final Button btnEdit = new Button();
             private final Button btnDelete = new Button();
@@ -217,77 +177,116 @@ public class CashbackController implements Initializable {
     }
 
     private void initializeSearch() {
-        filteredData = new FilteredList<>(cashbacksList, p -> true);
-        txtRecherche.textProperty().addListener((obs, old, newVal) -> {
+        filteredData = new FilteredList<>(cashbacksList, c -> true);
+        txtRecherche.textProperty().addListener((obs, old, newValue) -> {
+            String filter = newValue == null ? "" : newValue.trim().toLowerCase();
             filteredData.setPredicate(cashback -> {
-                if (newVal == null || newVal.isEmpty()) return true;
-                String filter = newVal.toLowerCase();
-                String partnerName = cashback.getPartenaireNom() != null
-                    ? cashback.getPartenaireNom() : getPartnerNameById(cashback.getIdPartenaire());
-                return (partnerName != null && partnerName.toLowerCase().contains(filter)) ||
-                       (cashback.getStatut() != null && cashback.getStatut().toLowerCase().contains(filter));
+                if (filter.isEmpty()) {
+                    return true;
+                }
+                String userToken = String.valueOf(cashback.getIdUser());
+                String userName = cashback.getUserDisplayName() == null ? "" : cashback.getUserDisplayName().toLowerCase();
+                return userToken.contains(filter)
+                        || userName.contains(filter)
+                        || safe(cashback.getPartenaireNom()).toLowerCase().contains(filter)
+                        || safe(cashback.getStatut()).toLowerCase().contains(filter);
             });
             updateTableInfo();
         });
+
         SortedList<Cashback> sortedData = new SortedList<>(filteredData);
         sortedData.comparatorProperty().bind(tableCashbacks.comparatorProperty());
         tableCashbacks.setItems(sortedData);
     }
 
+    private void setupAutoCalculation() {
+        txtMontantAchat.textProperty().addListener((obs, old, value) -> calculateCashback());
+        txtTauxApplique.textProperty().addListener((obs, old, value) -> calculateCashback());
+    }
+
     private void setupTableSelection() {
-        tableCashbacks.getSelectionModel().selectedItemProperty().addListener((obs, old, newVal) -> {
-            if (newVal != null) {
-                selectedCashback = newVal;
-                populateForm(newVal);
-                isEditMode = true;
-                btnAjouter.setText("Modifier");
+        tableCashbacks.getSelectionModel().selectedItemProperty().addListener((obs, old, value) -> {
+            if (value == null) {
+                return;
             }
+            selectedCashback = value;
+            populateForm(value);
+            isEditMode = true;
+            btnAjouter.setText("Modifier");
         });
     }
 
-    private void loadData() {
-        cashbacksList.clear();
-        List<Cashback> dbCashbacks = cashbackService.getAllCashbacks();
-        cashbacksList.addAll(dbCashbacks);
+    private void loadPartenaires() {
+        List<Partenaire> partenaires = partenaireService.getAllPartenaires();
+        Set<String> names = new LinkedHashSet<>();
+        for (Partenaire partenaire : partenaires) {
+            if (partenaire.getNom() != null && !partenaire.getNom().isBlank()) {
+                names.add(partenaire.getNom().trim());
+            }
+        }
+
+        // Fallback when partner table is empty: keep admin UX usable.
+        if (names.isEmpty()) {
+            names.add("Carrefour");
+            names.add("Zara");
+            names.add("Technopolis");
+            names.add("Pizza Hut");
+            names.add("Tunisair");
+        }
+
+        cmbPartenaire.getItems().setAll(names);
+    }
+
+    private void reloadCashbacks() {
+        cashbacksList.setAll(cashbackService.getAllCashbacks());
+        updateStats();
         updateTableInfo();
     }
 
-    private void updateStats() {
-        double totalCashback = cashbackService.getTotalCashbackAll();
-        long beneficiaires = cashbackService.getBeneficiaryCount();
-        double cashbackMois = cashbackService.getCurrentMonthCashbackAll();
+    private void calculateCashback() {
+        try {
+            double montant = parseDouble(txtMontantAchat.getText());
+            double taux = parseDouble(txtTauxApplique.getText());
+            txtMontantCashback.setText(String.format("%.2f", montant * taux / 100));
+        } catch (NumberFormatException ex) {
+            txtMontantCashback.setText("0.00");
+        }
+    }
 
-        lblTotalCashback.setText(String.format("%,.2f DT", totalCashback));
-        lblNombreBeneficiaires.setText(String.valueOf(beneficiaires));
-        lblCashbackMois.setText(String.format("%,.2f DT", cashbackMois));
+    private void updateStats() {
+        lblTotalCashback.setText(String.format("%,.2f DT", cashbackService.getTotalCreditedGlobal()));
+        lblNombreBeneficiaires.setText(String.valueOf(cashbackService.countActiveUsersWithCashback()));
+        lblCashbackMois.setText(String.format("%,.2f DT", cashbackService.getCurrentMonthTotalGlobal()));
     }
 
     private void updateTableInfo() {
-        lblTableInfo.setText(String.format("Affichage de %d sur %d entrees", filteredData.size(), cashbacksList.size()));
+        int filteredCount = filteredData == null ? 0 : filteredData.size();
+        lblTableInfo.setText(String.format("Affichage de %d sur %d entrees", filteredCount, cashbacksList.size()));
     }
 
     private void populateForm(Cashback cashback) {
+        txtUserId.setText(String.valueOf(cashback.getIdUser()));
         txtMontantAchat.setText(String.valueOf(cashback.getMontantAchat()));
         txtTauxApplique.setText(String.valueOf(cashback.getTauxApplique()));
         txtMontantCashback.setText(String.valueOf(cashback.getMontantCashback()));
-        dpDateAchat.setValue(parseDate(cashback.getDateAchat()));
-        dpDateCredit.setValue(parseDate(cashback.getDateCredit()));
-        dpDateExpiration.setValue(parseDate(cashback.getDateExpiration()));
+        dpDateAchat.setValue(cashback.getDateAchat());
+        dpDateCredit.setValue(cashback.getDateCredit());
+        dpDateExpiration.setValue(cashback.getDateExpiration());
         cmbStatut.setValue(cashback.getStatut());
-        String partnerName = cashback.getPartenaireNom() != null
-            ? cashback.getPartenaireNom() : getPartnerNameById(cashback.getIdPartenaire());
-        cmbPartenaire.setValue(partnerName);
+        cmbPartenaire.setValue(cashback.getPartenaireNom());
     }
 
     private void clearForm() {
+        txtUserId.clear();
         txtMontantAchat.clear();
         txtTauxApplique.clear();
-        txtMontantCashback.clear();
+        txtMontantCashback.setText("0.00");
         dpDateAchat.setValue(null);
         dpDateCredit.setValue(null);
         dpDateExpiration.setValue(null);
         cmbStatut.setValue(null);
         cmbPartenaire.setValue(null);
+
         selectedCashback = null;
         isEditMode = false;
         btnAjouter.setText("Ajouter");
@@ -296,63 +295,67 @@ public class CashbackController implements Initializable {
 
     @FXML
     private void handleAjouter() {
-        if (!validateForm()) return;
+        if (!validateForm()) {
+            return;
+        }
 
         try {
-            String partenaireNom = cmbPartenaire.getValue() != null ? cmbPartenaire.getValue() : "Non specifie";
-            int idPartenaire = getPartnerIdByName(partenaireNom);
-            double montantAchat = Double.parseDouble(txtMontantAchat.getText());
-            double taux = Double.parseDouble(txtTauxApplique.getText());
-            double montantCashback = Double.parseDouble(txtMontantCashback.getText());
-            String dateAchat = dpDateAchat.getValue() != null ? dpDateAchat.getValue().toString() : null;
-            String dateCredit = dpDateCredit.getValue() != null ? dpDateCredit.getValue().toString() : null;
-            String dateExpiration = dpDateExpiration.getValue() != null ? dpDateExpiration.getValue().toString() : null;
-            String statut = cmbStatut.getValue();
-
+            Cashback cashback = buildFromForm();
             if (isEditMode && selectedCashback != null) {
-                selectedCashback.setIdPartenaire(idPartenaire);
-                selectedCashback.setMontantAchat(montantAchat);
-                selectedCashback.setTauxApplique(taux);
-                selectedCashback.setMontantCashback(montantCashback);
-                selectedCashback.setDateAchat(dateAchat);
-                selectedCashback.setDateCredit(dateCredit);
-                selectedCashback.setDateExpiration(dateExpiration);
-                selectedCashback.setStatut(statut);
-                selectedCashback.setPartenaireNom(partenaireNom);
-
-                if (cashbackService.updateCashback(selectedCashback)) {
-                    tableCashbacks.refresh();
-                    showAlert(Alert.AlertType.INFORMATION, "Succes", "Cashback modifie avec succes!");
-                } else {
-                    showAlert(Alert.AlertType.ERROR, "Erreur", "Echec de la modification.");
+                cashback.setIdCashback(selectedCashback.getIdCashback());
+                if (!cashbackService.updateCashbackAsAdmin(cashback)) {
+                    showAlert(Alert.AlertType.ERROR, "Erreur", "Mise a jour impossible.");
+                    return;
                 }
+                showAlert(Alert.AlertType.INFORMATION, "Succes", "Cashback modifie avec succes.");
             } else {
-                Cashback newCashback = new Cashback(idPartenaire, montantAchat, taux, montantCashback,
-                    dateAchat, dateCredit, dateExpiration, statut);
-                newCashback.setPartenaireNom(partenaireNom);
-
-                if (cashbackService.addCashback(newCashback)) {
-                    cashbacksList.add(newCashback);
-                    showAlert(Alert.AlertType.INFORMATION, "Succes", "Cashback ajoute avec succes!");
-                } else {
-                    showAlert(Alert.AlertType.ERROR, "Erreur", "Echec de l'ajout.");
+                int createdId = cashbackService.createCashback(cashback);
+                if (createdId <= 0) {
+                    showAlert(Alert.AlertType.ERROR, "Erreur", "Creation impossible.");
+                    return;
                 }
+                showAlert(Alert.AlertType.INFORMATION, "Succes", "Cashback ajoute avec succes.");
             }
 
             clearForm();
-            updateStats();
-            updateTableInfo();
-        } catch (NumberFormatException e) {
-            showAlert(Alert.AlertType.ERROR, "Erreur", "Valeurs numeriques invalides.");
+            reloadCashbacks();
+        } catch (RuntimeException ex) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", ex.getMessage());
         }
     }
 
-    @FXML private void handleSupprimer() {
-        if (selectedCashback != null) deleteCashback(selectedCashback);
-        else showAlert(Alert.AlertType.WARNING, "Avertissement", "Selectionnez un cashback.");
+    @FXML
+    private void handleSupprimer() {
+        if (selectedCashback == null) {
+            showAlert(Alert.AlertType.WARNING, "Avertissement", "Selectionnez un cashback.");
+            return;
+        }
+        deleteCashback(selectedCashback);
     }
 
-    @FXML private void handleAnnuler() { clearForm(); }
+    @FXML
+    private void handleAnnuler() {
+        clearForm();
+    }
+
+    private Cashback buildFromForm() {
+        Cashback cashback = new Cashback();
+        cashback.setIdUser(Integer.parseInt(txtUserId.getText().trim()));
+        cashback.setPartenaireNom(cmbPartenaire.getValue() == null ? "" : cmbPartenaire.getValue().trim());
+
+        Optional<Partenaire> partenaireOpt = partenaireService.findByName(cashback.getPartenaireNom());
+        cashback.setIdPartenaire(partenaireOpt.map(Partenaire::getIdPartenaire).orElse(null));
+
+        cashback.setMontantAchat(parseDouble(txtMontantAchat.getText()));
+        cashback.setTauxApplique(parseDouble(txtTauxApplique.getText()));
+        cashback.setMontantCashback(parseDouble(txtMontantCashback.getText()));
+        cashback.setDateAchat(dpDateAchat.getValue());
+        cashback.setDateCredit(dpDateCredit.getValue());
+        cashback.setDateExpiration(dpDateExpiration.getValue());
+        cashback.setStatut(cmbStatut.getValue());
+        cashback.setTransactionRef("");
+        return cashback;
+    }
 
     private void editCashback(Cashback cashback) {
         selectedCashback = cashback;
@@ -362,70 +365,107 @@ public class CashbackController implements Initializable {
     }
 
     private void deleteCashback(Cashback cashback) {
-        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION, "Supprimer ce cashback?", ButtonType.OK, ButtonType.CANCEL);
+        Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
+                "Supprimer ce cashback ?",
+                ButtonType.OK,
+                ButtonType.CANCEL);
         Optional<ButtonType> result = confirm.showAndWait();
-        if (result.isPresent() && result.get() == ButtonType.OK) {
-            if (cashbackService.deleteCashback(cashback.getIdCashback())) {
-                cashbacksList.remove(cashback);
-                clearForm();
-                updateStats();
-                updateTableInfo();
-            } else {
-                showAlert(Alert.AlertType.ERROR, "Erreur", "Echec de la suppression.");
-            }
+        if (result.isEmpty() || result.get() != ButtonType.OK) {
+            return;
         }
+
+        boolean deleted = cashbackService.deleteCashbackAsAdmin(cashback.getIdCashback());
+        if (!deleted) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Suppression impossible.");
+            return;
+        }
+
+        clearForm();
+        reloadCashbacks();
     }
 
     private boolean validateForm() {
-        if (txtMontantAchat.getText().isEmpty() || txtTauxApplique.getText().isEmpty() ||
-            dpDateAchat.getValue() == null || cmbStatut.getValue() == null) {
-            showAlert(Alert.AlertType.ERROR, "Validation", "Remplissez tous les champs obligatoires.");
+        if (txtUserId.getText().isBlank()) {
+            showAlert(Alert.AlertType.ERROR, "Validation", "L identifiant utilisateur est obligatoire.");
             return false;
         }
+        if (cmbPartenaire.getValue() == null || cmbPartenaire.getValue().isBlank()) {
+            showAlert(Alert.AlertType.ERROR, "Validation", "Selectionnez un partenaire.");
+            return false;
+        }
+        if (txtMontantAchat.getText().isBlank() || txtTauxApplique.getText().isBlank() || txtMontantCashback.getText().isBlank()) {
+            showAlert(Alert.AlertType.ERROR, "Validation", "Les champs montant/taux sont obligatoires.");
+            return false;
+        }
+        if (dpDateAchat.getValue() == null) {
+            showAlert(Alert.AlertType.ERROR, "Validation", "La date d achat est obligatoire.");
+            return false;
+        }
+        if (cmbStatut.getValue() == null || cmbStatut.getValue().isBlank()) {
+            showAlert(Alert.AlertType.ERROR, "Validation", "Le statut est obligatoire.");
+            return false;
+        }
+
+        try {
+            Integer.parseInt(txtUserId.getText().trim());
+            parseDouble(txtMontantAchat.getText());
+            parseDouble(txtTauxApplique.getText());
+            parseDouble(txtMontantCashback.getText());
+        } catch (NumberFormatException ex) {
+            showAlert(Alert.AlertType.ERROR, "Validation", "Valeurs numeriques invalides.");
+            return false;
+        }
+
         return true;
     }
 
-    @FXML private void trierParDateAchat() {
-        cashbacksList.sort(Comparator.comparing(Cashback::getDateAchat, Comparator.nullsLast(Comparator.reverseOrder())));
+    @FXML
+    private void trierParDateAchat() {
+        cashbacksList.sort(Comparator.comparing(Cashback::getDateAchat, Comparator.nullsLast(LocalDate::compareTo)).reversed());
     }
-    @FXML private void trierParMontant() {
+
+    @FXML
+    private void trierParMontant() {
         cashbacksList.sort(Comparator.comparing(Cashback::getMontantAchat).reversed());
     }
-    @FXML private void trierParCashback() {
+
+    @FXML
+    private void trierParCashback() {
         cashbacksList.sort(Comparator.comparing(Cashback::getMontantCashback).reversed());
     }
-    @FXML private void trierParStatut() {
-        cashbacksList.sort(Comparator.comparing(Cashback::getStatut, Comparator.nullsLast(Comparator.naturalOrder())));
+
+    @FXML
+    private void trierParStatut() {
+        cashbacksList.sort(Comparator.comparing(c -> safe(c.getStatut())));
     }
-    @FXML private void exporterPDF() { showAlert(Alert.AlertType.INFORMATION, "Export", "En developpement."); }
-    @FXML private void envoyerSMS() { showAlert(Alert.AlertType.INFORMATION, "SMS", "En developpement."); }
+
+    @FXML
+    private void exporterPDF() {
+        showAlert(Alert.AlertType.INFORMATION, "Export", "Export PDF en developpement.");
+    }
+
+    @FXML
+    private void envoyerSMS() {
+        showAlert(Alert.AlertType.INFORMATION, "SMS", "Envoi SMS en developpement.");
+    }
+
+    private String formatDate(LocalDate date) {
+        return date == null ? "-" : date.format(DISPLAY_DATE_FORMAT);
+    }
+
+    private double parseDouble(String text) {
+        return Double.parseDouble(text == null ? "0" : text.trim().replace(",", "."));
+    }
+
+    private String safe(String value) {
+        return value == null ? "" : value;
+    }
 
     private void showAlert(Alert.AlertType type, String title, String msg) {
-        Alert a = new Alert(type);
-        a.setTitle(title);
-        a.setHeaderText(null);
-        a.setContentText(msg);
-        a.showAndWait();
-    }
-
-    // ═══════════════════ DATE HELPERS ═══════════════════
-
-    private String formatDate(String dateStr) {
-        if (dateStr == null || dateStr.isEmpty()) return "-";
-        try {
-            LocalDate date = LocalDate.parse(dateStr);
-            return date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-        } catch (DateTimeParseException e) {
-            return dateStr;
-        }
-    }
-
-    private LocalDate parseDate(String dateStr) {
-        if (dateStr == null || dateStr.isEmpty()) return null;
-        try {
-            return LocalDate.parse(dateStr);
-        } catch (DateTimeParseException e) {
-            return null;
-        }
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(msg);
+        alert.showAndWait();
     }
 }

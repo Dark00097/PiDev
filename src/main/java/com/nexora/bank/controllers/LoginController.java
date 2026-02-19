@@ -32,7 +32,6 @@ public class LoginController {
 
     @FXML
     private void handleLogin() {
-        System.out.println("Login attempt for: " + txtEmail.getText());
         String email = txtEmail.getText() == null ? "" : txtEmail.getText().trim();
         String password = txtPassword.getText() == null ? "" : txtPassword.getText();
 
@@ -47,7 +46,6 @@ public class LoginController {
         }
 
         try {
-            System.out.println("Authenticating user: " + email);
             Optional<User> authenticatedUser = userService.authenticate(email, password);
             if (authenticatedUser.isEmpty()) {
                 showError("Invalid email or password.");
@@ -55,12 +53,10 @@ public class LoginController {
             }
 
             User user = authenticatedUser.get();
-            System.out.println("User authenticated: " + user.getEmail() + " | Role: " + user.getRole() + " | Status: " + user.getStatus());
             String role = user.getRole() == null ? "" : user.getRole().trim().toUpperCase();
             String status = user.getStatus() == null ? "" : user.getStatus().trim().toUpperCase();
 
             if ("ROLE_ADMIN".equals(role)) {
-                System.out.println("Admin login - loading MainView.fxml");
                 if (!"ACTIVE".equals(status)) {
                     showError("Admin account is inactive.");
                     return;
@@ -114,11 +110,10 @@ public class LoginController {
             userService.markUserOnline(user.getIdUser());
             user = userService.findByIdPublic(user.getIdUser()).orElse(user);
             AuthSession.setCurrentUser(user);
-            System.out.println("Regular user login - loading UserDashboard.fxml");
             SceneRouter.show("/fxml/UserDashboard.fxml", "NEXORA BANK - User Dashboard", 1200, 760, 980, 680);
         } catch (Exception ex) {
+            showError("Login failed. Please try again.");
             ex.printStackTrace();
-            showError("Login failed. Please try again. Error: " + ex.getMessage());
         }
     }
 

@@ -68,12 +68,7 @@
 
             <ScrollPane styleClass="nx-form-scroll" fitToWidth="true" VBox.vgrow="ALWAYS">
                 <VBox styleClass="nx-card-body" spacing="16">
-                    <!-- Credit -->
-                    <VBox styleClass="nx-form-group" spacing="8">
-                        <Label text="Credit (ID)" styleClass="nx-label, nx-label-required"/>
-                        <ComboBox fx:id="cmbCredit" promptText="Selectionner un credit" styleClass="nx-select" maxWidth="Infinity"/>
-                    </VBox>
-
+                    
                     <!-- Type Garantie -->
                     <VBox styleClass="nx-form-group" spacing="8">
                         <Label text="Type de Garantie" styleClass="nx-label, nx-label-required"/>
@@ -199,7 +194,6 @@
             <VBox styleClass="nx-table-container" VBox.vgrow="ALWAYS">
                 <TableView fx:id="tableGaranties" styleClass="nx-table" VBox.vgrow="ALWAYS">
                     <columns>
-                        <TableColumn fx:id="colCredit" text="Credit ID" prefWidth="95"/>
                         <TableColumn fx:id="colType" text="Type" prefWidth="150"/>
                         <TableColumn fx:id="colValeurEstimee" text="Valeur Estimée" prefWidth="120"/>
                         <TableColumn fx:id="colValeurRetenue" text="Valeur Retenue" prefWidth="120"/>
