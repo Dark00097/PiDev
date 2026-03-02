@@ -12,8 +12,12 @@ public class User {
     private String password;
     private String createdAt;
     private String accountOpenedFrom;
+    private String accountOpenedLocation;
+    private Double accountOpenedLatitude;
+    private Double accountOpenedLongitude;
     private String lastOnlineAt;
     private String lastOnlineFrom;
+    private String profileImagePath;
     private boolean biometricEnabled;
 
 
@@ -138,6 +142,38 @@ public class User {
         this.lastOnlineFrom = lastOnlineFrom;
     }
 
+    public String getAccountOpenedLocation() {
+        return accountOpenedLocation;
+    }
+
+    public void setAccountOpenedLocation(String accountOpenedLocation) {
+        this.accountOpenedLocation = accountOpenedLocation;
+    }
+
+    public Double getAccountOpenedLatitude() {
+        return accountOpenedLatitude;
+    }
+
+    public void setAccountOpenedLatitude(Double accountOpenedLatitude) {
+        this.accountOpenedLatitude = accountOpenedLatitude;
+    }
+
+    public Double getAccountOpenedLongitude() {
+        return accountOpenedLongitude;
+    }
+
+    public void setAccountOpenedLongitude(Double accountOpenedLongitude) {
+        this.accountOpenedLongitude = accountOpenedLongitude;
+    }
+
+    public String getProfileImagePath() {
+        return profileImagePath;
+    }
+
+    public void setProfileImagePath(String profileImagePath) {
+        this.profileImagePath = profileImagePath;
+    }
+
     public boolean isBiometricEnabled() {
         return biometricEnabled;
     }
@@ -158,8 +194,12 @@ public class User {
                 ", status='" + status + '\'' +
                 ", createdAt='" + createdAt + '\'' +
                 ", accountOpenedFrom='" + accountOpenedFrom + '\'' +
+                ", accountOpenedLocation='" + accountOpenedLocation + '\'' +
+                ", accountOpenedLatitude=" + accountOpenedLatitude +
+                ", accountOpenedLongitude=" + accountOpenedLongitude +
                 ", lastOnlineAt='" + lastOnlineAt + '\'' +
                 ", lastOnlineFrom='" + lastOnlineFrom + '\'' +
+                ", profileImagePath='" + profileImagePath + '\'' +
                 ", biometricEnabled=" + biometricEnabled +
                 '}';
     }

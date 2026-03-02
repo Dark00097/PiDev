@@ -2,6 +2,9 @@ package com.nexora.bank.controllers;
 
 import com.nexora.bank.SceneRouter;
 import com.nexora.bank.AuthSession;
+import com.nexora.bank.Models.Notification;
+import com.nexora.bank.Models.User;
+import com.nexora.bank.Service.NotificationService;
 import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -10,6 +13,7 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Side;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -56,6 +60,7 @@ public class MainController implements Initializable {
     @FXML private ScrollPane contentScrollPane;
     @FXML private VBox dashboardContent;
     @FXML private VBox sidebarNav;
+    @FXML private Label lblAdminNotificationCount;
     
     // DateTime Labels
     @FXML private Label currentDate;
@@ -88,6 +93,7 @@ public class MainController implements Initializable {
     private ScheduledExecutorService clockExecutor;
     private Timeline pulseAnimation;
     private Timeline notificationPulse;
+    private Timeline notificationRefreshTimeline;
     private StackPane activePill;
     private TranslateTransition pillTransition;
     private static final double PILL_INSET_X = 12;
@@ -96,6 +102,8 @@ public class MainController implements Initializable {
     
     // Animation Timelines
     private final Map<Node, Timeline> nodeAnimations = new HashMap<>();
+    private final NotificationService notificationService = new NotificationService();
+    private ContextMenu notificationsMenu;
 
     // =============================================
     // INITIALIZATION
@@ -113,12 +121,15 @@ public class MainController implements Initializable {
         initializeCharts();
         initializeTable();
         initializeResponsiveMode();
+        startNotificationAutoRefresh();
+        refreshNotificationBadge();
         
         // Start entrance animations + pill setup
         Platform.runLater(() -> {
             playEntranceAnimations();
             setupSidebarPill();
             moveActivePill(currentActiveButton, false);
+            refreshNotificationBadge();
         });
     }
 
@@ -509,6 +520,9 @@ public class MainController implements Initializable {
     public void shutdown() {
         if (clockExecutor != null && !clockExecutor.isShutdown()) {
             clockExecutor.shutdown();
+        }
+        if (notificationRefreshTimeline != null) {
+            notificationRefreshTimeline.stop();
         }
         nodeAnimations.values().forEach(Timeline::stop);
     }
@@ -1614,8 +1628,21 @@ public class MainController implements Initializable {
     }
     
     @FXML
-    private void openNotifications() {
-        showNotificationPopup("Notifications", "7 nouvelles notifications", "fas-bell");
+    private void openNotifications(ActionEvent event) {
+        User currentUser = AuthSession.getCurrentUser();
+        if (currentUser == null) {
+            showInfoAlert("Notifications", "Session utilisateur introuvable.");
+            return;
+        }
+
+        try {
+            List<Notification> notifications = notificationService.getRecentNotificationsFor(currentUser, 12);
+            showNotificationsPanel(event, notifications);
+            notificationService.markAllAsRead(currentUser);
+            refreshNotificationBadge();
+        } catch (Exception ex) {
+            showErrorMessage("Notifications", "Impossible de charger les notifications.");
+        }
     }
     
     @FXML
@@ -1681,6 +1708,145 @@ public class MainController implements Initializable {
     // =============================================
     // UTILITY METHODS
     // =============================================
+
+    private void refreshNotificationBadge() {
+        if (lblAdminNotificationCount == null) {
+            return;
+        }
+
+        User currentUser = AuthSession.getCurrentUser();
+        if (currentUser == null) {
+            lblAdminNotificationCount.setText("0");
+            lblAdminNotificationCount.setVisible(true);
+            lblAdminNotificationCount.setManaged(true);
+            return;
+        }
+
+        try {
+            int unreadCount = notificationService.countUnreadFor(currentUser);
+            lblAdminNotificationCount.setText(formatNotificationCount(unreadCount));
+            lblAdminNotificationCount.setVisible(true);
+            lblAdminNotificationCount.setManaged(true);
+        } catch (Exception ex) {
+            lblAdminNotificationCount.setText("0");
+            lblAdminNotificationCount.setVisible(true);
+            lblAdminNotificationCount.setManaged(true);
+        }
+    }
+
+    private String formatNotificationCount(int count) {
+        if (count < 0) {
+            return "0";
+        }
+        if (count > 99) {
+            return "99+";
+        }
+        return String.valueOf(count);
+    }
+
+    private void startNotificationAutoRefresh() {
+        if (notificationRefreshTimeline != null) {
+            notificationRefreshTimeline.stop();
+        }
+        notificationRefreshTimeline = new Timeline(
+            new KeyFrame(Duration.seconds(8), e -> refreshNotificationBadge())
+        );
+        notificationRefreshTimeline.setCycleCount(Animation.INDEFINITE);
+        notificationRefreshTimeline.play();
+    }
+
+    private String safeLabel(String value) {
+        return value == null || value.isBlank() ? "-" : value.trim();
+    }
+
+    private void showNotificationsPanel(ActionEvent event, List<Notification> notifications) {
+        if (event == null || !(event.getSource() instanceof Node anchor)) {
+            return;
+        }
+
+        if (notificationsMenu != null && notificationsMenu.isShowing()) {
+            notificationsMenu.hide();
+            return;
+        }
+
+        VBox panel = new VBox(10);
+        panel.setPrefWidth(380);
+        panel.setMaxWidth(380);
+        panel.setStyle(
+            "-fx-background-color: #ffffff;" +
+            "-fx-background-radius: 14;" +
+            "-fx-border-color: #dbe3ef;" +
+            "-fx-border-radius: 14;" +
+            "-fx-padding: 12;"
+        );
+
+        Label title = new Label("Notifications");
+        title.setStyle("-fx-font-size: 15px; -fx-font-weight: 700; -fx-text-fill: #0A2540;");
+
+        VBox listContainer = new VBox(8);
+        if (notifications == null || notifications.isEmpty()) {
+            Label empty = new Label("Aucune notification.");
+            empty.setStyle("-fx-font-size: 12px; -fx-text-fill: #64748b;");
+            listContainer.getChildren().add(empty);
+        } else {
+            for (Notification notification : notifications) {
+                VBox row = new VBox(3);
+                row.setStyle(
+                    "-fx-background-color: #f8fbff;" +
+                    "-fx-background-radius: 10;" +
+                    "-fx-padding: 10;" +
+                    "-fx-border-color: #e8eef7;" +
+                    "-fx-border-radius: 10;" +
+                    "-fx-cursor: hand;"
+                );
+
+                Label rowTitle = new Label(safeLabel(notification.getTitle()));
+                rowTitle.setWrapText(true);
+                rowTitle.setStyle("-fx-font-size: 12px; -fx-font-weight: 700; -fx-text-fill: #0f172a;");
+
+                Label rowMessage = new Label(safeLabel(notification.getMessage()));
+                rowMessage.setWrapText(true);
+                rowMessage.setStyle("-fx-font-size: 12px; -fx-text-fill: #334155;");
+
+                Label rowTime = new Label("At: " + safeLabel(notification.getCreatedAt()));
+                rowTime.setStyle("-fx-font-size: 11px; -fx-text-fill: #64748b;");
+
+                row.getChildren().addAll(rowTitle, rowMessage, rowTime);
+                row.setOnMouseClicked(e -> handleNotificationClick(notification));
+                listContainer.getChildren().add(row);
+            }
+        }
+
+        ScrollPane scrollPane = new ScrollPane(listContainer);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setPrefViewportHeight(320);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
+
+        panel.getChildren().addAll(title, scrollPane);
+
+        notificationsMenu = new ContextMenu();
+        CustomMenuItem customItem = new CustomMenuItem(panel, false);
+        notificationsMenu.getItems().setAll(customItem);
+        notificationsMenu.setAutoHide(true);
+        notificationsMenu.show(anchor, Side.BOTTOM, -320, 8);
+    }
+
+    private void handleNotificationClick(Notification notification) {
+        User currentUser = AuthSession.getCurrentUser();
+        if (currentUser == null || !"ROLE_ADMIN".equalsIgnoreCase(safeLabel(currentUser.getRole()))) {
+            return;
+        }
+        if (notification == null || notification.getRelatedUserId() == null || notification.getRelatedUserId() <= 0) {
+            return;
+        }
+
+        AuthSession.setPendingUserManagementTargetId(notification.getRelatedUserId());
+        if (notificationsMenu != null) {
+            notificationsMenu.hide();
+        }
+        showGestionUser();
+    }
     
     private void showNotificationPopup(String title, String message, String iconLiteral) {
         // Create popup notification

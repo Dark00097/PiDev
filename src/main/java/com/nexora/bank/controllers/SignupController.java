@@ -12,7 +12,7 @@ public class SignupController {
 
     @FXML private TextField txtFullName;
     @FXML private TextField txtEmail;
-    @FXML private TextField txtPhone;
+    @FXML private TextField txtTelephone;
     @FXML private TextField txtOtp;
     @FXML private PasswordField txtPassword;
     @FXML private PasswordField txtConfirmPassword;
@@ -49,7 +49,7 @@ public class SignupController {
     private void handleSignup() {
         String fullName = value(txtFullName);
         String email = value(txtEmail);
-        String phone = value(txtPhone);
+        String phone = value(txtTelephone);
         String otpCode = value(txtOtp);
         String password = txtPassword.getText() == null ? "" : txtPassword.getText();
         String confirmPassword = txtConfirmPassword.getText() == null ? "" : txtConfirmPassword.getText();
@@ -113,7 +113,10 @@ public class SignupController {
     }
 
     private String value(TextField field) {
-        return field.getText() == null ? "" : field.getText().trim();
+        if (field == null || field.getText() == null) {
+            return "";
+        }
+        return field.getText().trim();
     }
 
     private String[] splitName(String fullName) {

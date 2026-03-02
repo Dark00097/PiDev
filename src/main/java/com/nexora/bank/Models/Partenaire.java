@@ -11,6 +11,7 @@ public class Partenaire {
     private double plafondMensuel;
     private String conditions;
     private String status;
+    private double rating = 4.0;
 
     public Partenaire() {
     }
@@ -36,6 +37,19 @@ public class Partenaire {
         this.plafondMensuel = plafondMensuel;
         this.conditions = conditions;
         this.status = status;
+    }
+
+    public Partenaire(int idPartenaire, String nom, String categorie, String description, double tauxCashback, double tauxCashbackMax, double plafondMensuel, String conditions, String status, double rating) {
+        this.idPartenaire = idPartenaire;
+        this.nom = nom;
+        this.categorie = categorie;
+        this.description = description;
+        this.tauxCashback = tauxCashback;
+        this.tauxCashbackMax = tauxCashbackMax;
+        this.plafondMensuel = plafondMensuel;
+        this.conditions = conditions;
+        this.status = status;
+        this.rating = rating;
     }
 
     public int getIdPartenaire() {
@@ -110,6 +124,14 @@ public class Partenaire {
         this.status = status;
     }
 
+    public double getRating() {
+        return rating;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
+    }
+
     @Override
     public String toString() {
         return "Partenaire{" +
@@ -122,6 +144,7 @@ public class Partenaire {
                 ", plafondMensuel=" + plafondMensuel +
                 ", conditions='" + conditions + '\'' +
                 ", status='" + status + '\'' +
+                ", rating=" + rating +
                 '}';
     }
 }

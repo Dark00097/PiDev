@@ -127,6 +127,11 @@ public class LoginController {
         SceneRouter.show("/fxml/Signup.fxml", "NEXORA BANK - Sign Up", 1200, 760, 980, 680);
     }
 
+    @FXML
+    private void openForgotPassword() {
+        SceneRouter.show("/fxml/ForgotPassword.fxml", "NEXORA BANK - Reset Password", 1200, 760, 980, 680);
+    }
+
     private void showError(String message) {
         lblMessage.setText(message);
         lblMessage.setVisible(true);

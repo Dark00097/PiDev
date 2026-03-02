@@ -16,6 +16,10 @@ public class Cashback {
     private LocalDate dateExpiration;
     private String statut;
     private String transactionRef;
+    private Double userRating;
+    private String userRatingComment;
+    private String bonusDecision;
+    private String bonusNote;
 
     public Cashback() {
     }
@@ -140,6 +144,38 @@ public class Cashback {
         this.transactionRef = transactionRef;
     }
 
+    public Double getUserRating() {
+        return userRating;
+    }
+
+    public void setUserRating(Double userRating) {
+        this.userRating = userRating;
+    }
+
+    public String getUserRatingComment() {
+        return userRatingComment;
+    }
+
+    public void setUserRatingComment(String userRatingComment) {
+        this.userRatingComment = userRatingComment;
+    }
+
+    public String getBonusDecision() {
+        return bonusDecision;
+    }
+
+    public void setBonusDecision(String bonusDecision) {
+        this.bonusDecision = bonusDecision;
+    }
+
+    public String getBonusNote() {
+        return bonusNote;
+    }
+
+    public void setBonusNote(String bonusNote) {
+        this.bonusNote = bonusNote;
+    }
+
     @Override
     public String toString() {
         return "Cashback{" +
@@ -156,6 +192,10 @@ public class Cashback {
                 ", dateExpiration=" + dateExpiration +
                 ", statut='" + statut + '\'' +
                 ", transactionRef='" + transactionRef + '\'' +
+                ", userRating=" + userRating +
+                ", userRatingComment='" + userRatingComment + '\'' +
+                ", bonusDecision='" + bonusDecision + '\'' +
+                ", bonusNote='" + bonusNote + '\'' +
                 '}';
     }
 }

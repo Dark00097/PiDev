@@ -50,18 +50,18 @@ public class AdminSecuritySettingsController {
 
     @FXML
     private void handleTestBiometricVerification() {
-        AuthResult result = BiometricVerificationDialog.promptAndVerify("NEXORA Bank admin verification");
+        AuthResult result = BiometricVerificationDialog.promptAndVerify("Verification admin NEXORA Bank");
         BiometricVerificationDialog.showResultDialog(result);
-        lblStatus.setText("Last biometric test result: " + result);
+        lblStatus.setText("Dernier resultat du test biometrie : " + result);
     }
 
     @FXML
     private void handleOpenBiometricSettings() {
         try {
             BiometricVerificationDialog.openDeviceBiometricSettings();
-            lblStatus.setText("Opened biometric settings. Enable face or fingerprint there.");
+            lblStatus.setText("Parametres biometrie ouverts. Activez visage ou empreinte digitale.");
         } catch (IOException ex) {
-            showError("Failed to open biometric settings.");
+            showError("Impossible d ouvrir les parametres biometrie.");
         }
     }
 
@@ -74,10 +74,10 @@ public class AdminSecuritySettingsController {
             settings.setEnableEmailOtp(chkEnableEmailOtp.isSelected());
 
             settingsStore.save(settings);
-            lblStatus.setText("Security settings saved to: " + settingsStore.getSettingsFilePath());
-            showInfo("Admin account management", "Security settings saved successfully.");
+            lblStatus.setText("Parametres de securite enregistres dans : " + settingsStore.getSettingsFilePath());
+            showInfo("Gestion du compte admin", "Parametres de securite enregistres avec succes.");
         } catch (Exception ex) {
-            showError("Failed to save admin security settings.");
+            showError("Echec d enregistrement des parametres de securite admin.");
         }
     }
 
@@ -100,28 +100,28 @@ public class AdminSecuritySettingsController {
         String telephone = safe(txtTelephone.getText());
 
         if (nom.isBlank() || prenom.isBlank() || email.isBlank() || telephone.isBlank()) {
-            showError("Please fill all profile fields.");
+            showError("Veuillez remplir tous les champs du profil.");
             return;
         }
         if (!EMAIL_PATTERN.matcher(email).matches()) {
-            showError("Invalid email format.");
+            showError("Format d email invalide.");
             return;
         }
 
         try {
             boolean updated = userService.updateAdminOwnProfile(admin.getIdUser(), nom, prenom, email, telephone);
             if (!updated) {
-                showError("Profile update failed.");
+                showError("Echec de mise a jour du profil.");
                 return;
             }
 
             Optional<User> refreshed = userService.findByIdPublic(admin.getIdUser());
             refreshed.ifPresent(AuthSession::setCurrentUser);
             loadCurrentAdminProfile();
-            lblStatus.setText("Admin profile updated successfully.");
-            showInfo("Admin account management", "Profile updated successfully.");
+            lblStatus.setText("Profil admin mis a jour avec succes.");
+            showInfo("Gestion du compte admin", "Profil mis a jour avec succes.");
         } catch (Exception ex) {
-            showError(ex.getMessage() == null ? "Failed to update profile." : ex.getMessage());
+            showError(ex.getMessage() == null ? "Echec de mise a jour du profil." : ex.getMessage());
         }
     }
 
@@ -137,39 +137,39 @@ public class AdminSecuritySettingsController {
         String confirmPassword = txtConfirmNewPassword.getText() == null ? "" : txtConfirmNewPassword.getText();
 
         if (currentPassword.isBlank() || newPassword.isBlank() || confirmPassword.isBlank()) {
-            showError("Please fill current password, new password, and confirmation.");
+            showError("Veuillez saisir le mot de passe actuel, le nouveau et la confirmation.");
             return;
         }
         if (!newPassword.equals(confirmPassword)) {
-            showError("New password and confirmation do not match.");
+            showError("Le nouveau mot de passe et la confirmation ne correspondent pas.");
             return;
         }
         if (!STRONG_PASSWORD_PATTERN.matcher(newPassword).matches()) {
-            showError("New password must include uppercase, lowercase, number, special char, and 8+ length.");
+            showError("Le nouveau mot de passe doit inclure majuscule, minuscule, chiffre, caractere special et 8+ caracteres.");
             return;
         }
 
-        AuthResult result = BiometricVerificationDialog.promptAndVerify("NEXORA Bank admin password change verification");
+        AuthResult result = BiometricVerificationDialog.promptAndVerify("Verification de changement de mot de passe admin NEXORA Bank");
         if (result != AuthResult.VERIFIED) {
             BiometricVerificationDialog.showResultDialog(result);
-            lblStatus.setText("Password change cancelled: biometric verification failed.");
+            lblStatus.setText("Changement de mot de passe annule : verification biometrie echouee.");
             return;
         }
 
         try {
             boolean updated = userService.updateAdminOwnPassword(admin.getIdUser(), currentPassword, newPassword);
             if (!updated) {
-                showError("Password update failed.");
+                showError("Echec de mise a jour du mot de passe.");
                 return;
             }
 
             txtCurrentPassword.clear();
             txtNewPassword.clear();
             txtConfirmNewPassword.clear();
-            lblStatus.setText("Admin password updated successfully.");
-            showInfo("Admin account management", "Password changed successfully.");
+            lblStatus.setText("Mot de passe admin mis a jour avec succes.");
+            showInfo("Gestion du compte admin", "Mot de passe change avec succes.");
         } catch (Exception ex) {
-            showError(ex.getMessage() == null ? "Failed to change password." : ex.getMessage());
+            showError(ex.getMessage() == null ? "Echec du changement de mot de passe." : ex.getMessage());
         }
     }
 
@@ -179,10 +179,10 @@ public class AdminSecuritySettingsController {
             chkRequireBiometricOnAdminLogin.setSelected(settings.isRequireBiometricOnAdminLogin());
             chkRequireBiometricOnSensitiveActions.setSelected(settings.isRequireBiometricOnSensitiveActions());
             chkEnableEmailOtp.setSelected(settings.isEnableEmailOtp());
-            lblStatus.setText("Loaded from: " + settingsStore.getSettingsFilePath());
+            lblStatus.setText("Charge depuis : " + settingsStore.getSettingsFilePath());
         } catch (Exception ex) {
-            lblStatus.setText("Failed to load settings.");
-            showError("Failed to load admin security settings.");
+            lblStatus.setText("Echec du chargement des parametres.");
+            showError("Echec du chargement des parametres de securite admin.");
         }
     }
 
@@ -203,19 +203,19 @@ public class AdminSecuritySettingsController {
     private User requireCurrentAdmin() {
         User current = AuthSession.getCurrentUser();
         if (current == null || current.getIdUser() <= 0) {
-            showError("No active admin session found. Please login again.");
+            showError("Aucune session admin active. Veuillez vous reconnecter.");
             return null;
         }
 
         Optional<User> refreshed = userService.findByIdPublic(current.getIdUser());
         if (refreshed.isEmpty()) {
-            showError("Admin account not found. Please login again.");
+            showError("Compte admin introuvable. Veuillez vous reconnecter.");
             return null;
         }
 
         User admin = refreshed.get();
         if (!"ROLE_ADMIN".equalsIgnoreCase(safe(admin.getRole()))) {
-            showError("Current session is not an admin session.");
+            showError("La session courante n est pas une session admin.");
             return null;
         }
 
@@ -236,8 +236,10 @@ public class AdminSecuritySettingsController {
 
     private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR, message);
-        alert.setTitle("Admin account management");
+        alert.setTitle("Gestion du compte admin");
         alert.setHeaderText(null);
         alert.showAndWait();
     }
 }
+
+

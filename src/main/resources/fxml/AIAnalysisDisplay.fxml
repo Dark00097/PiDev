@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.SVGPath?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.nexora.bank.controllers.AIAnalysisDisplayController"
+      stylesheets="@../css/AIAnalysisDisplay.css"
+      styleClass="ai-analysis-container" spacing="0">
+
+    <HBox styleClass="ai-header" alignment="CENTER_LEFT" spacing="16">
+        <StackPane styleClass="ai-header-icon">
+            <SVGPath content="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+        </StackPane>
+        <VBox spacing="2" HBox.hgrow="ALWAYS">
+            <Label fx:id="lblHeaderTitle" text="Security Analysis Report" styleClass="ai-header-title"/>
+            <Label fx:id="lblHeaderSubtitle" text="AI-Powered Account Assessment" styleClass="ai-header-subtitle"/>
+        </VBox>
+        <Label fx:id="lblTimestamp" text="" styleClass="ai-timestamp"/>
+        <Button fx:id="btnClose" text="Close" styleClass="ai-btn-close" onAction="#handleClose"/>
+    </HBox>
+
+    <ScrollPane styleClass="ai-scroll-pane" fitToWidth="true" VBox.vgrow="ALWAYS">
+        <VBox styleClass="ai-content" spacing="20">
+
+            <VBox fx:id="sectionAccountHolder" styleClass="ai-section" spacing="12" managed="true" visible="true">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <StackPane styleClass="ai-section-icon ai-section-icon-blue">
+                        <SVGPath content="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/>
+                    </StackPane>
+                    <Label text="Account Holder" styleClass="ai-section-title"/>
+                </HBox>
+                <Label fx:id="lblAccountHolder" text="" styleClass="ai-account-holder" wrapText="true"/>
+            </VBox>
+
+            <VBox fx:id="sectionSummary" styleClass="ai-section" spacing="12" managed="true" visible="true">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <StackPane styleClass="ai-section-icon ai-section-icon-teal">
+                        <SVGPath content="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z"/>
+                    </StackPane>
+                    <Label text="Current Situation" styleClass="ai-section-title"/>
+                </HBox>
+                <Label fx:id="lblSummary" text="" styleClass="ai-section-content" wrapText="true"/>
+            </VBox>
+
+            <VBox fx:id="sectionRiskLevel" styleClass="ai-section ai-section-risk" spacing="16" managed="true" visible="true">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <StackPane styleClass="ai-section-icon ai-section-icon-orange">
+                        <SVGPath content="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </StackPane>
+                    <Label text="Security Risk Assessment" styleClass="ai-section-title"/>
+                </HBox>
+
+                <HBox alignment="CENTER_LEFT" spacing="16">
+                    <VBox styleClass="ai-risk-badge-container" alignment="CENTER">
+                        <Label fx:id="lblRiskLevel" text="MEDIUM" styleClass="ai-risk-badge"/>
+                        <Label text="Risk Level" styleClass="ai-risk-badge-label"/>
+                    </VBox>
+                    <VBox spacing="8" HBox.hgrow="ALWAYS">
+                        <Label text="Contributing Factors" styleClass="ai-subsection-title"/>
+                        <VBox fx:id="containerRiskReasons" spacing="6"/>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+            <VBox fx:id="sectionSecurityAdvice" styleClass="ai-section" spacing="12" managed="true" visible="true">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <StackPane styleClass="ai-section-icon ai-section-icon-green">
+                        <SVGPath content="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0 1 12 2.944a11.955 11.955 0 0 1-8.618 3.04A12.02 12.02 0 0 0 3 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                    </StackPane>
+                    <Label text="Security Recommendations" styleClass="ai-section-title"/>
+                </HBox>
+                <VBox fx:id="containerSecurityAdvice" spacing="8"/>
+            </VBox>
+
+            <VBox fx:id="sectionSuspicious" styleClass="ai-section ai-section-warning" spacing="12" managed="true" visible="true">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <StackPane styleClass="ai-section-icon ai-section-icon-red">
+                        <SVGPath content="M12 8v4m0 4h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/>
+                    </StackPane>
+                    <Label text="Items Requiring Attention" styleClass="ai-section-title"/>
+                </HBox>
+                <VBox fx:id="containerSuspicious" spacing="8"/>
+            </VBox>
+
+        </VBox>
+    </ScrollPane>
+
+    <HBox styleClass="ai-footer" alignment="CENTER" spacing="16">
+        <Label text="Generated by NEXORA AI Security Engine" styleClass="ai-footer-text"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Button text="Export Report" styleClass="ai-btn ai-btn-outline" onAction="#handleExportReport"/>
+        <Button text="Refresh Analysis" styleClass="ai-btn ai-btn-primary" onAction="#handleRefreshAnalysis"/>
+    </HBox>
+</VBox>

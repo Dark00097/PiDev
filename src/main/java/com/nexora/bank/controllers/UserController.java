@@ -4,8 +4,11 @@ import com.myapp.config.AdminSecuritySettings;
 import com.myapp.config.AdminSecuritySettingsStore;
 import com.myapp.security.AuthResult;
 import com.myapp.security.BiometricVerificationDialog;
+import com.nexora.bank.AuthSession;
 import com.nexora.bank.Models.User;
 import com.nexora.bank.Service.UserService;
+import com.nexora.bank.Utils.ProfileImageUtils;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -25,7 +28,10 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.shape.SVGPath;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
@@ -84,6 +90,7 @@ public class UserController implements Initializable {
         initializeSearch();
         updateSelectedUserContext(null);
         refreshUsers();
+        applyNotificationRedirectTarget();
     }
 
     private void initializeComboData() {
@@ -100,6 +107,33 @@ public class UserController implements Initializable {
         colTelephone.setCellValueFactory(new PropertyValueFactory<>("telephone"));
         colRole.setCellValueFactory(new PropertyValueFactory<>("role"));
         colStatut.setCellValueFactory(new PropertyValueFactory<>("status"));
+
+        colNom.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setText(null);
+                    setGraphic(null);
+                    return;
+                }
+
+                User rowUser = getTableRow() == null ? null : (User) getTableRow().getItem();
+                if (rowUser == null) {
+                    setText(item);
+                    setGraphic(null);
+                    return;
+                }
+
+                HBox container = new HBox(10);
+                container.setAlignment(Pos.CENTER_LEFT);
+                container.getChildren().addAll(createUserPhotoThumb(rowUser), new Label(safe(rowUser.getNom())));
+                container.getChildren().get(1).getStyleClass().add("nx-user-name-cell");
+
+                setText(null);
+                setGraphic(container);
+            }
+        });
 
         colStatut.setCellFactory(col -> new TableCell<>() {
             @Override
@@ -231,6 +265,47 @@ public class UserController implements Initializable {
         return button;
     }
 
+    private StackPane createUserPhotoThumb(User user) {
+        StackPane thumb = new StackPane();
+        thumb.getStyleClass().add("nx-user-photo-thumb");
+        thumb.setMinSize(30, 30);
+        thumb.setMaxSize(30, 30);
+
+        Image avatar = ProfileImageUtils.loadImageOrNull(user == null ? null : user.getProfileImagePath(), 30, 30);
+        if (avatar != null) {
+            ImageView imageView = new ImageView(avatar);
+            imageView.setFitWidth(30);
+            imageView.setFitHeight(30);
+            imageView.setPreserveRatio(false);
+            imageView.getStyleClass().add("nx-user-photo-image");
+            ProfileImageUtils.applyCircularClip(imageView, 30);
+            thumb.getChildren().add(imageView);
+            return thumb;
+        }
+
+        Label initials = new Label(buildInitials(user));
+        initials.getStyleClass().add("nx-user-photo-fallback");
+        thumb.getChildren().add(initials);
+        return thumb;
+    }
+
+    private String buildInitials(User user) {
+        String prenom = user == null ? "" : safe(user.getPrenom());
+        String nom = user == null ? "" : safe(user.getNom());
+        String source = (prenom + " " + nom).trim();
+        if (source.isBlank()) {
+            source = user == null ? "" : safe(user.getEmail());
+        }
+        if (source.isBlank()) {
+            return "U";
+        }
+        String[] parts = source.split("\\s+");
+        if (parts.length >= 2) {
+            return (parts[0].substring(0, 1) + parts[1].substring(0, 1)).toUpperCase();
+        }
+        return source.substring(0, 1).toUpperCase();
+    }
+
     private void initializeSearch() {
         filteredData = new FilteredList<>(usersList, p -> true);
         txtRecherche.textProperty().addListener((obs, oldValue, newValue) -> {
@@ -264,6 +339,30 @@ public class UserController implements Initializable {
             showError("Failed to load users from database.");
             ex.printStackTrace();
         }
+    }
+
+    private void applyNotificationRedirectTarget() {
+        Integer targetUserId = AuthSession.consumePendingUserManagementTargetId();
+        if (targetUserId == null || targetUserId <= 0) {
+            return;
+        }
+
+        Platform.runLater(() -> {
+            User target = usersList.stream()
+                .filter(user -> user.getIdUser() == targetUserId)
+                .findFirst()
+                .orElse(null);
+
+            if (target == null) {
+                return;
+            }
+
+            if (txtRecherche != null) {
+                txtRecherche.setText(target.getEmail() == null ? "" : target.getEmail());
+            }
+            tableUsers.getSelectionModel().select(target);
+            tableUsers.scrollTo(target);
+        });
     }
 
     private void updateStats() {

@@ -35,17 +35,17 @@ public class StatisticsController implements Initializable {
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         series.setName("Transactions 2025");
         series.getData().add(new XYChart.Data<>("Jan", 132000));
-        series.getData().add(new XYChart.Data<>("FÃ©v", 148000));
+        series.getData().add(new XYChart.Data<>("Fév", 148000));
         series.getData().add(new XYChart.Data<>("Mar", 162000));
         series.getData().add(new XYChart.Data<>("Avr", 175000));
         series.getData().add(new XYChart.Data<>("Mai", 190000));
         series.getData().add(new XYChart.Data<>("Juin", 205000));
         series.getData().add(new XYChart.Data<>("Juil", 198000));
-        series.getData().add(new XYChart.Data<>("AoÃ»t", 210000));
+        series.getData().add(new XYChart.Data<>("Août", 210000));
         series.getData().add(new XYChart.Data<>("Sep", 225000));
         series.getData().add(new XYChart.Data<>("Oct", 240000));
         series.getData().add(new XYChart.Data<>("Nov", 255000));
-        series.getData().add(new XYChart.Data<>("DÃ©c", 275000));
+        series.getData().add(new XYChart.Data<>("Déc", 275000));
         
         chartTransactions.getData().add(series);
     }
@@ -53,7 +53,7 @@ public class StatisticsController implements Initializable {
     private void loadPieChart() {
         ObservableList<PieChart.Data> pieChartData = FXCollections.observableArrayList(
             new PieChart.Data("Courant (45%)", 45),
-            new PieChart.Data("Ã‰pargne (35%)", 35),
+            new PieChart.Data("Épargne (35%)", 35),
             new PieChart.Data("Professionnel (20%)", 20)
         );
         chartComptes.setData(pieChartData);
@@ -61,7 +61,7 @@ public class StatisticsController implements Initializable {
 
     private void loadBarChart() {
         XYChart.Series<String, Number> series = new XYChart.Series<>();
-        series.setName("Montant accordÃ©");
+        series.setName("Montant accordé");
         series.getData().add(new XYChart.Data<>("Immobilier", 850000));
         series.getData().add(new XYChart.Data<>("Automobile", 320000));
         series.getData().add(new XYChart.Data<>("Personnel", 180000));
@@ -72,14 +72,14 @@ public class StatisticsController implements Initializable {
 
     private void loadRecentActivities() {
         ObservableList<String> activities = FXCollections.observableArrayList(
-            "Nouveau compte crÃ©Ã© - CB-2024-156",
-            "Virement de 5 000 DT effectuÃ©",
-            "CrÃ©dit immobilier approuvÃ©",
-            "Transaction validÃ©e - 1 250 DT",
+            "Nouveau compte créé - CB-2024-156",
+            "Virement de 5 000 DT effectué",
+            "Crédit immobilier approuvé",
+            "Transaction validée - 1 250 DT",
             "Nouveau client inscrit",
-            "Cashback crÃ©ditÃ© - 45 DT",
-            "Rapport mensuel gÃ©nÃ©rÃ©",
-            "Compte vÃ©rifiÃ© - CB-2024-089"
+            "Cashback crédité - 45 DT",
+            "Rapport mensuel généré",
+            "Compte vérifié - CB-2024-089"
         );
         listActivites.setItems(activities);
     }
@@ -90,7 +90,7 @@ public class StatisticsController implements Initializable {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Actualisation");
         alert.setHeaderText(null);
-        alert.setContentText("Les statistiques ont Ã©tÃ© actualisÃ©es.");
+        alert.setContentText("Les statistiques ont été actualisées.");
         alert.showAndWait();
     }
 }

@@ -1,16 +1,31 @@
 package com.nexora.bank.controllers;
 
 import com.nexora.bank.AuthSession;
+import com.nexora.bank.Models.Notification;
+import com.nexora.bank.Models.User;
 import com.nexora.bank.SceneRouter;
+import com.nexora.bank.Service.NotificationService;
+import com.nexora.bank.Utils.ProfileImageUtils;
 import javafx.animation.*;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Side;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.CustomMenuItem;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tooltip;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
+import org.kordamp.ikonli.javafx.FontIcon;
+
+import java.util.List;
 
 public class UserDashboardController {
 
@@ -31,19 +46,25 @@ public class UserDashboardController {
     @FXML private Label lblPageTitle;
     @FXML private Label lblPageSubtitle;
     @FXML private Label lblBreadcrumb;
+    @FXML private Label lblUserNotificationCount;
+    @FXML private ImageView imgNavbarAvatar;
+    @FXML private FontIcon iconNavbarAvatarFallback;
 
     private static final String NAV_ACTIVE_CLASS = "nav-button-active";
     private static final Duration TRANSITION_DURATION = Duration.millis(300);
 
     private Button currentActiveButton;
     private VBox currentActiveSection;
+    private final NotificationService notificationService = new NotificationService();
+    private ContextMenu notificationsMenu;
+    private Timeline notificationRefreshTimeline;
 
     private final String[][] pageInfo = {
-        {"Bank Accounts", "Manage and monitor your accounts", "Accounts"},
-        {"Transactions", "View your transaction history", "Transactions"},
-        {"Credit Services", "Loans, credit cards & financing", "Credit"},
-        {"Rewards", "Cashback and exclusive offers", "Rewards"},
-        {"My Profile", "Manage your identity, security and access preferences", "Profile"}
+        {"Comptes bancaires", "Gerez et suivez vos comptes", "Comptes"},
+        {"Transactions", "Consultez l historique de vos transactions", "Transactions"},
+        {"Services de credit", "Prets, cartes de credit et financement", "Credit"},
+        {"Recompenses", "Cashback et offres exclusives", "Recompenses"},
+        {"Mon profil", "Gerez votre identite, securite et acces", "Profil"}
     };
 
     @FXML
@@ -51,25 +72,22 @@ public class UserDashboardController {
         setupTooltips();
         setupHoverEffects();
         showCompte();
-        
-        // Initialize user name if session exists
-        if (AuthSession.getCurrentUser() != null && lblUserName != null) {
-            String prenom = AuthSession.getCurrentUser().getPrenom();
-            String nom = AuthSession.getCurrentUser().getNom();
-            String fullName = ((prenom == null ? "" : prenom.trim()) + " " + (nom == null ? "" : nom.trim())).trim();
-            if (fullName.isEmpty()) {
-                fullName = AuthSession.getCurrentUser().getEmail();
-            }
-            lblUserName.setText(fullName);
+        startNotificationAutoRefresh();
+        refreshNotificationBadge();
+
+        if (sectionProfileController != null) {
+            sectionProfileController.setProfileUpdatedCallback(this::refreshCurrentUserVisuals);
         }
+        refreshCurrentUserVisuals();
+        refreshNotificationBadge();
     }
 
     private void setupTooltips() {
-        createModernTooltip(btnCompte, "View and manage your bank accounts");
-        createModernTooltip(btnTransaction, "Track all your transactions");
-        createModernTooltip(btnCredit, "Explore credit services");
-        createModernTooltip(btnCashback, "Check your rewards and cashback");
-        createModernTooltip(btnSettings, "Open your profile and security settings");
+        createModernTooltip(btnCompte, "Voir et gerer vos comptes bancaires");
+        createModernTooltip(btnTransaction, "Suivre toutes vos transactions");
+        createModernTooltip(btnCredit, "Explorer les services de credit");
+        createModernTooltip(btnCashback, "Consulter vos recompenses et cashback");
+        createModernTooltip(btnSettings, "Ouvrir votre profil et vos parametres de securite");
     }
 
     private void createModernTooltip(Button button, String text) {
@@ -132,7 +150,39 @@ public class UserDashboardController {
         if (sectionProfileController != null) {
             sectionProfileController.refreshProfile();
         }
+        refreshCurrentUserVisuals();
         switchSection(sectionProfile, null, 4);
+    }
+
+    private void refreshCurrentUserVisuals() {
+        User currentUser = AuthSession.getCurrentUser();
+        if (currentUser == null) {
+            return;
+        }
+
+        if (lblUserName != null) {
+            String prenom = currentUser.getPrenom();
+            String nom = currentUser.getNom();
+            String fullName = ((prenom == null ? "" : prenom.trim()) + " " + (nom == null ? "" : nom.trim())).trim();
+            if (fullName.isEmpty()) {
+                fullName = currentUser.getEmail();
+            }
+            lblUserName.setText(fullName);
+        }
+
+        if (imgNavbarAvatar != null) {
+            ProfileImageUtils.applyCircularClip(imgNavbarAvatar, 42);
+            Image avatar = ProfileImageUtils.loadImageOrNull(currentUser.getProfileImagePath(), 42, 42);
+            boolean hasAvatar = avatar != null;
+            imgNavbarAvatar.setImage(avatar);
+            imgNavbarAvatar.setVisible(hasAvatar);
+            imgNavbarAvatar.setManaged(hasAvatar);
+
+            if (iconNavbarAvatarFallback != null) {
+                iconNavbarAvatarFallback.setVisible(!hasAvatar);
+                iconNavbarAvatarFallback.setManaged(!hasAvatar);
+            }
+        }
     }
 
     private void switchSection(VBox newSection, Button newButton, int pageIndex) {
@@ -286,9 +336,9 @@ public class UserDashboardController {
     @FXML
     private void openHome() {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Sign Out");
-        alert.setHeaderText("Are you sure you want to sign out?");
-        alert.setContentText("You will be redirected to the home page.");
+        alert.setTitle("Deconnexion");
+        alert.setHeaderText("Voulez-vous vraiment vous deconnecter ?");
+        alert.setContentText("Vous serez redirige vers la page d accueil.");
         
         // Style the alert
         alert.getDialogPane().getStylesheets().add(
@@ -298,15 +348,27 @@ public class UserDashboardController {
         alert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
                 AuthSession.clear();
-                SceneRouter.show("/fxml/Home.fxml", "NEXORA BANK - Welcome", 1200, 760, 980, 680);
+                SceneRouter.show("/fxml/Home.fxml", "NEXORA BANK - Accueil", 1200, 760, 980, 680);
             }
         });
     }
 
     @FXML
-    private void openNotifications() {
-        showInfoAlert("Notifications", "You have 3 new notifications",
-            "- Transfer completed successfully\n- New cashback offer available\n- Security update completed");
+    private void openNotifications(ActionEvent event) {
+        User currentUser = AuthSession.getCurrentUser();
+        if (currentUser == null) {
+            showInfoAlert("Notifications", "Session utilisateur introuvable.", "");
+            return;
+        }
+
+        try {
+            List<Notification> notifications = notificationService.getRecentNotificationsFor(currentUser, 12);
+            showNotificationsPanel(event, notifications);
+            notificationService.markAllAsRead(currentUser);
+            refreshNotificationBadge();
+        } catch (Exception ex) {
+            showInfoAlert("Notifications", "Impossible de charger les notifications.", "");
+        }
     }
 
     @FXML
@@ -323,6 +385,127 @@ public class UserDashboardController {
             getClass().getResource("/css/UserDashboard.css").toExternalForm()
         );
         alert.show();
+    }
+
+    private void refreshNotificationBadge() {
+        if (lblUserNotificationCount == null) {
+            return;
+        }
+
+        User currentUser = AuthSession.getCurrentUser();
+        if (currentUser == null) {
+            lblUserNotificationCount.setText("0");
+            lblUserNotificationCount.setVisible(true);
+            lblUserNotificationCount.setManaged(true);
+            return;
+        }
+
+        try {
+            int unreadCount = notificationService.countUnreadFor(currentUser);
+            lblUserNotificationCount.setText(formatNotificationCount(unreadCount));
+            lblUserNotificationCount.setVisible(true);
+            lblUserNotificationCount.setManaged(true);
+        } catch (Exception ex) {
+            lblUserNotificationCount.setText("0");
+            lblUserNotificationCount.setVisible(true);
+            lblUserNotificationCount.setManaged(true);
+        }
+    }
+
+    private String safeLabel(String value) {
+        return value == null || value.isBlank() ? "-" : value.trim();
+    }
+
+    private String formatNotificationCount(int count) {
+        if (count < 0) {
+            return "0";
+        }
+        if (count > 99) {
+            return "99+";
+        }
+        return String.valueOf(count);
+    }
+
+    private void startNotificationAutoRefresh() {
+        if (notificationRefreshTimeline != null) {
+            notificationRefreshTimeline.stop();
+        }
+        notificationRefreshTimeline = new Timeline(
+            new KeyFrame(Duration.seconds(8), e -> refreshNotificationBadge())
+        );
+        notificationRefreshTimeline.setCycleCount(Animation.INDEFINITE);
+        notificationRefreshTimeline.play();
+    }
+
+    private void showNotificationsPanel(ActionEvent event, List<Notification> notifications) {
+        if (event == null || !(event.getSource() instanceof Node anchor)) {
+            return;
+        }
+
+        if (notificationsMenu != null && notificationsMenu.isShowing()) {
+            notificationsMenu.hide();
+            return;
+        }
+
+        VBox panel = new VBox(10);
+        panel.setPrefWidth(360);
+        panel.setMaxWidth(360);
+        panel.setStyle(
+            "-fx-background-color: #ffffff;" +
+            "-fx-background-radius: 14;" +
+            "-fx-border-color: #dbe3ef;" +
+            "-fx-border-radius: 14;" +
+            "-fx-padding: 12;"
+        );
+
+        Label title = new Label("Notifications");
+        title.setStyle("-fx-font-size: 15px; -fx-font-weight: 700; -fx-text-fill: #0A2540;");
+
+        VBox listContainer = new VBox(8);
+        if (notifications == null || notifications.isEmpty()) {
+            Label empty = new Label("Aucune notification.");
+            empty.setStyle("-fx-font-size: 12px; -fx-text-fill: #64748b;");
+            listContainer.getChildren().add(empty);
+        } else {
+            for (Notification notification : notifications) {
+                VBox row = new VBox(3);
+                row.setStyle(
+                    "-fx-background-color: #f8fbff;" +
+                    "-fx-background-radius: 10;" +
+                    "-fx-padding: 10;" +
+                    "-fx-border-color: #e8eef7;" +
+                    "-fx-border-radius: 10;"
+                );
+
+                Label rowTitle = new Label(safeLabel(notification.getTitle()));
+                rowTitle.setWrapText(true);
+                rowTitle.setStyle("-fx-font-size: 12px; -fx-font-weight: 700; -fx-text-fill: #0f172a;");
+
+                Label rowMessage = new Label(safeLabel(notification.getMessage()));
+                rowMessage.setWrapText(true);
+                rowMessage.setStyle("-fx-font-size: 12px; -fx-text-fill: #334155;");
+
+                Label rowTime = new Label("At: " + safeLabel(notification.getCreatedAt()));
+                rowTime.setStyle("-fx-font-size: 11px; -fx-text-fill: #64748b;");
+
+                row.getChildren().addAll(rowTitle, rowMessage, rowTime);
+                listContainer.getChildren().add(row);
+            }
+        }
+
+        ScrollPane scrollPane = new ScrollPane(listContainer);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setPrefViewportHeight(300);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+        scrollPane.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
+
+        panel.getChildren().addAll(title, scrollPane);
+
+        notificationsMenu = new ContextMenu();
+        CustomMenuItem customItem = new CustomMenuItem(panel, false);
+        notificationsMenu.getItems().setAll(customItem);
+        notificationsMenu.setAutoHide(true);
+        notificationsMenu.show(anchor, Side.BOTTOM, -300, 8);
     }
 
     private void setVisibleManaged(VBox node, boolean visible) {

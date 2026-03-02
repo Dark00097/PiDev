@@ -21,7 +21,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
 import javafx.scene.shape.SVGPath;
 
@@ -31,6 +33,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -53,6 +56,7 @@ public class CashbackController implements Initializable {
 
     @FXML private Button btnAjouter;
     @FXML private Button btnSupprimer;
+    @FXML private Button btnDonnerReward;
 
     @FXML private TableView<Cashback> tableCashbacks;
     @FXML private TableColumn<Cashback, String> colUser;
@@ -63,6 +67,8 @@ public class CashbackController implements Initializable {
     @FXML private TableColumn<Cashback, String> colDateAchat;
     @FXML private TableColumn<Cashback, String> colDateCredit;
     @FXML private TableColumn<Cashback, String> colDateExpiration;
+    @FXML private TableColumn<Cashback, String> colUserRating;
+    @FXML private TableColumn<Cashback, String> colBonusDecision;
     @FXML private TableColumn<Cashback, String> colStatut;
     @FXML private TableColumn<Cashback, Void> colActions;
 
@@ -89,6 +95,7 @@ public class CashbackController implements Initializable {
         cmbStatut.setVisibleRowCount(6);
         loadPartenaires();
         reloadCashbacks();
+        updateRewardButtonState();
     }
 
     private void initializeTable() {
@@ -101,11 +108,13 @@ public class CashbackController implements Initializable {
         });
         colPartenaire.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getPartenaireNom()));
         colMontantAchat.setCellValueFactory(c -> new SimpleStringProperty(String.format("%.2f DT", c.getValue().getMontantAchat())));
-        colTaux.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getTauxApplique() + "%"));
+        colTaux.setCellValueFactory(c -> new SimpleStringProperty(String.format(Locale.US, "%.2f%%", c.getValue().getTauxApplique())));
         colMontantCashback.setCellValueFactory(c -> new SimpleStringProperty(String.format("%.2f DT", c.getValue().getMontantCashback())));
         colDateAchat.setCellValueFactory(c -> new SimpleStringProperty(formatDate(c.getValue().getDateAchat())));
         colDateCredit.setCellValueFactory(c -> new SimpleStringProperty(formatDate(c.getValue().getDateCredit())));
         colDateExpiration.setCellValueFactory(c -> new SimpleStringProperty(formatDate(c.getValue().getDateExpiration())));
+        colUserRating.setCellValueFactory(c -> new SimpleStringProperty(formatUserRating(c.getValue().getUserRating())));
+        colBonusDecision.setCellValueFactory(c -> new SimpleStringProperty(formatBonusDecision(c.getValue())));
         colStatut.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getStatut()));
 
         colMontantCashback.setCellFactory(column -> new TableCell<>() {
@@ -145,8 +154,9 @@ public class CashbackController implements Initializable {
 
         colActions.setCellFactory(column -> new TableCell<>() {
             private final Button btnEdit = new Button();
+            private final Button btnReward = new Button();
             private final Button btnDelete = new Button();
-            private final HBox hbox = new HBox(8);
+            private final HBox hbox = new HBox(6);
 
             {
                 btnEdit.getStyleClass().addAll("nx-table-action", "nx-table-action-edit");
@@ -155,6 +165,13 @@ public class CashbackController implements Initializable {
                 editIcon.getStyleClass().add("nx-action-icon");
                 btnEdit.setGraphic(editIcon);
 
+                btnReward.getStyleClass().addAll("nx-table-action", "nx-table-action-edit");
+                SVGPath rewardIcon = new SVGPath();
+                rewardIcon.setContent("M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8V7m0 1v8m0 0v1");
+                rewardIcon.getStyleClass().add("nx-action-icon");
+                btnReward.setGraphic(rewardIcon);
+                btnReward.setTooltip(new Tooltip("Donner reward"));
+
                 btnDelete.getStyleClass().addAll("nx-table-action", "nx-table-action-delete");
                 SVGPath deleteIcon = new SVGPath();
                 deleteIcon.setContent("M19 7l-.867 12.142A2 2 0 0 1 16.138 21H7.862a2 2 0 0 1-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v3M4 7h16");
@@ -162,9 +179,10 @@ public class CashbackController implements Initializable {
                 btnDelete.setGraphic(deleteIcon);
 
                 hbox.setAlignment(Pos.CENTER);
-                hbox.getChildren().addAll(btnEdit, btnDelete);
+                hbox.getChildren().addAll(btnEdit, btnReward, btnDelete);
 
                 btnEdit.setOnAction(event -> editCashback(getTableView().getItems().get(getIndex())));
+                btnReward.setOnAction(event -> grantReward(getTableView().getItems().get(getIndex())));
                 btnDelete.setOnAction(event -> deleteCashback(getTableView().getItems().get(getIndex())));
             }
 
@@ -201,18 +219,20 @@ public class CashbackController implements Initializable {
 
     private void setupAutoCalculation() {
         txtMontantAchat.textProperty().addListener((obs, old, value) -> calculateCashback());
-        txtTauxApplique.textProperty().addListener((obs, old, value) -> calculateCashback());
+        cmbPartenaire.valueProperty().addListener((obs, old, value) -> calculateCashback());
     }
 
     private void setupTableSelection() {
         tableCashbacks.getSelectionModel().selectedItemProperty().addListener((obs, old, value) -> {
             if (value == null) {
+                updateRewardButtonState();
                 return;
             }
             selectedCashback = value;
             populateForm(value);
             isEditMode = true;
             btnAjouter.setText("Modifier");
+            updateRewardButtonState();
         });
     }
 
@@ -246,9 +266,17 @@ public class CashbackController implements Initializable {
     private void calculateCashback() {
         try {
             double montant = parseDouble(txtMontantAchat.getText());
-            double taux = parseDouble(txtTauxApplique.getText());
-            txtMontantCashback.setText(String.format("%.2f", montant * taux / 100));
+            if (montant <= 0) {
+                txtTauxApplique.setText("0.00");
+                txtMontantCashback.setText("0.00");
+                return;
+            }
+            double rating = resolveSelectedPartnerRating();
+            double taux = cashbackService.resolveEffectiveRatePercent(montant, rating);
+            txtTauxApplique.setText(String.format(Locale.US, "%.2f", taux));
+            txtMontantCashback.setText(String.format(Locale.US, "%.2f", cashbackService.calculateCashbackByAmountAndRating(montant, rating)));
         } catch (NumberFormatException ex) {
+            txtTauxApplique.setText("0.00");
             txtMontantCashback.setText("0.00");
         }
     }
@@ -291,6 +319,7 @@ public class CashbackController implements Initializable {
         isEditMode = false;
         btnAjouter.setText("Ajouter");
         tableCashbacks.getSelectionModel().clearSelection();
+        updateRewardButtonState();
     }
 
     @FXML
@@ -338,6 +367,19 @@ public class CashbackController implements Initializable {
         clearForm();
     }
 
+    @FXML
+    private void handleDonnerReward() {
+        Cashback target = selectedCashback;
+        if (target == null && tableCashbacks != null) {
+            target = tableCashbacks.getSelectionModel().getSelectedItem();
+        }
+        if (target == null) {
+            showAlert(Alert.AlertType.WARNING, "Reward", "Selectionnez un cashback dans le tableau.");
+            return;
+        }
+        grantReward(target);
+    }
+
     private Cashback buildFromForm() {
         Cashback cashback = new Cashback();
         cashback.setIdUser(Integer.parseInt(txtUserId.getText().trim()));
@@ -346,9 +388,11 @@ public class CashbackController implements Initializable {
         Optional<Partenaire> partenaireOpt = partenaireService.findByName(cashback.getPartenaireNom());
         cashback.setIdPartenaire(partenaireOpt.map(Partenaire::getIdPartenaire).orElse(null));
 
-        cashback.setMontantAchat(parseDouble(txtMontantAchat.getText()));
-        cashback.setTauxApplique(parseDouble(txtTauxApplique.getText()));
-        cashback.setMontantCashback(parseDouble(txtMontantCashback.getText()));
+        double montant = parseDouble(txtMontantAchat.getText());
+        double rating = partenaireOpt.map(Partenaire::getRating).orElse(0.0);
+        cashback.setMontantAchat(montant);
+        cashback.setTauxApplique(cashbackService.resolveEffectiveRatePercent(montant, rating));
+        cashback.setMontantCashback(cashbackService.calculateCashbackByAmountAndRating(montant, rating));
         cashback.setDateAchat(dpDateAchat.getValue());
         cashback.setDateCredit(dpDateCredit.getValue());
         cashback.setDateExpiration(dpDateExpiration.getValue());
@@ -362,6 +406,103 @@ public class CashbackController implements Initializable {
         populateForm(cashback);
         isEditMode = true;
         btnAjouter.setText("Modifier");
+    }
+
+    private void grantReward(Cashback cashback) {
+        if (cashback == null) {
+            return;
+        }
+        if (cashback.getUserRating() == null) {
+            showAlert(Alert.AlertType.WARNING, "Decision bonus", "L utilisateur n a pas encore note ce cashback.");
+            return;
+        }
+
+        Alert decisionDialog = new Alert(
+            Alert.AlertType.CONFIRMATION,
+            "Approuver un bonus pour ce cashback ?\nOui = bonus accorde, Non = pas de bonus.",
+            ButtonType.YES,
+            ButtonType.NO,
+            ButtonType.CANCEL
+        );
+        decisionDialog.setTitle("Decision bonus");
+        String comment = safe(cashback.getUserRatingComment());
+        String header = "Notation utilisateur: " + formatUserRating(cashback.getUserRating());
+        if (!comment.isBlank()) {
+            header += "\nCommentaire: " + comment;
+        }
+        decisionDialog.setHeaderText(header);
+        Optional<ButtonType> decisionResult = decisionDialog.showAndWait();
+        if (decisionResult.isEmpty() || decisionResult.get() == ButtonType.CANCEL) {
+            return;
+        }
+
+        if (decisionResult.get() == ButtonType.NO) {
+            TextInputDialog rejectReasonDialog = new TextInputDialog("Pas de bonus sur cette transaction");
+            rejectReasonDialog.setTitle("Decision bonus");
+            rejectReasonDialog.setHeaderText("Raison du refus");
+            rejectReasonDialog.setContentText("Raison:");
+            Optional<String> rejectReasonResult = rejectReasonDialog.showAndWait();
+            if (rejectReasonResult.isEmpty()) {
+                return;
+            }
+            String reason = rejectReasonResult.get();
+
+            try {
+                boolean updated = cashbackService.setAdminBonusDecision(cashback.getIdCashback(), false, reason);
+                if (!updated) {
+                    showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d enregistrer le refus du bonus.");
+                    return;
+                }
+                reloadCashbacks();
+                showAlert(Alert.AlertType.INFORMATION, "Decision enregistree", "Bonus refuse pour cette transaction.");
+            } catch (RuntimeException ex) {
+                showAlert(Alert.AlertType.ERROR, "Erreur", ex.getMessage());
+            }
+            return;
+        }
+
+        TextInputDialog amountDialog = new TextInputDialog("5.00");
+        amountDialog.setTitle("Reward Admin");
+        amountDialog.setHeaderText("Accorder un bonus cashback");
+        amountDialog.setContentText("Montant bonus (DT):");
+        Optional<String> bonusResult = amountDialog.showAndWait();
+        if (bonusResult.isEmpty()) {
+            return;
+        }
+
+        double bonus;
+        try {
+            bonus = parseDouble(bonusResult.get());
+        } catch (NumberFormatException ex) {
+            showAlert(Alert.AlertType.WARNING, "Validation", "Montant bonus invalide.");
+            return;
+        }
+        if (bonus <= 0) {
+            showAlert(Alert.AlertType.WARNING, "Validation", "Le bonus doit etre superieur a 0.");
+            return;
+        }
+
+        TextInputDialog reasonDialog = new TextInputDialog("Bonus fidelite");
+        reasonDialog.setTitle("Reward Admin");
+        reasonDialog.setHeaderText("Raison du bonus (optionnel)");
+        reasonDialog.setContentText("Raison:");
+        Optional<String> reasonResult = reasonDialog.showAndWait();
+        if (reasonResult.isEmpty()) {
+            return;
+        }
+        String reason = reasonResult.get();
+
+        try {
+            boolean granted = cashbackService.grantAdminReward(cashback.getIdCashback(), bonus, reason);
+            if (!granted) {
+                showAlert(Alert.AlertType.ERROR, "Erreur", "Impossible d appliquer le reward.");
+                return;
+            }
+            reloadCashbacks();
+            showAlert(Alert.AlertType.INFORMATION, "Succes", "Reward applique: +" + String.format(Locale.US, "%.2f", bonus) + " DT");
+        } catch (RuntimeException ex) {
+            showAlert(Alert.AlertType.ERROR, "Erreur", ex.getMessage());
+        }
     }
 
     private void deleteCashback(Cashback cashback) {
@@ -382,6 +523,7 @@ public class CashbackController implements Initializable {
 
         clearForm();
         reloadCashbacks();
+        updateRewardButtonState();
     }
 
     private boolean validateForm() {
@@ -457,8 +599,59 @@ public class CashbackController implements Initializable {
         return Double.parseDouble(text == null ? "0" : text.trim().replace(",", "."));
     }
 
+    private double resolveSelectedPartnerRating() {
+        String partnerName = cmbPartenaire.getValue();
+        if (partnerName == null || partnerName.isBlank()) {
+            return 0.0;
+        }
+        return partenaireService.findByName(partnerName).map(Partenaire::getRating).orElse(0.0);
+    }
+
+    private String formatUserRating(Double rating) {
+        if (rating == null) {
+            return "\u2606\u2606\u2606\u2606\u2606";
+        }
+        return toStars(rating) + " (" + String.format(Locale.US, "%.1f/5", rating) + ")";
+    }
+
+    private String toStars(double rating) {
+        int rounded = (int) Math.round(rating);
+        rounded = Math.max(0, Math.min(5, rounded));
+        StringBuilder stars = new StringBuilder(5);
+        for (int i = 1; i <= 5; i++) {
+            stars.append(i <= rounded ? "\u2605" : "\u2606");
+        }
+        return stars.toString();
+    }
+
+    private String formatBonusDecision(Cashback cashback) {
+        if (cashback == null) {
+            return "Pending";
+        }
+        String decision = safe(cashback.getBonusDecision());
+        if (decision.isBlank()) {
+            decision = "Pending";
+        }
+        String note = safe(cashback.getBonusNote());
+        if (note.isBlank()) {
+            return decision;
+        }
+        return decision + " (" + note + ")";
+    }
+
     private String safe(String value) {
         return value == null ? "" : value;
+    }
+
+    private void updateRewardButtonState() {
+        if (btnDonnerReward == null || tableCashbacks == null) {
+            return;
+        }
+        Cashback current = selectedCashback;
+        if (current == null) {
+            current = tableCashbacks.getSelectionModel().getSelectedItem();
+        }
+        btnDonnerReward.setDisable(current == null);
     }
 
     private void showAlert(Alert.AlertType type, String title, String msg) {
@@ -469,3 +662,5 @@ public class CashbackController implements Initializable {
         alert.showAndWait();
     }
 }
+
+

@@ -42,6 +42,7 @@ public class PartenaireController implements Initializable {
     @FXML private TextArea txtDescription;
     @FXML private TextField txtTauxCashback;
     @FXML private TextField txtTauxCashbackMax;
+    @FXML private TextField txtRating;
     @FXML private TextField txtPlafondMensuel;
     @FXML private TextArea txtConditions;
     @FXML private ComboBox<String> cmbStatut;
@@ -53,6 +54,7 @@ public class PartenaireController implements Initializable {
     @FXML private TableColumn<Partenaire, String> colCategorie;
     @FXML private TableColumn<Partenaire, String> colTaux;
     @FXML private TableColumn<Partenaire, String> colTauxMax;
+    @FXML private TableColumn<Partenaire, String> colRating;
     @FXML private TableColumn<Partenaire, String> colPlafond;
     @FXML private TableColumn<Partenaire, String> colDescription;
     @FXML private TableColumn<Partenaire, String> colStatut;
@@ -81,6 +83,7 @@ public class PartenaireController implements Initializable {
         colCategorie.setCellValueFactory(new PropertyValueFactory<>("categorie"));
         colTaux.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getTauxCashback() + "%"));
         colTauxMax.setCellValueFactory(c -> new SimpleStringProperty(c.getValue().getTauxCashbackMax() + "%"));
+        colRating.setCellValueFactory(c -> new SimpleStringProperty(String.format("⭐ %.1f/5", c.getValue().getRating())));
         colPlafond.setCellValueFactory(c -> new SimpleStringProperty(String.format("%.2f DT", c.getValue().getPlafondMensuel())));
         colDescription.setCellValueFactory(new PropertyValueFactory<>("description"));
         colStatut.setCellValueFactory(c -> new SimpleStringProperty(safe(c.getValue().getStatus())));
@@ -245,6 +248,7 @@ public class PartenaireController implements Initializable {
         txtDescription.setText(partenaire.getDescription());
         txtTauxCashback.setText(String.valueOf(partenaire.getTauxCashback()));
         txtTauxCashbackMax.setText(String.valueOf(partenaire.getTauxCashbackMax()));
+        txtRating.setText(String.format("%.1f", partenaire.getRating()));
         txtPlafondMensuel.setText(String.valueOf(partenaire.getPlafondMensuel()));
         txtConditions.setText(partenaire.getConditions());
         cmbStatut.setValue(partenaire.getStatus());
@@ -256,6 +260,7 @@ public class PartenaireController implements Initializable {
         txtDescription.clear();
         txtTauxCashback.clear();
         txtTauxCashbackMax.clear();
+        txtRating.clear();
         txtPlafondMensuel.clear();
         txtConditions.clear();
         cmbStatut.setValue(null);
@@ -278,6 +283,7 @@ public class PartenaireController implements Initializable {
             String description = safe(txtDescription.getText());
             double taux = Double.parseDouble(txtTauxCashback.getText().trim());
             double tauxMax = txtTauxCashbackMax.getText().isBlank() ? taux : Double.parseDouble(txtTauxCashbackMax.getText().trim());
+            double rating = txtRating.getText().isBlank() ? 4.0 : Double.parseDouble(txtRating.getText().trim());
             double plafond = txtPlafondMensuel.getText().isBlank() ? 0 : Double.parseDouble(txtPlafondMensuel.getText().trim());
             String conditions = safe(txtConditions.getText());
             String status = cmbStatut.getValue();
@@ -288,6 +294,7 @@ public class PartenaireController implements Initializable {
             partenaire.setDescription(description);
             partenaire.setTauxCashback(taux);
             partenaire.setTauxCashbackMax(tauxMax);
+            partenaire.setRating(rating);
             partenaire.setPlafondMensuel(plafond);
             partenaire.setConditions(conditions);
             partenaire.setStatus(status);
@@ -394,6 +401,17 @@ public class PartenaireController implements Initializable {
                 Double.parseDouble(txtTauxCashbackMax.getText().trim());
             } catch (NumberFormatException ex) {
                 errors.append("- Taux cashback max invalide\n");
+            }
+        }
+
+        if (!txtRating.getText().trim().isEmpty()) {
+            try {
+                double rating = Double.parseDouble(txtRating.getText().trim());
+                if (rating < 0 || rating > 5) {
+                    errors.append("- Rating doit etre entre 0 et 5\n");
+                }
+            } catch (NumberFormatException ex) {
+                errors.append("- Rating invalide\n");
             }
         }
 

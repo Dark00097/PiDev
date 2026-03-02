@@ -41,10 +41,15 @@ public final class SceneRouter {
             stage.show();
         } catch (IOException ex) {
             ex.printStackTrace();
+            Throwable root = ex;
+            while (root.getCause() != null) {
+                root = root.getCause();
+            }
+            String rootMessage = root.getMessage() == null ? root.getClass().getSimpleName() : root.getMessage();
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Erreur");
             alert.setHeaderText("Impossible de charger la vue");
-            alert.setContentText("Vue: " + fxmlPath);
+            alert.setContentText("Vue: " + fxmlPath + "\nCause: " + rootMessage);
             alert.show();
         }
     }

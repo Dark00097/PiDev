@@ -17,13 +17,13 @@ public class EmailNotificationService {
 
     private static final String SMTP_USERNAME = fromEnv("NEXORA_SMTP_EMAIL", "jfkdiekrjrjee06@gmail.com");
     private static final String SMTP_PASSWORD = fromEnv("NEXORA_SMTP_APP_PASSWORD", "hkmromvmrirxvhvj");
-    private static final String SMTP_FROM_NAME = fromEnv("NEXORA_SMTP_FROM_NAME", "NEXORA Mail");
+    private static final String SMTP_FROM_NAME = fromEnv("NEXORA_SMTP_FROM_NAME", "NEXORA Notification");
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
     public void sendCashbackSubmittedEmail(User user, Cashback cashback) {
         if (user == null || user.getEmail() == null || user.getEmail().isBlank()) {
-            throw new IllegalArgumentException("User email is required for cashback notification.");
+            throw new IllegalArgumentException("Email utilisateur requis pour la notification cashback.");
         }
 
         String fullName = ((safe(user.getPrenom()) + " " + safe(user.getNom())).trim());
@@ -31,23 +31,23 @@ public class EmailNotificationService {
             fullName = user.getEmail().trim();
         }
 
-        String subject = "Cashback submitted successfully - NEXORA";
+        String subject = "Cashback soumis avec succes - NEXORA";
         String content = """
             <html>
             <body style='font-family:Segoe UI,Arial,sans-serif;background:#f4f7fb;padding:24px;'>
               <div style='max-width:620px;margin:0 auto;background:#fff;border:1px solid #e6ebf2;border-radius:12px;padding:24px;'>
-                <h2 style='margin:0 0 12px;color:#0A2540;'>Cashback received</h2>
-                <p style='margin:0 0 16px;color:#334155;'>Hello %s,</p>
-                <p style='margin:0 0 16px;color:#334155;'>Your cashback request has been submitted successfully.</p>
+                <h2 style='margin:0 0 12px;color:#0A2540;'>Cashback recu</h2>
+                <p style='margin:0 0 16px;color:#334155;'>Bonjour %s,</p>
+                <p style='margin:0 0 16px;color:#334155;'>Votre demande de cashback a ete soumise avec succes.</p>
                 <table style='width:100%%;border-collapse:collapse;'>
-                  <tr><td style='padding:8px 0;color:#64748b;'>Partner</td><td style='padding:8px 0;color:#0f172a;font-weight:600;'>%s</td></tr>
-                  <tr><td style='padding:8px 0;color:#64748b;'>Purchase amount</td><td style='padding:8px 0;color:#0f172a;font-weight:600;'>%.2f</td></tr>
-                  <tr><td style='padding:8px 0;color:#64748b;'>Rate</td><td style='padding:8px 0;color:#0f172a;font-weight:600;'>%.2f%%</td></tr>
-                  <tr><td style='padding:8px 0;color:#64748b;'>Cashback amount</td><td style='padding:8px 0;color:#0f172a;font-weight:600;'>%.2f</td></tr>
-                  <tr><td style='padding:8px 0;color:#64748b;'>Purchase date</td><td style='padding:8px 0;color:#0f172a;font-weight:600;'>%s</td></tr>
-                  <tr><td style='padding:8px 0;color:#64748b;'>Status</td><td style='padding:8px 0;color:#0f172a;font-weight:600;'>%s</td></tr>
+                  <tr><td style='padding:8px 0;color:#64748b;'>Partenaire</td><td style='padding:8px 0;color:#0f172a;font-weight:600;'>%s</td></tr>
+                  <tr><td style='padding:8px 0;color:#64748b;'>Montant achat</td><td style='padding:8px 0;color:#0f172a;font-weight:600;'>%.2f</td></tr>
+                  <tr><td style='padding:8px 0;color:#64748b;'>Taux</td><td style='padding:8px 0;color:#0f172a;font-weight:600;'>%.2f%%</td></tr>
+                  <tr><td style='padding:8px 0;color:#64748b;'>Montant cashback</td><td style='padding:8px 0;color:#0f172a;font-weight:600;'>%.2f</td></tr>
+                  <tr><td style='padding:8px 0;color:#64748b;'>Date achat</td><td style='padding:8px 0;color:#0f172a;font-weight:600;'>%s</td></tr>
+                  <tr><td style='padding:8px 0;color:#64748b;'>Statut</td><td style='padding:8px 0;color:#0f172a;font-weight:600;'>%s</td></tr>
                 </table>
-                <p style='margin:18px 0 0;color:#64748b;font-size:13px;'>You will be notified when this cashback is credited.</p>
+                <p style='margin:18px 0 0;color:#64748b;font-size:13px;'>Vous serez notifie lorsque ce cashback sera credite.</p>
               </div>
             </body>
             </html>
@@ -86,7 +86,7 @@ public class EmailNotificationService {
             message.setContent(content, "text/html; charset=UTF-8");
             Transport.send(message);
         } catch (Exception ex) {
-            throw new RuntimeException("Failed to send cashback email notification.", ex);
+            throw new RuntimeException("Echec de l envoi de la notification email cashback.", ex);
         }
     }
 
@@ -111,3 +111,5 @@ public class EmailNotificationService {
                 .replace("'", "&#39;");
     }
 }
+
+

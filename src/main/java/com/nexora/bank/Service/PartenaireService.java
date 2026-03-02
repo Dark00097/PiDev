@@ -25,7 +25,7 @@ public class PartenaireService {
     public List<Partenaire> getAllPartenaires() {
         String sql = """
             SELECT idPartenaire, nom, categorie, description, tauxCashback, tauxCashbackMax,
-                   plafondMensuel, conditions, status
+                   plafondMensuel, conditions, status, rating
             FROM partenaire
             ORDER BY nom ASC
             """;
@@ -45,7 +45,7 @@ public class PartenaireService {
     public Optional<Partenaire> findByName(String name) {
         String sql = """
             SELECT idPartenaire, nom, categorie, description, tauxCashback, tauxCashbackMax,
-                   plafondMensuel, conditions, status
+                   plafondMensuel, conditions, status, rating
             FROM partenaire
             WHERE LOWER(TRIM(nom)) = LOWER(TRIM(?))
             LIMIT 1
@@ -66,8 +66,8 @@ public class PartenaireService {
 
     public int createPartenaire(Partenaire partenaire) {
         String sql = """
-            INSERT INTO partenaire (nom, categorie, description, tauxCashback, tauxCashbackMax, plafondMensuel, conditions, status)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO partenaire (nom, categorie, description, tauxCashback, tauxCashbackMax, plafondMensuel, conditions, status, rating)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             """;
 
         try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -89,13 +89,13 @@ public class PartenaireService {
         String sql = """
             UPDATE partenaire
             SET nom = ?, categorie = ?, description = ?, tauxCashback = ?, tauxCashbackMax = ?,
-                plafondMensuel = ?, conditions = ?, status = ?
+                plafondMensuel = ?, conditions = ?, status = ?, rating = ?
             WHERE idPartenaire = ?
             """;
 
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             fillPartenaire(ps, partenaire);
-            ps.setInt(9, partenaire.getIdPartenaire());
+            ps.setInt(10, partenaire.getIdPartenaire());
             return ps.executeUpdate() > 0;
         } catch (SQLException ex) {
             throw new RuntimeException("Failed to update partenaire.", ex);
@@ -123,6 +123,7 @@ public class PartenaireService {
         ps.setString(7, safeText(partenaire.getConditions()));
         String status = safeText(partenaire.getStatus());
         ps.setString(8, status.isBlank() ? "Actif" : status);
+        ps.setDouble(9, normalizeRating(partenaire.getRating()));
     }
 
     private Partenaire mapPartenaire(ResultSet rs) throws SQLException {
@@ -135,7 +136,8 @@ public class PartenaireService {
                 rs.getDouble("tauxCashbackMax"),
                 rs.getDouble("plafondMensuel"),
                 rs.getString("conditions"),
-                rs.getString("status")
+                rs.getString("status"),
+                normalizeRating(rs.getDouble("rating"))
         );
     }
 
@@ -150,13 +152,15 @@ public class PartenaireService {
                 tauxCashbackMax DOUBLE NOT NULL,
                 plafondMensuel DOUBLE NOT NULL,
                 conditions VARCHAR(255) NULL,
-                status VARCHAR(30) NOT NULL DEFAULT 'Actif'
+                status VARCHAR(30) NOT NULL DEFAULT 'Actif',
+                rating DOUBLE NOT NULL DEFAULT 4.0
             )
             """;
 
         try (Statement st = connection.createStatement()) {
             st.execute(createSql);
             ensureColumn("status", "ALTER TABLE partenaire ADD COLUMN status VARCHAR(30) NOT NULL DEFAULT 'Actif'");
+            ensureColumn("rating", "ALTER TABLE partenaire ADD COLUMN rating DOUBLE NOT NULL DEFAULT 4.0");
         } catch (SQLException ex) {
             throw new RuntimeException("Failed to ensure partenaire table.", ex);
         }
@@ -175,5 +179,15 @@ public class PartenaireService {
 
     private String safeText(String value) {
         return value == null ? "" : value.trim();
+    }
+
+    private double normalizeRating(double rating) {
+        if (rating < 0) {
+            return 0;
+        }
+        if (rating > 5) {
+            return 5;
+        }
+        return rating;
     }
 }
