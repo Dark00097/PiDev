@@ -8,11 +8,17 @@ public class CoffreVirtuel {
     private double montantActuel;
     private String dateCreation;
     private String dateObjectifs;
+    /** Date du dernier versement (YYYY-MM-DD) ; null si jamais de dépôt ou colonne absente. */
+    private String dateDernierDepot;
     private String status;
     private boolean estVerrouille;
     private int idCompte;
+    private int idUser;
 
-    public CoffreVirtuel(String nom, double objectifMontant, double montantActuel, String dateCreation, String dateObjectifs, String status, boolean estVerrouille, int idCompte) {
+
+    public CoffreVirtuel(){};
+
+    public CoffreVirtuel(String nom, double objectifMontant, double montantActuel, String dateCreation, String dateObjectifs, String status, boolean estVerrouille, int idCompte, int idUser) {
         this.nom = nom;
         this.objectifMontant = objectifMontant;
         this.montantActuel = montantActuel;
@@ -21,9 +27,10 @@ public class CoffreVirtuel {
         this.status = status;
         this.estVerrouille = estVerrouille;
         this.idCompte = idCompte;
+        this.idUser = idUser;
     }
 
-    public CoffreVirtuel(int idCoffre, String nom, double objectifMontant, double montantActuel, String dateCreation, String dateObjectifs, String status, boolean estVerrouille, int idCompte) {
+    public CoffreVirtuel(int idCoffre, String nom, double objectifMontant, double montantActuel, String dateCreation, String dateObjectifs, String status, boolean estVerrouille, int idCompte, int idUser) {
         this.idCoffre = idCoffre;
         this.nom = nom;
         this.objectifMontant = objectifMontant;
@@ -33,9 +40,7 @@ public class CoffreVirtuel {
         this.status = status;
         this.estVerrouille = estVerrouille;
         this.idCompte = idCompte;
-    }
-
-    public CoffreVirtuel() {
+        this.idUser = idUser;
     }
 
     public int getIdCoffre() {
@@ -86,6 +91,14 @@ public class CoffreVirtuel {
         this.dateObjectifs = dateObjectifs;
     }
 
+    public String getDateDernierDepot() {
+        return dateDernierDepot;
+    }
+
+    public void setDateDernierDepot(String dateDernierDepot) {
+        this.dateDernierDepot = dateDernierDepot;
+    }
+
     public String getStatus() {
         return status;
     }
@@ -110,6 +123,15 @@ public class CoffreVirtuel {
         this.idCompte = idCompte;
     }
 
+    public int getIdUser() {
+        return idUser;
+    }
+
+    public void setIdUser(int idUser) {
+        this.idUser = idUser;
+    }
+
+
     @Override
     public String toString() {
         return "CoffreVirtuel{" +
@@ -122,6 +144,7 @@ public class CoffreVirtuel {
                 ", status='" + status + '\'' +
                 ", estVerrouille=" + estVerrouille +
                 ", idCompte=" + idCompte +
+                ", idUser=" + idUser +
                 '}';
     }
 }
