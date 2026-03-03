@@ -878,7 +878,7 @@ public class CoffreVirtuelController implements Initializable {
 
         // ÉTAPE 6 : Envoyer
         try {
-            userService.sendCustomEmail(user.getEmail(), subject, html);
+            //userService.sendCustomEmail(user.getEmail(), subject, html);
             System.out.println("✅ Email envoyé à " + user.getEmail() + " (client: " + fullName + ")");
         } catch (RuntimeException ex) {
             System.out.println("❌ Echec envoi email : " + ex.getMessage());
