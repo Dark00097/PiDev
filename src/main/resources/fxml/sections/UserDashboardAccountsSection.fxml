@@ -28,12 +28,12 @@
       styleClass="comptes-section"
       stylesheets="@../../css/sections/UserDashboardAccountsSection.css">
 
-    
+
     <VBox styleClass="section-header" spacing="16">
         <padding>
             <Insets top="28" right="32" bottom="24" left="32"/>
         </padding>
-        
+
         <HBox alignment="CENTER_LEFT" spacing="16">
             <StackPane styleClass="section-icon-container">
                 <FontIcon iconLiteral="fas-wallet" styleClass="section-icon"/>
@@ -63,13 +63,13 @@
         </HBox>
     </VBox>
 
-    
+
     <HBox styleClass="kpi-container" spacing="20">
         <padding>
             <Insets top="0" right="32" bottom="24" left="32"/>
         </padding>
 
-        
+
         <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS" spacing="14">
             <HBox spacing="12" alignment="CENTER_LEFT">
                 <StackPane styleClass="kpi-icon-wrapper kpi-icon-primary">
@@ -89,7 +89,7 @@
             </HBox>
         </VBox>
 
-        
+
         <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS" spacing="14">
             <HBox spacing="12" alignment="CENTER_LEFT">
                 <StackPane styleClass="kpi-icon-wrapper kpi-icon-secondary">
@@ -106,7 +106,7 @@
             </HBox>
         </VBox>
 
-        
+
         <VBox styleClass="kpi-card" HBox.hgrow="ALWAYS" spacing="14">
             <HBox spacing="12" alignment="CENTER_LEFT">
                 <StackPane styleClass="kpi-icon-wrapper kpi-icon-accent">
@@ -123,7 +123,7 @@
             </HBox>
         </VBox>
 
-        
+
         <VBox styleClass="kpi-card kpi-card-highlight" HBox.hgrow="ALWAYS" spacing="14">
             <HBox spacing="12" alignment="CENTER_LEFT">
                 <StackPane styleClass="kpi-icon-wrapper kpi-icon-highlight">
@@ -143,16 +143,16 @@
         </VBox>
     </HBox>
 
-    
+
     <HBox spacing="24" VBox.vgrow="ALWAYS">
         <padding>
             <Insets top="0" right="32" bottom="32" left="32"/>
         </padding>
 
-        
+
         <VBox styleClass="content-card" prefWidth="480" spacing="0">
-            
-            
+
+
             <HBox styleClass="card-header" spacing="14" alignment="CENTER_LEFT">
                 <StackPane styleClass="card-header-icon">
                     <FontIcon iconLiteral="fas-edit" styleClass="card-header-icon-glyph"/>
@@ -163,7 +163,7 @@
                 </VBox>
             </HBox>
 
-            
+
             <VBox styleClass="card-body" spacing="20">
                 <GridPane hgap="16" vgap="16" styleClass="form-grid">
                     <columnConstraints>
@@ -171,7 +171,7 @@
                         <ColumnConstraints percentWidth="62"/>
                     </columnConstraints>
 
-                    
+
                     <VBox spacing="6" GridPane.rowIndex="0" GridPane.columnIndex="0" GridPane.columnSpan="2">
                         <Label text="Numero de compte" styleClass="form-label"/>
                         <HBox styleClass="input-group" spacing="0">
@@ -182,7 +182,7 @@
                         </HBox>
                     </VBox>
 
-                    
+
                     <VBox spacing="6" GridPane.rowIndex="1" GridPane.columnIndex="0">
                         <Label text="Balance" styleClass="form-label"/>
                         <HBox styleClass="input-group" spacing="0">
@@ -193,13 +193,13 @@
                         </HBox>
                     </VBox>
 
-                    
+
                     <VBox spacing="6" GridPane.rowIndex="1" GridPane.columnIndex="1">
                         <Label text="Date d ouverture" styleClass="form-label"/>
                         <DatePicker fx:id="dpOpeningDate" promptText="Selectionner une date" styleClass="date-picker" maxWidth="1.7976931348623157E308"/>
                     </VBox>
 
-                    
+
                     <VBox spacing="6" GridPane.rowIndex="2" GridPane.columnIndex="0">
                         <Label text="Statut du compte" styleClass="form-label"/>
                         <ComboBox fx:id="cbStatus" promptText="Selectionner" styleClass="combo-box" maxWidth="1.7976931348623157E308">
@@ -213,7 +213,7 @@
                         </ComboBox>
                     </VBox>
 
-                    
+
                     <VBox spacing="6" GridPane.rowIndex="2" GridPane.columnIndex="1">
                         <Label text="Type de compte" styleClass="form-label"/>
                         <ComboBox fx:id="cbType" promptText="Selectionner le type" styleClass="combo-box" maxWidth="1.7976931348623157E308">
@@ -227,7 +227,7 @@
                         </ComboBox>
                     </VBox>
 
-                    
+
                     <VBox spacing="6" GridPane.rowIndex="3" GridPane.columnIndex="0">
                         <Label text="Plafond de retrait" styleClass="form-label"/>
                         <HBox styleClass="input-group" spacing="0">
@@ -238,7 +238,7 @@
                         </HBox>
                     </VBox>
 
-                    
+
                     <VBox spacing="6" GridPane.rowIndex="3" GridPane.columnIndex="1">
                         <Label text="Plafond de virement" styleClass="form-label"/>
                         <HBox styleClass="input-group" spacing="0">
@@ -250,7 +250,7 @@
                     </VBox>
                 </GridPane>
 
-                
+
                 <HBox spacing="12" alignment="CENTER_RIGHT" styleClass="form-actions">
                     <Button styleClass="btn-outline" onAction="#clearForm">
                         <graphic>
@@ -279,10 +279,10 @@
                 </HBox>
             </VBox>
 
-            
+
             <VBox fx:id="coffreFormContainer" styleClass="vault-form-container" spacing="0" visible="false" managed="false">
                 <Separator styleClass="section-divider"/>
-                
+
                 <HBox styleClass="vault-form-header" spacing="12" alignment="CENTER_LEFT">
                     <StackPane styleClass="vault-form-icon">
                         <FontIcon iconLiteral="fas-lock" styleClass="vault-form-icon-glyph"/>
@@ -378,10 +378,10 @@
             </VBox>
         </VBox>
 
-        
+
         <VBox styleClass="content-card" HBox.hgrow="ALWAYS" spacing="0">
-            
-            
+
+
             <HBox styleClass="card-header" spacing="14" alignment="CENTER_LEFT">
                 <StackPane styleClass="card-header-icon">
                     <FontIcon iconLiteral="fas-layer-group" styleClass="card-header-icon-glyph"/>
@@ -398,11 +398,11 @@
                 </HBox>
             </HBox>
 
-            
+
             <ScrollPane styleClass="comptes-scroll" fitToWidth="true" VBox.vgrow="ALWAYS">
                 <VBox styleClass="card-body" spacing="20">
-                    
-                    
+
+
                     <HBox styleClass="filter-tabs" spacing="8">
                         <Button text="All" styleClass="filter-tab filter-tab-active"/>
                         <Button text="Courant" styleClass="filter-tab"/>
@@ -410,10 +410,10 @@
                         <Button text="Professionnel" styleClass="filter-tab"/>
                     </HBox>
 
-                    
+
                     <FlowPane styleClass="comptes-grid" hgap="16" vgap="16">
-                        
-                        
+
+
                         <VBox styleClass="account-card" prefWidth="260" spacing="0" onMouseClicked="#selectAccount">
                             <HBox styleClass="account-card-header account-card-header-current" spacing="10" alignment="CENTER_LEFT">
                                 <StackPane styleClass="account-type-badge">
@@ -466,7 +466,7 @@
                             </HBox>
                         </VBox>
 
-                        
+
                         <VBox styleClass="account-card" prefWidth="260" spacing="0" onMouseClicked="#selectAccount">
                             <HBox styleClass="account-card-header account-card-header-savings" spacing="10" alignment="CENTER_LEFT">
                                 <StackPane styleClass="account-type-badge">
@@ -519,7 +519,7 @@
                             </HBox>
                         </VBox>
 
-                        
+
                         <VBox styleClass="account-card" prefWidth="260" spacing="0">
                             <HBox styleClass="account-card-header account-card-header-business" spacing="10" alignment="CENTER_LEFT">
                                 <StackPane styleClass="account-type-badge">
@@ -572,7 +572,7 @@
                             </HBox>
                         </VBox>
 
-                        
+
                         <VBox styleClass="account-card account-card-add" prefWidth="260" alignment="CENTER" spacing="12" onMouseClicked="#addNewAccount">
                             <StackPane styleClass="add-account-icon-wrapper">
                                 <FontIcon iconLiteral="fas-plus" styleClass="add-account-icon"/>
@@ -582,10 +582,10 @@
                         </VBox>
                     </FlowPane>
 
-                    
+
                     <VBox fx:id="coffresDisplayContainer" styleClass="vaults-section" spacing="16" visible="false" managed="false">
                         <Separator styleClass="section-divider"/>
-                        
+
                         <HBox alignment="CENTER_LEFT" spacing="12">
                             <StackPane styleClass="vaults-section-icon">
                                 <FontIcon iconLiteral="fas-lock" styleClass="vaults-section-icon-glyph"/>
@@ -605,7 +605,7 @@
                         </HBox>
 
                         <FlowPane hgap="16" vgap="16">
-                            
+
                             <VBox styleClass="vault-card" prefWidth="240" spacing="14">
                                 <HBox alignment="CENTER_LEFT" spacing="10">
                                     <StackPane styleClass="vault-icon-wrapper vault-icon-vacation">
@@ -630,7 +630,7 @@
                                 </VBox>
                             </VBox>
 
-                            
+
                             <VBox styleClass="vault-card" prefWidth="240" spacing="14">
                                 <HBox alignment="CENTER_LEFT" spacing="10">
                                     <StackPane styleClass="vault-icon-wrapper vault-icon-education">
@@ -655,7 +655,7 @@
                                 </VBox>
                             </VBox>
 
-                            
+
                             <VBox styleClass="vault-card" prefWidth="240" spacing="14">
                                 <HBox alignment="CENTER_LEFT" spacing="10">
                                     <StackPane styleClass="vault-icon-wrapper vault-icon-emergency">
