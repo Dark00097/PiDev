@@ -1,5 +1,5 @@
 {
-  "requireBiometricOnAdminLogin": true,
+  "requireBiometricOnAdminLogin": false,
   "requireBiometricOnSensitiveActions": false,
   "enableEmailOtp": false
 }

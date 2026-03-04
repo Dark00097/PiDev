@@ -630,7 +630,7 @@
                         <HBox alignment="CENTER_LEFT">
                             <Label text="Cashback recents" styleClass="content-section-title"/>
                             <Region HBox.hgrow="ALWAYS"/>
-                            <ComboBox promptText="Toute periode" styleClass="filter-dropdown" prefWidth="120">
+                            <ComboBox fx:id="cmbRecentPeriodFilter" promptText="Toute periode" styleClass="filter-dropdown" prefWidth="120">
                                 <items>
                                     <FXCollections fx:factory="observableArrayList">
                                         <String fx:value="Aujourd hui"/>

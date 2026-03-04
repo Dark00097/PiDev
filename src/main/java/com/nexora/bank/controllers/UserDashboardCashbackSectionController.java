@@ -64,6 +64,13 @@ public class UserDashboardCashbackSectionController {
         AR
     }
 
+    private enum RecentPeriodFilter {
+        TODAY,
+        THIS_WEEK,
+        THIS_MONTH,
+        ALL_PERIODS
+    }
+
     private static final String I18N_TEXT_KEY = "i18n_text_key";
     private static final String I18N_PROMPT_KEY = "i18n_prompt_key";
 
@@ -96,6 +103,7 @@ public class UserDashboardCashbackSectionController {
     @FXML private Label lblKpiPendingAmount;
     @FXML private Label lblTotalRewardsValue;
     @FXML private Label lblQuickPendingAmount;
+    @FXML private ComboBox<String> cmbRecentPeriodFilter;
     @FXML private VBox cashbackListContainer;
     @FXML private Button btnAnalyzeCashbackAi;
     @FXML private Label lblCashbackAiStatus;
@@ -127,6 +135,7 @@ public class UserDashboardCashbackSectionController {
     private List<Partenaire> cachedPartenaires = List.of();
     private Cashback editingCashback;
     private UiLanguage currentLanguage = UiLanguage.FR;
+    private RecentPeriodFilter selectedRecentPeriodFilter = RecentPeriodFilter.ALL_PERIODS;
     private final Map<String, String> enTranslations = new HashMap<>();
     private final Map<String, String> arTranslations = new HashMap<>();
 
@@ -155,6 +164,7 @@ public class UserDashboardCashbackSectionController {
         refreshDashboardData();
         initializeTranslations();
         initializeLanguageSwitcher();
+        initializeRecentPeriodFilter();
         applyLanguage(currentLanguage);
     }
 
@@ -321,7 +331,73 @@ public class UserDashboardCashbackSectionController {
             lblKpiMonthDescription.setText(monthName + " " + LocalDate.now().getYear());
         }
 
+        refreshRecentPeriodFilterItems();
         renderCashbackList();
+    }
+
+    private void initializeRecentPeriodFilter() {
+        if (cmbRecentPeriodFilter == null) {
+            return;
+        }
+        refreshRecentPeriodFilterItems();
+        cmbRecentPeriodFilter.valueProperty().addListener((obs, oldVal, newVal) -> {
+            RecentPeriodFilter resolved = resolveRecentPeriodFilter(newVal);
+            if (resolved != selectedRecentPeriodFilter) {
+                selectedRecentPeriodFilter = resolved;
+                renderCashbackList();
+            }
+        });
+    }
+
+    private void refreshRecentPeriodFilterItems() {
+        if (cmbRecentPeriodFilter == null) {
+            return;
+        }
+        cmbRecentPeriodFilter.getItems().setAll(
+            periodFilterLabel(RecentPeriodFilter.TODAY),
+            periodFilterLabel(RecentPeriodFilter.THIS_WEEK),
+            periodFilterLabel(RecentPeriodFilter.THIS_MONTH),
+            periodFilterLabel(RecentPeriodFilter.ALL_PERIODS)
+        );
+        cmbRecentPeriodFilter.setPromptText(periodFilterLabel(RecentPeriodFilter.ALL_PERIODS));
+        cmbRecentPeriodFilter.setValue(periodFilterLabel(selectedRecentPeriodFilter));
+    }
+
+    private String periodFilterLabel(RecentPeriodFilter filter) {
+        if (filter == null) {
+            return t("Toute periode");
+        }
+        return switch (filter) {
+            case TODAY -> t("Aujourd hui");
+            case THIS_WEEK -> t("Cette semaine");
+            case THIS_MONTH -> t("Ce mois");
+            case ALL_PERIODS -> t("Toute periode");
+        };
+    }
+
+    private RecentPeriodFilter resolveRecentPeriodFilter(String value) {
+        if (matchesTranslationToken(value, "Aujourd hui")) {
+            return RecentPeriodFilter.TODAY;
+        }
+        if (matchesTranslationToken(value, "Cette semaine")) {
+            return RecentPeriodFilter.THIS_WEEK;
+        }
+        if (matchesTranslationToken(value, "Ce mois")) {
+            return RecentPeriodFilter.THIS_MONTH;
+        }
+        return RecentPeriodFilter.ALL_PERIODS;
+    }
+
+    private boolean matchesTranslationToken(String value, String frToken) {
+        String normalized = safe(value).trim();
+        if (normalized.isEmpty()) {
+            return false;
+        }
+        String enValue = safe(enTranslations.get(frToken));
+        String arValue = safe(arTranslations.get(frToken));
+        return normalized.equalsIgnoreCase(frToken)
+            || normalized.equalsIgnoreCase(enValue)
+            || normalized.equals(arValue);
     }
 
     private void registerTranslationKeys(Parent parent) {
@@ -906,18 +982,42 @@ public class UserDashboardCashbackSectionController {
         }
 
         cashbackListContainer.getChildren().clear();
-        if (userCashbacks.isEmpty()) {
+        List<Cashback> filteredCashbacks = userCashbacks.stream()
+            .filter(this::matchesSelectedRecentPeriod)
+            .limit(6)
+            .toList();
+
+        if (filteredCashbacks.isEmpty()) {
             Label empty = new Label(t("Aucun cashback enregistre."));
             empty.getStyleClass().add("cashback-item-date");
             cashbackListContainer.getChildren().add(empty);
             return;
         }
 
-        int limit = Math.min(6, userCashbacks.size());
-        for (int i = 0; i < limit; i++) {
-            Cashback cashback = userCashbacks.get(i);
+        for (Cashback cashback : filteredCashbacks) {
             cashbackListContainer.getChildren().add(buildCashbackRow(cashback));
         }
+    }
+
+    private boolean matchesSelectedRecentPeriod(Cashback cashback) {
+        if (cashback == null) {
+            return false;
+        }
+        LocalDate referenceDate = cashback.getCreatedAt() == null
+            ? cashback.getDateAchat()
+            : cashback.getCreatedAt().toLocalDate();
+        if (referenceDate == null) {
+            return selectedRecentPeriodFilter == RecentPeriodFilter.ALL_PERIODS;
+        }
+
+        LocalDate today = LocalDate.now();
+        return switch (selectedRecentPeriodFilter) {
+            case TODAY -> referenceDate.isEqual(today);
+            case THIS_WEEK -> !referenceDate.isBefore(today.minusDays(6)) && !referenceDate.isAfter(today);
+            case THIS_MONTH -> referenceDate.getYear() == today.getYear()
+                && referenceDate.getMonthValue() == today.getMonthValue();
+            case ALL_PERIODS -> true;
+        };
     }
 
     private HBox buildCashbackRow(Cashback cashback) {

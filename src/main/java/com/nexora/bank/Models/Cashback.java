@@ -1,6 +1,7 @@
 package com.nexora.bank.Models;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Cashback {
     private int idCashback;
@@ -14,6 +15,7 @@ public class Cashback {
     private LocalDate dateAchat;
     private LocalDate dateCredit;
     private LocalDate dateExpiration;
+    private LocalDateTime createdAt;
     private String statut;
     private String transactionRef;
     private Double userRating;
@@ -128,6 +130,14 @@ public class Cashback {
         this.dateExpiration = dateExpiration;
     }
 
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
     public String getStatut() {
         return statut;
     }
@@ -190,6 +200,7 @@ public class Cashback {
                 ", dateAchat=" + dateAchat +
                 ", dateCredit=" + dateCredit +
                 ", dateExpiration=" + dateExpiration +
+                ", createdAt=" + createdAt +
                 ", statut='" + statut + '\'' +
                 ", transactionRef='" + transactionRef + '\'' +
                 ", userRating=" + userRating +

@@ -408,7 +408,7 @@ public class CashbackService {
             SELECT c.id_cashback, c.id_user, CONCAT(COALESCE(u.prenom, ''), ' ', COALESCE(u.nom, '')) AS user_name,
                    c.id_partenaire, c.partenaire_nom, c.montant_achat, c.taux_applique, c.montant_cashback,
                    c.date_achat, c.date_credit, c.date_expiration, c.statut, c.transaction_ref,
-                   c.user_rating, c.user_rating_comment, c.bonus_decision, c.bonus_note
+                   c.user_rating, c.user_rating_comment, c.bonus_decision, c.bonus_note, c.created_at
             FROM cashback_entries c
             LEFT JOIN users u ON u.idUser = c.id_user
             """;
@@ -434,6 +434,8 @@ public class CashbackService {
         cashback.setDateAchat(dateAchat == null ? null : dateAchat.toLocalDate());
         cashback.setDateCredit(dateCredit == null ? null : dateCredit.toLocalDate());
         cashback.setDateExpiration(dateExpiration == null ? null : dateExpiration.toLocalDate());
+        java.sql.Timestamp createdAt = rs.getTimestamp("created_at");
+        cashback.setCreatedAt(createdAt == null ? null : createdAt.toLocalDateTime());
 
         cashback.setStatut(rs.getString("statut"));
         cashback.setTransactionRef(rs.getString("transaction_ref"));
@@ -576,6 +578,7 @@ public class CashbackService {
             ensureColumn("user_rating_comment", "ALTER TABLE cashback_entries ADD COLUMN user_rating_comment VARCHAR(255) NULL");
             ensureColumn("bonus_decision", "ALTER TABLE cashback_entries ADD COLUMN bonus_decision VARCHAR(20) NOT NULL DEFAULT 'Pending'");
             ensureColumn("bonus_note", "ALTER TABLE cashback_entries ADD COLUMN bonus_note VARCHAR(255) NULL");
+            ensureColumn("created_at", "ALTER TABLE cashback_entries ADD COLUMN created_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP");
         } catch (SQLException ex) {
             throw new RuntimeException("Failed to ensure cashback table.", ex);
         }
