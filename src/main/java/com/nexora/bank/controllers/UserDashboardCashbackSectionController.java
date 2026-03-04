@@ -17,7 +17,10 @@ import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.geometry.NodeOrientation;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar;
@@ -43,17 +46,31 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
+import java.util.ArrayDeque;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Optional;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public class UserDashboardCashbackSectionController {
 
+    private enum UiLanguage {
+        FR,
+        EN,
+        AR
+    }
+
+    private static final String I18N_TEXT_KEY = "i18n_text_key";
+    private static final String I18N_PROMPT_KEY = "i18n_prompt_key";
+
+    @FXML private VBox rootCashbackSection;
     @FXML private VBox partnerFormContainer;
     @FXML private VBox cashbackFormContainer;
+    @FXML private ComboBox<String> cmbLanguage;
 
     @FXML private Button tabPartner;
     @FXML private Button tabCashback;
@@ -99,8 +116,6 @@ public class UserDashboardCashbackSectionController {
 
     private static final Duration ANIMATION_DURATION = Duration.millis(250);
     private static final String TAB_ACTIVE_CLASS = "form-tab-active";
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd MMM yyyy");
-    private static final DateTimeFormatter AI_TIMESTAMP_FORMAT = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm");
 
     private CashbackService cashbackService;
     private PartenaireService partenaireService;
@@ -111,6 +126,9 @@ public class UserDashboardCashbackSectionController {
     private final ObservableList<Cashback> userCashbacks = FXCollections.observableArrayList();
     private List<Partenaire> cachedPartenaires = List.of();
     private Cashback editingCashback;
+    private UiLanguage currentLanguage = UiLanguage.FR;
+    private final Map<String, String> enTranslations = new HashMap<>();
+    private final Map<String, String> arTranslations = new HashMap<>();
 
     @FXML
     private void initialize() {
@@ -135,6 +153,340 @@ public class UserDashboardCashbackSectionController {
 
         showCashbackForm();
         refreshDashboardData();
+        initializeTranslations();
+        initializeLanguageSwitcher();
+        applyLanguage(currentLanguage);
+    }
+
+    private void initializeTranslations() {
+        putTranslation("Langue", "Language", "اللغة");
+        putTranslation("Recompenses cashback", "Cashback rewards", "مكافآت الكاش باك");
+        putTranslation("Gagnez des recompenses chez les partenaires et suivez votre cashback",
+            "Earn rewards with partners and track your cashback",
+            "اكسب مكافآت مع الشركاء وتابع الكاش باك");
+        putTranslation("Historique", "History", "السجل");
+        putTranslation("Echanger les recompenses", "Redeem rewards", "استبدال المكافآت");
+        putTranslation("RECOMPENSES TOTALES", "TOTAL REWARDS", "إجمالي المكافآت");
+        putTranslation("Gains cumules", "Total earnings", "إجمالي الأرباح");
+        putTranslation("Membre Or", "Gold Member", "عضو ذهبي");
+        putTranslation("CE MOIS", "THIS MONTH", "هذا الشهر");
+        putTranslation("PARTENAIRES ACTIFS", "ACTIVE PARTNERS", "الشركاء النشطون");
+        putTranslation("Commercants inscrits", "Registered merchants", "التجار المسجلون");
+        putTranslation("commercants", "merchants", "تجار");
+        putTranslation("EN ATTENTE", "PENDING", "قيد الانتظار");
+        putTranslation("En attente de credit", "Waiting for credit", "في انتظار الإيداع");
+        putTranslation("Ajouter une nouvelle entree", "Add a new entry", "إضافة عملية جديدة");
+        putTranslation("Saisir votre cashback", "Enter your cashback", "أدخل الكاش باك الخاص بك");
+        putTranslation("Saisir cashback", "Submit cashback", "تسجيل الكاش باك");
+        putTranslation("Selectionner un partenaire", "Select a partner", "اختر شريكًا");
+        putTranslation("Montant achat", "Purchase amount", "مبلغ الشراء");
+        putTranslation("Date achat", "Purchase date", "تاريخ الشراء");
+        putTranslation("Selectionner une date", "Select a date", "اختر تاريخًا");
+        putTranslation("Taux applique", "Applied rate", "النسبة المطبقة");
+        putTranslation("Montant cashback", "Cashback amount", "مبلغ الكاش باك");
+        putTranslation("Reference transaction (optionnel)", "Transaction reference (optional)", "مرجع العملية (اختياري)");
+        putTranslation("Saisir recu ou numero de transaction", "Enter receipt or transaction number", "أدخل رقم الإيصال أو العملية");
+        putTranslation("Cashback estime", "Estimated cashback", "الكاش باك المتوقع");
+        putTranslation("Base sur votre achat", "Based on your purchase", "بناءً على عملية الشراء");
+        putTranslation("Sera credite sous 3-5 jours", "Will be credited within 3-5 days", "سيتم الإيداع خلال 3-5 أيام");
+        putTranslation("Vider", "Clear", "مسح");
+        putTranslation("Vos recompenses", "Your rewards", "مكافآتك");
+        putTranslation("Suivez vos gains et commercants partenaires", "Track your earnings and partner merchants", "تابع أرباحك والتجار الشركاء");
+        putTranslation("Solde disponible", "Available balance", "الرصيد المتاح");
+        putTranslation("Cette semaine", "This week", "هذا الأسبوع");
+        putTranslation("Echange", "Redeemed", "المستبدل");
+        putTranslation("Analyse cashback IA", "AI cashback analysis", "تحليل الكاش باك بالذكاء الاصطناعي");
+        putTranslation("Suggestions intelligentes pour optimiser vos gains", "Smart suggestions to optimize your earnings", "اقتراحات ذكية لتحسين أرباحك");
+        putTranslation("Pret", "Ready", "جاهز");
+        putTranslation("Analyser cashback IA", "Analyze cashback AI", "تحليل الكاش باك بالذكاء الاصطناعي");
+        putTranslation("Mise a jour:", "Updated:", "آخر تحديث:");
+        putTranslation("Mise a jour: -", "Updated: -", "آخر تحديث: -");
+        putTranslation("Commercants partenaires", "Partner merchants", "التجار الشركاء");
+        putTranslation("Voir tout", "View all", "عرض الكل");
+        putTranslation("Ajouter partenaire", "Add partner", "إضافة شريك");
+        putTranslation("Cashback recents", "Recent cashback", "عمليات الكاش باك الأخيرة");
+        putTranslation("Toute periode", "All periods", "كل الفترات");
+        putTranslation("Aujourd hui", "Today", "اليوم");
+        putTranslation("Ce mois", "This month", "هذا الشهر");
+        putTranslation("Aucun cashback enregistre.", "No cashback recorded.", "لا توجد عمليات كاش باك.");
+        putTranslation("Achat", "Purchase", "شراء");
+        putTranslation("Ref", "Ref", "المرجع");
+        putTranslation("Note", "Rating", "التقييم");
+        putTranslation("Bonus", "Bonus", "المكافأة");
+        putTranslation("Taux", "Rate", "النسبة");
+        putTranslation("Noter", "Rate", "قيّم");
+        putTranslation("Modifier note", "Edit rating", "تعديل التقييم");
+        putTranslation("Pending", "Pending", "قيد الانتظار");
+        putTranslation("Approved", "Approved", "مقبول");
+        putTranslation("Rejected", "Rejected", "مرفوض");
+        putTranslation("Partenaire", "Partner", "شريك");
+        putTranslation("Categorie", "Category", "الفئة");
+        putTranslation("Jusqu a", "Up to", "حتى");
+        putTranslation("Jusqu a 0%", "Up to 0%", "حتى 0%");
+        putTranslation("General", "General", "عام");
+        putTranslation("Noter cashback", "Rate cashback", "تقييم الكاش باك");
+        putTranslation("Selectionnez une note avec les etoiles", "Select a star rating", "اختر تقييمًا بالنجوم");
+        putTranslation("Valider", "Confirm", "تأكيد");
+        putTranslation("Cliquez sur les etoiles:", "Click on the stars:", "اضغط على النجوم:");
+        putTranslation("Aucune etoile", "No stars", "بدون نجوم");
+        putTranslation("Commentaire", "Comment", "تعليق");
+        putTranslation("Commentaire optionnel", "Optional comment", "تعليق اختياري");
+        putTranslation("Historique Cashback", "Cashback history", "سجل الكاش باك");
+        putTranslation("Cashback", "Cashback", "كاش باك");
+        putTranslation("Date", "Date", "التاريخ");
+        putTranslation("Reference", "Reference", "المرجع");
+        putTranslation("Votre note", "Your rating", "تقييمك");
+        putTranslation("Decision bonus", "Bonus decision", "قرار المكافأة");
+        putTranslation("Statut", "Status", "الحالة");
+        putTranslation("Modifier", "Edit", "تعديل");
+        putTranslation("Supprimer", "Delete", "حذف");
+        putTranslation("Supprimer ce cashback ?", "Delete this cashback?", "حذف عملية الكاش باك هذه؟");
+        putTranslation("Echanger vos recompenses disponibles ?", "Redeem your available rewards?", "استبدال مكافآتك المتاحة؟");
+        putTranslation("Analyse IA en cours...", "AI analysis in progress...", "تحليل الذكاء الاصطناعي جارٍ...");
+        putTranslation("Aucune recommandation generee.", "No recommendation generated.", "لم يتم توليد أي توصية.");
+        putTranslation("Analyse IA terminee", "AI analysis completed", "اكتمل تحليل الذكاء الاصطناعي");
+        putTranslation("Mode local (IA indisponible)", "Local mode (AI unavailable)", "الوضع المحلي (الذكاء الاصطناعي غير متاح)");
+        putTranslation("Session", "Session", "الجلسة");
+        putTranslation("Veuillez vous reconnecter.", "Please sign in again.", "يرجى تسجيل الدخول مرة أخرى.");
+        putTranslation("Validation", "Validation", "التحقق");
+        putTranslation("Erreur de validation", "Validation error", "خطأ في التحقق");
+        putTranslation("Erreur", "Error", "خطأ");
+        putTranslation("Succes", "Success", "نجاح");
+        putTranslation("Information", "Information", "معلومة");
+        putTranslation("Selectionnez un partenaire.", "Select a partner.", "اختر شريكًا.");
+        putTranslation("Modification refusee.", "Update denied.", "تم رفض التعديل.");
+        putTranslation("Creation impossible.", "Creation failed.", "تعذر الإنشاء.");
+        putTranslation("Cashback modifie", "Cashback updated", "تم تعديل الكاش باك");
+        putTranslation("Votre cashback a ete mis a jour.", "Your cashback was updated.", "تم تحديث الكاش باك الخاص بك.");
+        putTranslation("Cashback enregistre", "Cashback saved", "تم حفظ الكاش باك");
+        putTranslation("Le cashback a ete enregistre avec succes.", "Cashback was saved successfully.", "تم حفظ الكاش باك بنجاح.");
+        putTranslation("Selectionnez une ligne a modifier.", "Select a row to edit.", "حدد سطرًا للتعديل.");
+        putTranslation("Selectionnez une ligne a noter.", "Select a row to rate.", "حدد سطرًا للتقييم.");
+        putTranslation("Selectionnez une ligne a supprimer.", "Select a row to delete.", "حدد سطرًا للحذف.");
+        putTranslation("Suppression refusee.", "Deletion denied.", "تم رفض الحذف.");
+        putTranslation("Echange lance", "Redeem started", "بدء الاستبدال");
+        putTranslation("Demande de redemption enregistree.", "Redemption request registered.", "تم تسجيل طلب الاستبدال.");
+        putTranslation("La note doit etre entre 0 et 5.", "Rating must be between 0 and 5.", "يجب أن يكون التقييم بين 0 و5.");
+        putTranslation("Impossible d enregistrer votre note.", "Unable to save your rating.", "تعذر حفظ تقييمك.");
+        putTranslation("Votre note est envoyee. L admin peut approuver ou refuser un bonus.",
+            "Your rating was sent. Admin can approve or reject a bonus.",
+            "تم إرسال تقييمك. يمكن للمسؤول قبول أو رفض المكافأة.");
+        putTranslation("Cashback indisponible", "Cashback unavailable", "الكاش باك غير متاح");
+        putTranslation("Veuillez saisir un nom de partenaire.", "Please enter a partner name.", "يرجى إدخال اسم شريك.");
+        putTranslation("Veuillez saisir un taux de cashback de base.", "Please enter a base cashback rate.", "يرجى إدخال نسبة الكاش باك الأساسية.");
+        putTranslation("Veuillez saisir un montant d achat.", "Please enter a purchase amount.", "يرجى إدخال مبلغ الشراء.");
+        putTranslation("Montant d achat invalide.", "Invalid purchase amount.", "مبلغ الشراء غير صالح.");
+        putTranslation("Le montant d achat doit etre superieur a 0.", "Purchase amount must be greater than 0.", "يجب أن يكون مبلغ الشراء أكبر من 0.");
+        putTranslation("Veuillez selectionner une date d achat.", "Please select a purchase date.", "يرجى اختيار تاريخ الشراء.");
+        putTranslation("Cliquez sur \"Analyser cashback IA\" pour obtenir des conseils personnalises.",
+            "Click \"Analyze cashback AI\" to get personalized advice.",
+            "اضغط \"تحليل الكاش باك بالذكاء الاصطناعي\" للحصول على نصائح مخصصة.");
+    }
+
+    private void initializeLanguageSwitcher() {
+        if (cmbLanguage == null) {
+            return;
+        }
+        cmbLanguage.getItems().setAll("Francais", "English", "العربية");
+        cmbLanguage.setValue("Francais");
+        cmbLanguage.valueProperty().addListener((obs, oldVal, newVal) -> {
+            UiLanguage selected = languageFromLabel(newVal);
+            if (selected != currentLanguage) {
+                applyLanguage(selected);
+            }
+        });
+    }
+
+    private void applyLanguage(UiLanguage language) {
+        currentLanguage = language == null ? UiLanguage.FR : language;
+
+        if (rootCashbackSection != null) {
+            rootCashbackSection.setNodeOrientation(currentLanguage == UiLanguage.AR
+                ? NodeOrientation.RIGHT_TO_LEFT
+                : NodeOrientation.LEFT_TO_RIGHT);
+            registerTranslationKeys(rootCashbackSection);
+            applyTranslations(rootCashbackSection);
+        }
+
+        if (cmbLanguage != null) {
+            cmbLanguage.setPromptText(t("Langue"));
+            String label = languageLabel(currentLanguage);
+            if (!label.equals(cmbLanguage.getValue())) {
+                cmbLanguage.setValue(label);
+            }
+        }
+
+        if (lblKpiMonthDescription != null) {
+            String monthName = LocalDate.now().getMonth().getDisplayName(TextStyle.FULL, resolveCurrentLocale());
+            lblKpiMonthDescription.setText(monthName + " " + LocalDate.now().getYear());
+        }
+
+        renderCashbackList();
+    }
+
+    private void registerTranslationKeys(Parent parent) {
+        ArrayDeque<Node> queue = new ArrayDeque<>();
+        queue.add(parent);
+
+        while (!queue.isEmpty()) {
+            Node node = queue.poll();
+            registerTranslationKey(node);
+            if (node instanceof Parent childParent) {
+                queue.addAll(childParent.getChildrenUnmodifiable());
+            }
+        }
+    }
+
+    private void applyTranslations(Parent parent) {
+        ArrayDeque<Node> queue = new ArrayDeque<>();
+        queue.add(parent);
+
+        while (!queue.isEmpty()) {
+            Node node = queue.poll();
+            applyTranslation(node);
+            if (node instanceof Parent childParent) {
+                queue.addAll(childParent.getChildrenUnmodifiable());
+            }
+        }
+    }
+
+    private void registerTranslationKey(Node node) {
+        if (node instanceof Label label) {
+            String text = safe(label.getText()).trim();
+            if (!text.isEmpty()) {
+                label.getProperties().putIfAbsent(I18N_TEXT_KEY, text);
+            }
+            return;
+        }
+
+        if (node instanceof Button button) {
+            String text = safe(button.getText()).trim();
+            if (!text.isEmpty()) {
+                button.getProperties().putIfAbsent(I18N_TEXT_KEY, text);
+            }
+            return;
+        }
+
+        if (node instanceof TextField textField) {
+            String prompt = safe(textField.getPromptText()).trim();
+            if (!prompt.isEmpty()) {
+                textField.getProperties().putIfAbsent(I18N_PROMPT_KEY, prompt);
+            }
+            return;
+        }
+
+        if (node instanceof TextArea textArea) {
+            String prompt = safe(textArea.getPromptText()).trim();
+            if (!prompt.isEmpty()) {
+                textArea.getProperties().putIfAbsent(I18N_PROMPT_KEY, prompt);
+            }
+            return;
+        }
+
+        if (node instanceof DatePicker datePicker) {
+            String prompt = safe(datePicker.getPromptText()).trim();
+            if (!prompt.isEmpty()) {
+                datePicker.getProperties().putIfAbsent(I18N_PROMPT_KEY, prompt);
+            }
+            return;
+        }
+
+        if (node instanceof ComboBox<?> comboBox && comboBox != cmbLanguage) {
+            String prompt = safe(comboBox.getPromptText()).trim();
+            if (!prompt.isEmpty()) {
+                comboBox.getProperties().putIfAbsent(I18N_PROMPT_KEY, prompt);
+            }
+        }
+    }
+
+    private void applyTranslation(Node node) {
+        if (node instanceof Label label) {
+            Object key = label.getProperties().get(I18N_TEXT_KEY);
+            if (key instanceof String source) {
+                label.setText(t(source));
+            }
+            return;
+        }
+
+        if (node instanceof Button button) {
+            Object key = button.getProperties().get(I18N_TEXT_KEY);
+            if (key instanceof String source) {
+                button.setText(t(source));
+            }
+            return;
+        }
+
+        if (node instanceof TextField textField) {
+            Object key = textField.getProperties().get(I18N_PROMPT_KEY);
+            if (key instanceof String source) {
+                textField.setPromptText(t(source));
+            }
+            return;
+        }
+
+        if (node instanceof TextArea textArea) {
+            Object key = textArea.getProperties().get(I18N_PROMPT_KEY);
+            if (key instanceof String source) {
+                textArea.setPromptText(t(source));
+            }
+            return;
+        }
+
+        if (node instanceof DatePicker datePicker) {
+            Object key = datePicker.getProperties().get(I18N_PROMPT_KEY);
+            if (key instanceof String source) {
+                datePicker.setPromptText(t(source));
+            }
+            return;
+        }
+
+        if (node instanceof ComboBox<?> comboBox && comboBox != cmbLanguage) {
+            Object key = comboBox.getProperties().get(I18N_PROMPT_KEY);
+            if (key instanceof String source) {
+                comboBox.setPromptText(t(source));
+            }
+        }
+    }
+
+    private void putTranslation(String fr, String en, String ar) {
+        enTranslations.put(fr, en);
+        arTranslations.put(fr, ar);
+    }
+
+    private String t(String frText) {
+        String key = safe(frText);
+        return switch (currentLanguage) {
+            case EN -> enTranslations.getOrDefault(key, key);
+            case AR -> arTranslations.getOrDefault(key, key);
+            default -> key;
+        };
+    }
+
+    private String languageLabel(UiLanguage language) {
+        return switch (language) {
+            case EN -> "English";
+            case AR -> "العربية";
+            default -> "Francais";
+        };
+    }
+
+    private UiLanguage languageFromLabel(String label) {
+        String normalized = safe(label).trim();
+        if ("English".equalsIgnoreCase(normalized)) {
+            return UiLanguage.EN;
+        }
+        if ("العربية".equals(normalized)) {
+            return UiLanguage.AR;
+        }
+        return UiLanguage.FR;
+    }
+
+    private Locale resolveCurrentLocale() {
+        return switch (currentLanguage) {
+            case EN -> Locale.ENGLISH;
+            case AR -> new Locale("ar");
+            default -> Locale.FRENCH;
+        };
     }
 
     @FXML
@@ -298,46 +650,46 @@ public class UserDashboardCashbackSectionController {
         }
 
         Dialog<ButtonType> dialog = new Dialog<>();
-        dialog.setTitle("Historique Cashback");
+        dialog.setTitle(t("Historique Cashback"));
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.CLOSE);
 
         TableView<Cashback> table = new TableView<>();
         table.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
 
-        TableColumn<Cashback, String> colPartner = new TableColumn<>("Partenaire");
+        TableColumn<Cashback, String> colPartner = new TableColumn<>(t("Partenaire"));
         colPartner.setCellValueFactory(new PropertyValueFactory<>("partenaireNom"));
 
-        TableColumn<Cashback, String> colPurchase = new TableColumn<>("Montant achat");
+        TableColumn<Cashback, String> colPurchase = new TableColumn<>(t("Montant achat"));
         colPurchase.setCellValueFactory(c -> new SimpleStringProperty(String.format("%.2f", c.getValue().getMontantAchat())));
 
-        TableColumn<Cashback, String> colRate = new TableColumn<>("Taux");
+        TableColumn<Cashback, String> colRate = new TableColumn<>(t("Taux"));
         colRate.setCellValueFactory(c -> new SimpleStringProperty(formatRate(c.getValue().getTauxApplique())));
 
-        TableColumn<Cashback, String> colCashback = new TableColumn<>("Cashback");
+        TableColumn<Cashback, String> colCashback = new TableColumn<>(t("Cashback"));
         colCashback.setCellValueFactory(c -> new SimpleStringProperty(String.format("+%.2f", c.getValue().getMontantCashback())));
 
-        TableColumn<Cashback, String> colDate = new TableColumn<>("Date");
+        TableColumn<Cashback, String> colDate = new TableColumn<>(t("Date"));
         colDate.setCellValueFactory(c -> new SimpleStringProperty(formatDate(c.getValue().getDateAchat())));
 
-        TableColumn<Cashback, String> colRef = new TableColumn<>("Reference");
+        TableColumn<Cashback, String> colRef = new TableColumn<>(t("Reference"));
         colRef.setCellValueFactory(c -> new SimpleStringProperty(safe(c.getValue().getTransactionRef())));
 
-        TableColumn<Cashback, String> colUserRating = new TableColumn<>("Votre note");
+        TableColumn<Cashback, String> colUserRating = new TableColumn<>(t("Votre note"));
         colUserRating.setCellValueFactory(c -> new SimpleStringProperty(formatRatingDisplay(c.getValue().getUserRating())));
 
-        TableColumn<Cashback, String> colBonusDecision = new TableColumn<>("Decision bonus");
+        TableColumn<Cashback, String> colBonusDecision = new TableColumn<>(t("Decision bonus"));
         colBonusDecision.setCellValueFactory(c -> new SimpleStringProperty(formatBonusDecision(c.getValue().getBonusDecision())));
 
-        TableColumn<Cashback, String> colStatus = new TableColumn<>("Statut");
+        TableColumn<Cashback, String> colStatus = new TableColumn<>(t("Statut"));
         colStatus.setCellValueFactory(new PropertyValueFactory<>("statut"));
 
         table.getColumns().addAll(colPartner, colPurchase, colRate, colCashback, colDate, colRef, colUserRating, colBonusDecision, colStatus);
         table.getItems().setAll(rows);
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
-        Button btnEdit = new Button("Modifier");
-        Button btnRate = new Button("Noter");
-        Button btnDelete = new Button("Supprimer");
+        Button btnEdit = new Button(t("Modifier"));
+        Button btnRate = new Button(t("Noter"));
+        Button btnDelete = new Button(t("Supprimer"));
 
         btnEdit.setOnAction(event -> {
             Cashback selected = table.getSelectionModel().getSelectedItem();
@@ -369,7 +721,7 @@ public class UserDashboardCashbackSectionController {
                 showNotification("Historique", "Selectionnez une ligne a supprimer.");
                 return;
             }
-            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION, "Supprimer ce cashback ?", ButtonType.OK, ButtonType.CANCEL);
+            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION, t("Supprimer ce cashback ?"), ButtonType.OK, ButtonType.CANCEL);
             Optional<ButtonType> result = confirm.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.OK) {
                 boolean deleted = cashbackService.deleteCashbackForUser(selected.getIdCashback(), currentUser.getIdUser());
@@ -408,9 +760,9 @@ public class UserDashboardCashbackSectionController {
 
         double available = cashbackService.getCreditedTotalByUser(currentUser.getIdUser());
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Echanger les recompenses");
-        alert.setHeaderText("Echanger vos recompenses disponibles ?");
-        alert.setContentText("Solde disponible : " + String.format("%.2f", available));
+        alert.setTitle(t("Echanger les recompenses"));
+        alert.setHeaderText(t("Echanger vos recompenses disponibles ?"));
+        alert.setContentText(t("Solde disponible") + " : " + String.format("%.2f", available));
 
         alert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
@@ -435,7 +787,7 @@ public class UserDashboardCashbackSectionController {
             : new ArrayList<>(userCashbacks);
         List<Partenaire> partenaires = cachedPartenaires == null ? List.of() : new ArrayList<>(cachedPartenaires);
 
-        setCashbackAiStatus("Analyse IA en cours...", "#2563EB");
+        setCashbackAiStatus(t("Analyse IA en cours..."), "#2563EB");
         if (btnAnalyzeCashbackAi != null) {
             btnAnalyzeCashbackAi.setDisable(true);
         }
@@ -453,11 +805,11 @@ public class UserDashboardCashbackSectionController {
             String response = aiTask.getValue();
             String cleaned = AIResponseFormatter.stripMarkdown(response);
             if (txtCashbackAiAdvice != null) {
-                txtCashbackAiAdvice.setText(cleaned.isBlank() ? "Aucune recommandation generee." : cleaned);
+                txtCashbackAiAdvice.setText(cleaned.isBlank() ? t("Aucune recommandation generee.") : cleaned);
             }
-            setCashbackAiStatus("Analyse IA terminee", "#059669");
+            setCashbackAiStatus(t("Analyse IA terminee"), "#059669");
             if (lblCashbackAiUpdatedAt != null) {
-                lblCashbackAiUpdatedAt.setText("Mise a jour: " + LocalDateTime.now().format(AI_TIMESTAMP_FORMAT));
+                lblCashbackAiUpdatedAt.setText(t("Mise a jour:") + " " + LocalDateTime.now().format(localizedDateTimeFormatter()));
             }
             if (btnAnalyzeCashbackAi != null) {
                 btnAnalyzeCashbackAi.setDisable(false);
@@ -469,9 +821,9 @@ public class UserDashboardCashbackSectionController {
             if (txtCashbackAiAdvice != null) {
                 txtCashbackAiAdvice.setText(fallback);
             }
-            setCashbackAiStatus("Mode local (IA indisponible)", "#B45309");
+            setCashbackAiStatus(t("Mode local (IA indisponible)"), "#B45309");
             if (lblCashbackAiUpdatedAt != null) {
-                lblCashbackAiUpdatedAt.setText("Mise a jour: " + LocalDateTime.now().format(AI_TIMESTAMP_FORMAT));
+                lblCashbackAiUpdatedAt.setText(t("Mise a jour:") + " " + LocalDateTime.now().format(localizedDateTimeFormatter()));
             }
             if (btnAnalyzeCashbackAi != null) {
                 btnAnalyzeCashbackAi.setDisable(false);
@@ -539,7 +891,7 @@ public class UserDashboardCashbackSectionController {
         if (lblKpiTotalRewards != null) lblKpiTotalRewards.setText(formatMoney(total));
         if (lblKpiThisMonth != null) lblKpiThisMonth.setText("+" + formatMoney(month));
         if (lblKpiMonthDescription != null) {
-            String monthName = LocalDate.now().getMonth().getDisplayName(TextStyle.FULL, Locale.FRENCH);
+            String monthName = LocalDate.now().getMonth().getDisplayName(TextStyle.FULL, resolveCurrentLocale());
             lblKpiMonthDescription.setText(monthName + " " + LocalDate.now().getYear());
         }
         if (lblKpiPartnerCount != null) lblKpiPartnerCount.setText(String.valueOf(partenaires.size()));
@@ -555,7 +907,7 @@ public class UserDashboardCashbackSectionController {
 
         cashbackListContainer.getChildren().clear();
         if (userCashbacks.isEmpty()) {
-            Label empty = new Label("Aucun cashback enregistre.");
+            Label empty = new Label(t("Aucun cashback enregistre."));
             empty.getStyleClass().add("cashback-item-date");
             cashbackListContainer.getChildren().add(empty);
             return;
@@ -596,19 +948,19 @@ public class UserDashboardCashbackSectionController {
         HBox meta = new HBox(10);
         meta.setAlignment(Pos.CENTER_LEFT);
 
-        Label purchase = new Label("Achat : " + formatMoney(cashback.getMontantAchat()));
+        Label purchase = new Label(t("Achat") + " : " + formatMoney(cashback.getMontantAchat()));
         purchase.getStyleClass().add("cashback-item-purchase");
 
         Label date = new Label(formatDate(cashback.getDateAchat()));
         date.getStyleClass().add("cashback-item-date");
 
-        Label ref = new Label("Ref : " + (isBlank(cashback.getTransactionRef()) ? "-" : cashback.getTransactionRef()));
+        Label ref = new Label(t("Ref") + " : " + (isBlank(cashback.getTransactionRef()) ? "-" : cashback.getTransactionRef()));
         ref.getStyleClass().add("cashback-item-date");
 
-        Label rating = new Label("Note: " + formatRatingDisplay(cashback.getUserRating()));
+        Label rating = new Label(t("Note") + ": " + formatRatingDisplay(cashback.getUserRating()));
         rating.getStyleClass().add("cashback-item-date");
 
-        Label bonusDecision = new Label("Bonus: " + formatBonusDecision(cashback.getBonusDecision()));
+        Label bonusDecision = new Label(t("Bonus") + ": " + formatBonusDecision(cashback.getBonusDecision()));
         bonusDecision.getStyleClass().add("cashback-item-date");
 
         meta.getChildren().addAll(purchase, date, ref, rating, bonusDecision);
@@ -620,12 +972,12 @@ public class UserDashboardCashbackSectionController {
         Label cashbackAmount = new Label("+" + formatMoney(cashback.getMontantCashback()));
         cashbackAmount.getStyleClass().add("cashback-item-amount");
 
-        Label rate = new Label("Taux " + formatRate(cashback.getTauxApplique()));
+        Label rate = new Label(t("Taux") + " " + formatRate(cashback.getTauxApplique()));
         rate.getStyleClass().add("cashback-item-rate");
 
         amounts.getChildren().addAll(cashbackAmount, rate);
 
-        Button btnRate = new Button(cashback.getUserRating() == null ? "Noter" : "Modifier note");
+        Button btnRate = new Button(cashback.getUserRating() == null ? t("Noter") : t("Modifier note"));
         btnRate.getStyleClass().add("btn-outline");
         btnRate.setOnAction(event -> rateCashback(cashback, this::refreshDashboardData));
 
@@ -647,15 +999,15 @@ public class UserDashboardCashbackSectionController {
         currentRounded = Math.max(0, Math.min(5, currentRounded));
 
         Dialog<Integer> ratingDialog = new Dialog<>();
-        ratingDialog.setTitle("Noter cashback");
-        ratingDialog.setHeaderText("Selectionnez une note avec les etoiles");
-        ButtonType btnValidate = new ButtonType("Valider", ButtonBar.ButtonData.OK_DONE);
+        ratingDialog.setTitle(t("Noter cashback"));
+        ratingDialog.setHeaderText(t("Selectionnez une note avec les etoiles"));
+        ButtonType btnValidate = new ButtonType(t("Valider"), ButtonBar.ButtonData.OK_DONE);
         ratingDialog.getDialogPane().getButtonTypes().addAll(btnValidate, ButtonType.CANCEL);
 
         VBox ratingContent = new VBox(10);
         ratingContent.setAlignment(Pos.CENTER_LEFT);
 
-        Label ratingHint = new Label("Cliquez sur les etoiles:");
+        Label ratingHint = new Label(t("Cliquez sur les etoiles:"));
         ratingHint.setStyle("-fx-font-size: 13px; -fx-text-fill: #334155;");
 
         HBox starsRow = new HBox(6);
@@ -677,7 +1029,7 @@ public class UserDashboardCashbackSectionController {
             starsRow.getChildren().add(starButton);
         }
 
-        Button clearRating = new Button("Aucune etoile");
+        Button clearRating = new Button(t("Aucune etoile"));
         clearRating.setStyle("-fx-font-size: 12px; -fx-background-color: #F8FAFC; -fx-border-color: #CBD5E1; -fx-border-radius: 8; -fx-background-radius: 8;");
         clearRating.setOnAction(event -> {
             selectedStars[0] = 0;
@@ -704,9 +1056,9 @@ public class UserDashboardCashbackSectionController {
         TextInputDialog commentDialog = new TextInputDialog(
             isBlank(selected.getUserRatingComment()) ? "" : selected.getUserRatingComment()
         );
-        commentDialog.setTitle("Commentaire");
-        commentDialog.setHeaderText("Commentaire optionnel");
-        commentDialog.setContentText("Commentaire:");
+        commentDialog.setTitle(t("Commentaire"));
+        commentDialog.setHeaderText(t("Commentaire optionnel"));
+        commentDialog.setContentText(t("Commentaire") + ":");
         String comment = commentDialog.showAndWait().orElse("");
 
         boolean rated = cashbackService.submitUserCashbackRating(selected.getIdCashback(), currentUser.getIdUser(), rating, comment);
@@ -827,7 +1179,7 @@ public class UserDashboardCashbackSectionController {
     }
 
     private String formatDate(LocalDate date) {
-        return date == null ? "-" : date.format(DATE_FORMAT);
+        return date == null ? "-" : date.format(localizedDateFormatter());
     }
 
     private String formatMoney(double amount) {
@@ -850,6 +1202,14 @@ public class UserDashboardCashbackSectionController {
         return String.format(Locale.US, "%.2f%%", rate);
     }
 
+    private DateTimeFormatter localizedDateFormatter() {
+        return DateTimeFormatter.ofPattern("dd MMM yyyy", resolveCurrentLocale());
+    }
+
+    private DateTimeFormatter localizedDateTimeFormatter() {
+        return DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm", resolveCurrentLocale());
+    }
+
     private String formatRatingDisplay(Double rating) {
         return toStars(rating);
     }
@@ -869,9 +1229,19 @@ public class UserDashboardCashbackSectionController {
 
     private String formatBonusDecision(String decision) {
         if (isBlank(decision)) {
-            return "Pending";
+            return t("Pending");
         }
-        return decision;
+        String normalized = safe(decision).trim();
+        if ("Approved".equalsIgnoreCase(normalized)) {
+            return t("Approved");
+        }
+        if ("Rejected".equalsIgnoreCase(normalized)) {
+            return t("Rejected");
+        }
+        if ("Pending".equalsIgnoreCase(normalized)) {
+            return t("Pending");
+        }
+        return normalized;
     }
 
     private double resolveLocalRate(double amount) {
@@ -934,9 +1304,9 @@ public class UserDashboardCashbackSectionController {
         }
 
         if (showcase == null || index >= showcase.size()) {
-            lblName.setText("Partenaire");
-            lblCategory.setText("Categorie");
-            lblRate.setText("Jusqu a 0%");
+            lblName.setText(t("Partenaire"));
+            lblCategory.setText(t("Categorie"));
+            lblRate.setText(t("Jusqu a 0%"));
             lblRating.setText("\u2606\u2606\u2606\u2606\u2606");
             return;
         }
@@ -944,8 +1314,8 @@ public class UserDashboardCashbackSectionController {
         Partenaire p = showcase.get(index);
         double maxRate = p.getTauxCashbackMax() > 0 ? p.getTauxCashbackMax() : p.getTauxCashback();
         lblName.setText(safe(p.getNom()));
-        lblCategory.setText(isBlank(p.getCategorie()) ? "General" : p.getCategorie());
-        lblRate.setText("Jusqu a " + String.format(Locale.US, "%.0f%%", maxRate));
+        lblCategory.setText(isBlank(p.getCategorie()) ? t("General") : p.getCategorie());
+        lblRate.setText(t("Jusqu a") + " " + String.format(Locale.US, "%.0f%%", maxRate));
         lblRating.setText(toStars(p.getRating()));
     }
 
@@ -964,12 +1334,12 @@ public class UserDashboardCashbackSectionController {
         if (txtCashbackAiAdvice != null) {
             txtCashbackAiAdvice.setEditable(false);
             txtCashbackAiAdvice.setWrapText(true);
-            txtCashbackAiAdvice.setText("Cliquez sur \"Analyser cashback IA\" pour obtenir des conseils personnalises.");
+            txtCashbackAiAdvice.setText(t("Cliquez sur \"Analyser cashback IA\" pour obtenir des conseils personnalises."));
         }
         if (lblCashbackAiUpdatedAt != null) {
-            lblCashbackAiUpdatedAt.setText("Mise a jour: -");
+            lblCashbackAiUpdatedAt.setText(t("Mise a jour: -"));
         }
-        setCashbackAiStatus("Pret", "#64748B");
+        setCashbackAiStatus(t("Pret"), "#64748B");
     }
 
     private void setCashbackAiStatus(String text, String colorHex) {
@@ -985,9 +1355,9 @@ public class UserDashboardCashbackSectionController {
 
     private void showNotification(String title, String message) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(title);
+        alert.setTitle(t(title));
         alert.setHeaderText(null);
-        alert.setContentText(message);
+        alert.setContentText(t(message));
         alert.show();
     }
 }

@@ -27,9 +27,11 @@ public class CashbackService {
     private static final double RATING_BONUS_PERCENT = 1.0;
 
     private final Connection connection;
+    private final NotificationService notificationService;
 
     public CashbackService() {
         this.connection = MyDB.getInstance().getConn();
+        this.notificationService = this.connection == null ? null : new NotificationService(this.connection);
         ensureCashbackTable();
     }
 
@@ -194,7 +196,15 @@ public class CashbackService {
             ps.setString(4, "Approved");
             ps.setString(5, safeText(rewardNote));
             ps.setInt(6, idCashback);
-            return ps.executeUpdate() > 0;
+            boolean updated = ps.executeUpdate() > 0;
+            if (updated) {
+                Cashback updatedCashback = findById(idCashback).orElse(cashback);
+                runNotificationSafely(() -> {
+                    notificationService.notifyUserCashbackRewardGranted(updatedCashback, normalizedBonus, rewardNote);
+                    notificationService.notifyAdminsCashbackRewardGranted(updatedCashback, normalizedBonus, rewardNote);
+                });
+            }
+            return updated;
         } catch (SQLException ex) {
             throw new RuntimeException("Failed to grant admin reward.", ex);
         }
@@ -202,6 +212,7 @@ public class CashbackService {
 
     public boolean setAdminBonusDecision(int idCashback, boolean approved, String decisionNote) {
         String decision = approved ? "Approved" : "Rejected";
+        Optional<Cashback> cashbackSnapshot = findById(idCashback);
         String sql = """
             UPDATE cashback_entries
             SET bonus_decision = ?, bonus_note = ?
@@ -211,7 +222,17 @@ public class CashbackService {
             ps.setString(1, decision);
             ps.setString(2, safeText(decisionNote));
             ps.setInt(3, idCashback);
-            return ps.executeUpdate() > 0;
+            boolean updated = ps.executeUpdate() > 0;
+            if (updated) {
+                Cashback target = cashbackSnapshot.orElseGet(() -> findById(idCashback).orElse(null));
+                if (target != null) {
+                    runNotificationSafely(() -> {
+                        notificationService.notifyUserCashbackBonusDecision(target, approved, decisionNote);
+                        notificationService.notifyAdminsCashbackBonusDecision(target, approved, decisionNote);
+                    });
+                }
+            }
+            return updated;
         } catch (SQLException ex) {
             throw new RuntimeException("Failed to update bonus decision.", ex);
         }
@@ -229,7 +250,15 @@ public class CashbackService {
             ps.setString(2, safeText(comment));
             ps.setInt(3, idCashback);
             ps.setInt(4, idUser);
-            return ps.executeUpdate() > 0;
+            boolean updated = ps.executeUpdate() > 0;
+            if (updated) {
+                Cashback target = findById(idCashback).orElseGet(() -> fallbackCashbackForRating(idCashback, idUser, normalized, comment));
+                runNotificationSafely(() -> {
+                    notificationService.notifyAdminsCashbackRatingSubmitted(target);
+                    notificationService.notifyUserCashbackRatingSubmitted(target);
+                });
+            }
+            return updated;
         } catch (SQLException ex) {
             throw new RuntimeException("Failed to submit cashback rating.", ex);
         }
@@ -565,5 +594,26 @@ public class CashbackService {
 
     private String safeText(String value) {
         return value == null ? "" : value.trim();
+    }
+
+    private Cashback fallbackCashbackForRating(int idCashback, int idUser, double rating, String comment) {
+        Cashback cashback = new Cashback();
+        cashback.setIdCashback(idCashback);
+        cashback.setIdUser(idUser);
+        cashback.setPartenaireNom("");
+        cashback.setUserRating(normalizeRating(rating));
+        cashback.setUserRatingComment(safeText(comment));
+        return cashback;
+    }
+
+    private void runNotificationSafely(Runnable action) {
+        if (notificationService == null || action == null) {
+            return;
+        }
+        try {
+            action.run();
+        } catch (Exception ex) {
+            System.err.println("Notification dispatch failed: " + ex.getMessage());
+        }
     }
 }

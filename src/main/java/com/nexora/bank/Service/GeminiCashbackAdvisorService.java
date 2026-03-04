@@ -21,7 +21,7 @@ import java.util.Set;
 
 public class GeminiCashbackAdvisorService {
 
-    private static final String API_KEY = fromEnv("NEXORA_GEMINI_API_KEY", "AIzaSyCyzF-c4eg1AU8jnFduDxATUKWs5AF-1Q8");
+    private static final String API_KEY = fromEnv("NEXORA_GEMINI_API_KEY");
     private static final String BASE_URL = "https://generativelanguage.googleapis.com/v1beta";
     private static final String[] PREFERRED_MODELS = new String[] {
         "gemini-2.5-flash",
@@ -385,11 +385,43 @@ public class GeminiCashbackAdvisorService {
         return value == null || value.isBlank() ? "-" : value.trim();
     }
 
-    private static String fromEnv(String key, String defaultValue) {
+    private static String fromEnv(String key) {
         String value = System.getenv(key);
-        if (value == null || value.isBlank()) {
-            return defaultValue;
+        if (value != null && !value.isBlank()) {
+            return value.trim();
         }
-        return value.trim();
+
+        java.nio.file.Path envFile = java.nio.file.Path.of(".env");
+        if (!java.nio.file.Files.exists(envFile)) {
+            return null;
+        }
+
+        try {
+            for (String line : java.nio.file.Files.readAllLines(envFile)) {
+                String trimmed = line.trim();
+                if (trimmed.isEmpty() || trimmed.startsWith("#")) {
+                    continue;
+                }
+                int separator = trimmed.indexOf('=');
+                if (separator <= 0) {
+                    continue;
+                }
+
+                String fileKey = trimmed.substring(0, separator).trim();
+                if (!fileKey.equals(key)) {
+                    continue;
+                }
+
+                String fileValue = trimmed.substring(separator + 1).trim();
+                if ((fileValue.startsWith("\"") && fileValue.endsWith("\""))
+                    || (fileValue.startsWith("'") && fileValue.endsWith("'"))) {
+                    fileValue = fileValue.substring(1, fileValue.length() - 1);
+                }
+                return fileValue.isBlank() ? null : fileValue;
+            }
+        } catch (Exception ignored) {
+        }
+
+        return null;
     }
 }

@@ -78,6 +78,7 @@ public class UserDashboardProfileSectionController {
     @FXML private Label lblPasswordStatus;
     @FXML private Label lblResetStatus;
     @FXML private Label lblAiStatus;
+    @FXML private Button btnSecureAccount;
     @FXML private VBox boxRecentActions;
     @FXML private VBox aiInlineAnalysisCard;
     @FXML private VBox aiEmptyState;
@@ -100,6 +101,7 @@ public class UserDashboardProfileSectionController {
     private final GeminiAccountAdvisorService geminiAccountAdvisorService = new GeminiAccountAdvisorService();
     private final AIAnalysisService aiAnalysisService = new AIAnalysisService();
     private List<UserActionLog> lastLoadedActions = List.of();
+    private FormattedAnalysis latestAiAnalysis;
     private Runnable profileUpdatedCallback;
     private String currentMapUrl;
 
@@ -108,6 +110,8 @@ public class UserDashboardProfileSectionController {
         hideInlineAnalysisCard();
         setAiEmptyContent(false, null);
         showAiEmptyState(true);
+        setSecureAccountButtonVisible(false);
+        latestAiAnalysis = null;
         ProfileImageUtils.applyCircularClip(imgProfileAvatar, 84);
         configureMapWebView();
         refreshProfile();
@@ -444,11 +448,92 @@ public class UserDashboardProfileSectionController {
         runAiAnalysis(user);
     }
 
-    private void runAiAnalysis(User user) {
-        List<UserActionLog> actions = lastLoadedActions;
-        if (actions == null || actions.isEmpty()) {
-            actions = userService.getRecentUserActions(user.getIdUser(), 20);
+    @FXML
+    private void handleSecureMyAccount() {
+        User user = requireCurrentUser();
+        if (user == null) {
+            return;
         }
+        if (latestAiAnalysis == null) {
+            setStatus(lblAiStatus, "Lancez d abord l analyse IA pour afficher le rapport.", false);
+            return;
+        }
+
+        String nom = safe(txtNom.getText());
+        String prenom = safe(txtPrenom.getText());
+        String email = safe(txtEmail.getText());
+        String telephone = safe(txtTelephone.getText());
+
+        if (nom.isBlank() || prenom.isBlank() || email.isBlank() || telephone.isBlank()) {
+            setStatus(lblProfileStatus, "Tous les champs sont obligatoires", false);
+            return;
+        }
+        if (!EMAIL_PATTERN.matcher(email).matches()) {
+            setStatus(lblProfileStatus, "Format d email invalide", false);
+            return;
+        }
+
+        setStatus(lblAiStatus, "Securisation en cours...", true);
+        setStatus(lblProfileStatus, "Generation d un nouveau mot de passe...", true);
+        if (btnSecureAccount != null) {
+            btnSecureAccount.setDisable(true);
+        }
+
+        Task<UserService.AiSecurityUpdateResult> secureTask = new Task<>() {
+            @Override
+            protected UserService.AiSecurityUpdateResult call() {
+                return userService.secureUserOwnAccountWithAi(
+                    user.getIdUser(),
+                    nom,
+                    prenom,
+                    email,
+                    telephone,
+                    latestAiAnalysis
+                );
+            }
+        };
+
+        secureTask.setOnSucceeded(event -> Platform.runLater(() -> {
+            if (btnSecureAccount != null) {
+                btnSecureAccount.setDisable(false);
+            }
+
+            UserService.AiSecurityUpdateResult updateResult = secureTask.getValue();
+            if (updateResult == null) {
+                setStatus(lblAiStatus, "Aucun resultat de securisation", false);
+                return;
+            }
+
+            Optional<User> refreshed = userService.findByIdPublic(user.getIdUser());
+            refreshed.ifPresent(AuthSession::setCurrentUser);
+            refreshProfile();
+            notifyProfileUpdated();
+
+            setStatus(lblAiStatus, "Securisation appliquee", true);
+            setStatus(lblProfileStatus, "Nouveau mot de passe envoye par email.", true);
+        }));
+
+        secureTask.setOnFailed(event -> Platform.runLater(() -> {
+            if (btnSecureAccount != null) {
+                btnSecureAccount.setDisable(false);
+            }
+            Throwable error = secureTask.getException();
+            String message = error == null || error.getMessage() == null
+                ? "Echec de la securisation IA"
+                : error.getMessage();
+            setStatus(lblAiStatus, message, false);
+            setStatus(lblProfileStatus, message, false);
+        }));
+
+        Thread worker = new Thread(secureTask, "ai-account-secure");
+        worker.setDaemon(true);
+        worker.start();
+    }
+
+    private void runAiAnalysis(User user) {
+        List<UserActionLog> actions = resolveActionsForAnalysis(user);
+        latestAiAnalysis = null;
+        setSecureAccountButtonVisible(false);
 
         setStatus(lblAiStatus, "Analyse en cours...", true);
         hideInlineAnalysisCard();
@@ -466,12 +551,16 @@ public class UserDashboardProfileSectionController {
         aiTask.setOnSucceeded(event -> Platform.runLater(() -> {
             String advice = aiTask.getValue();
             FormattedAnalysis analysis = aiAnalysisService.getFormattedAnalysis(advice);
+            latestAiAnalysis = analysis;
             renderInlineAnalysis(analysis);
-            setStatus(lblAiStatus, "Analyse terminee", true);
+            setSecureAccountButtonVisible(true);
+            setStatus(lblAiStatus, "Analyse terminee. Cliquez sur 'Secure my account'.", true);
         }));
 
         aiTask.setOnFailed(event -> Platform.runLater(() -> {
             Throwable error = aiTask.getException();
+            latestAiAnalysis = null;
+            setSecureAccountButtonVisible(false);
             setStatus(lblAiStatus, error == null ? "Echec de l analyse" : "Erreur: " + error.getMessage(), false);
             setAiEmptyContent(false, "Impossible d afficher l analyse pour le moment.");
             showAiEmptyState(true);
@@ -480,6 +569,14 @@ public class UserDashboardProfileSectionController {
         Thread worker = new Thread(aiTask, "gemini-account-advisor");
         worker.setDaemon(true);
         worker.start();
+    }
+
+    private List<UserActionLog> resolveActionsForAnalysis(User user) {
+        List<UserActionLog> actions = lastLoadedActions;
+        if (actions == null || actions.isEmpty()) {
+            actions = userService.getRecentUserActions(user.getIdUser(), 20);
+        }
+        return actions;
     }
 
     private void showAiEmptyState(boolean show) {
@@ -834,6 +931,7 @@ public class UserDashboardProfileSectionController {
             case "LOGOUT" -> "Deconnexion";
             case "PASSWORD_CHANGE" -> "Changement mot de passe";
             case "PROFILE_UPDATE" -> "Mise a jour du profil";
+            case "AI_ACCOUNT_SECURED" -> "Securisation IA du compte";
             default -> value.isBlank() ? "Action compte" : value;
         };
     }
@@ -916,6 +1014,15 @@ public class UserDashboardProfileSectionController {
 
     private boolean isNotEmpty(String value) {
         return !isBlank(value);
+    }
+
+    private void setSecureAccountButtonVisible(boolean visible) {
+        if (btnSecureAccount == null) {
+            return;
+        }
+        btnSecureAccount.setVisible(visible);
+        btnSecureAccount.setManaged(visible);
+        btnSecureAccount.setDisable(!visible);
     }
 
     private void notifyProfileUpdated() {

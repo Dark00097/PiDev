@@ -125,6 +125,14 @@
                     </HBox>
                 </VBox>
 
+                <VBox fx:id="boxMathChallenge" spacing="8" managed="false" visible="false">
+                    <Label fx:id="lblMathQuestion" text="Security check: 2 + 3 = ?" styleClass="auth-label"/>
+                    <HBox spacing="10" alignment="CENTER_LEFT" styleClass="auth-input-wrap">
+                        <FontIcon iconLiteral="fas-calculator" styleClass="auth-input-icon"/>
+                        <TextField fx:id="txtMathAnswer" promptText="Enter result" styleClass="auth-input" HBox.hgrow="ALWAYS"/>
+                    </HBox>
+                </VBox>
+
                 <Label fx:id="lblMessage" styleClass="auth-error"/>
 
                 <Button text="Se connecter" styleClass="auth-button-primary" onAction="#handleLogin" maxWidth="Infinity"/>

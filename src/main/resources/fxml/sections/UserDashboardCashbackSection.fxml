@@ -23,6 +23,7 @@
 <VBox xmlns="http://javafx.com/javafx/17"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.nexora.bank.controllers.UserDashboardCashbackSectionController"
+      fx:id="rootCashbackSection"
       spacing="0"
       styleClass="cashback-section"
       stylesheets="@../../css/sections/UserDashboardCashbackSection.css"
@@ -44,6 +45,7 @@
                 <Label text="Gagnez des recompenses chez les partenaires et suivez votre cashback" styleClass="section-subtitle"/>
             </VBox>
             <HBox spacing="10" alignment="CENTER_RIGHT">
+                <ComboBox fx:id="cmbLanguage" promptText="Langue" styleClass="filter-dropdown" prefWidth="130"/>
                 <Button styleClass="header-btn-secondary" onAction="#viewRewardsHistory">
                     <graphic>
                         <HBox spacing="8" alignment="CENTER">

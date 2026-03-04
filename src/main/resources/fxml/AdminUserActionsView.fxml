@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.nexora.bank.controllers.AdminUserActionsController"
+            stylesheets="@../css/AdminSettings.css"
+            styleClass="nx-main-scroll"
+            fitToWidth="true" fitToHeight="false">
+
+    <VBox styleClass="nx-settings-root" spacing="24">
+
+        <VBox styleClass="nx-hero-header" spacing="0">
+            <HBox alignment="CENTER_LEFT" spacing="18">
+                <StackPane styleClass="nx-hero-icon-container">
+                    <Circle radius="30" styleClass="nx-hero-icon-bg"/>
+                    <SVGPath content="M3 3h18v18H3zM3 9h18M9 21V9" styleClass="nx-hero-icon-svg"/>
+                </StackPane>
+                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                    <Label text="Journal des Actions Utilisateurs" styleClass="nx-hero-title"/>
+                    <Label text="Visualisez l'ensemble des actions utilisateurs enregistrées dans le système" styleClass="nx-hero-subtitle"/>
+                </VBox>
+                <Button fx:id="btnRefresh" text="Actualiser" styleClass="nx-btn nx-btn-outline" onAction="#handleRefresh"/>
+            </HBox>
+            <HBox styleClass="nx-hero-decoration" alignment="CENTER_LEFT">
+                <Region styleClass="nx-hero-line nx-hero-line-shield" HBox.hgrow="ALWAYS"/>
+                <Region styleClass="nx-hero-line nx-hero-line-lock" prefWidth="90"/>
+                <Region styleClass="nx-hero-line nx-hero-line-key" prefWidth="70"/>
+            </HBox>
+        </VBox>
+
+        <HBox spacing="16">
+            <VBox styleClass="nx-card nx-actions-stat-card" HBox.hgrow="ALWAYS" spacing="8">
+                <Label text="Total Actions" styleClass="nx-card-subtitle"/>
+                <Label fx:id="lblTotalActions" text="0" styleClass="nx-actions-stat-value"/>
+            </VBox>
+            <VBox styleClass="nx-card nx-actions-stat-card" HBox.hgrow="ALWAYS" spacing="8">
+                <Label text="Utilisateurs Uniques" styleClass="nx-card-subtitle"/>
+                <Label fx:id="lblUniqueUsers" text="0" styleClass="nx-actions-stat-value"/>
+            </VBox>
+            <VBox styleClass="nx-card nx-actions-stat-card" HBox.hgrow="ALWAYS" spacing="8">
+                <Label text="Actions Aujourd'hui" styleClass="nx-card-subtitle"/>
+                <Label fx:id="lblTodayActions" text="0" styleClass="nx-actions-stat-value"/>
+            </VBox>
+        </HBox>
+
+        <VBox styleClass="nx-card" spacing="0">
+            <HBox styleClass="nx-card-header" alignment="CENTER_LEFT" spacing="12">
+                <VBox spacing="2" HBox.hgrow="ALWAYS">
+                    <Label text="Activité Système" styleClass="nx-card-title"/>
+                    <Label text="Historique des actions des utilisateurs" styleClass="nx-card-subtitle"/>
+                </VBox>
+                <TextField fx:id="txtSearch" promptText="Rechercher..." styleClass="nx-input" prefWidth="260"/>
+                <ComboBox fx:id="cmbActionType" promptText="Type d'action" styleClass="nx-select" prefWidth="180"/>
+            </HBox>
+
+            <VBox styleClass="nx-card-body" VBox.vgrow="ALWAYS">
+                <TableView fx:id="tableActions" styleClass="nx-actions-table" prefHeight="700" minHeight="620" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="colDate" text="Date" prefWidth="170"/>
+                        <TableColumn fx:id="colUser" text="Utilisateur" prefWidth="200"/>
+                        <TableColumn fx:id="colRole" text="Rôle" prefWidth="110"/>
+                        <TableColumn fx:id="colAction" text="Action" prefWidth="170"/>
+                        <TableColumn fx:id="colSource" text="Source" prefWidth="170"/>
+                        <TableColumn fx:id="colDetails" text="Détails" prefWidth="420"/>
+                    </columns>
+                </TableView>
+            </VBox>
+
+            <HBox styleClass="nx-card-footer" alignment="CENTER_LEFT">
+                <Label fx:id="lblTableInfo" text="Affichage de 0 sur 0 actions" styleClass="nx-card-subtitle"/>
+            </HBox>
+        </VBox>
+
+    </VBox>
+</ScrollPane>

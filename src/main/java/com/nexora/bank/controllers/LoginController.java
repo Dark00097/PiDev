@@ -12,20 +12,34 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.VBox;
 
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class LoginController {
+    private static final int FAILED_ATTEMPTS_BEFORE_MATH = 3;
 
     @FXML private TextField txtEmail;
     @FXML private PasswordField txtPassword;
+    @FXML private VBox boxMathChallenge;
+    @FXML private Label lblMathQuestion;
+    @FXML private TextField txtMathAnswer;
     @FXML private Label lblMessage;
 
     private final UserService userService = new UserService();
     private final AdminSecuritySettingsStore adminSecuritySettingsStore = new AdminSecuritySettingsStore();
+    private int failedAttempts;
+    private Integer currentMathAnswer;
 
     @FXML
     private void initialize() {
+        failedAttempts = 0;
+        currentMathAnswer = null;
+        if (boxMathChallenge != null) {
+            boxMathChallenge.setVisible(false);
+            boxMathChallenge.setManaged(false);
+        }
         lblMessage.setVisible(false);
         lblMessage.setManaged(false);
     }
@@ -45,13 +59,19 @@ public class LoginController {
             return;
         }
 
+        if (isMathChallengeRequired() && !verifyMathChallenge()) {
+            showError("Too many failed attempts. Please solve the math challenge.");
+            return;
+        }
+
         try {
             Optional<User> authenticatedUser = userService.authenticate(email, password);
             if (authenticatedUser.isEmpty()) {
-                showError("Invalid email or password.");
+                registerFailedAttempt();
                 return;
             }
 
+            resetFailedAttemptProtection();
             User user = authenticatedUser.get();
             String role = user.getRole() == null ? "" : user.getRole().trim().toUpperCase();
             String status = user.getStatus() == null ? "" : user.getStatus().trim().toUpperCase();
@@ -136,6 +156,84 @@ public class LoginController {
         lblMessage.setText(message);
         lblMessage.setVisible(true);
         lblMessage.setManaged(true);
+    }
+
+    private void registerFailedAttempt() {
+        failedAttempts++;
+        if (failedAttempts < FAILED_ATTEMPTS_BEFORE_MATH) {
+            showError("Invalid email or password.");
+            return;
+        }
+
+        generateMathChallenge();
+        if (failedAttempts == FAILED_ATTEMPTS_BEFORE_MATH) {
+            showError("Invalid login. Next attempt requires solving the math challenge.");
+            return;
+        }
+        showError("Invalid login. Solve the math challenge to continue.");
+    }
+
+    private boolean isMathChallengeRequired() {
+        return failedAttempts >= FAILED_ATTEMPTS_BEFORE_MATH;
+    }
+
+    private boolean verifyMathChallenge() {
+        if (!isMathChallengeRequired()) {
+            return true;
+        }
+
+        if (currentMathAnswer == null) {
+            generateMathChallenge();
+            return false;
+        }
+
+        String answerText = txtMathAnswer == null ? "" : txtMathAnswer.getText().trim();
+        if (answerText.isBlank()) {
+            return false;
+        }
+
+        try {
+            int providedAnswer = Integer.parseInt(answerText);
+            if (providedAnswer == currentMathAnswer) {
+                if (txtMathAnswer != null) {
+                    txtMathAnswer.clear();
+                }
+                currentMathAnswer = null;
+                return true;
+            }
+        } catch (NumberFormatException ignored) {
+        }
+
+        generateMathChallenge();
+        if (txtMathAnswer != null) {
+            txtMathAnswer.clear();
+        }
+        return false;
+    }
+
+    private void generateMathChallenge() {
+        int left = ThreadLocalRandom.current().nextInt(1, 10);
+        int right = ThreadLocalRandom.current().nextInt(1, 10);
+        currentMathAnswer = left + right;
+        if (lblMathQuestion != null) {
+            lblMathQuestion.setText("Security check: " + left + " + " + right + " = ?");
+        }
+        if (boxMathChallenge != null) {
+            boxMathChallenge.setVisible(true);
+            boxMathChallenge.setManaged(true);
+        }
+    }
+
+    private void resetFailedAttemptProtection() {
+        failedAttempts = 0;
+        currentMathAnswer = null;
+        if (txtMathAnswer != null) {
+            txtMathAnswer.clear();
+        }
+        if (boxMathChallenge != null) {
+            boxMathChallenge.setVisible(false);
+            boxMathChallenge.setManaged(false);
+        }
     }
 
     private String getAdminBiometricErrorMessage(AuthResult result) {

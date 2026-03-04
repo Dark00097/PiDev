@@ -404,6 +404,36 @@
     -fx-text-fill: white;
 }
 
+.nx-btn-secure {
+    -fx-background-color: linear-gradient(to right, #16a34a, #15803d);
+    -fx-background-radius: 12px;
+    -fx-padding: 12px 24px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(22, 163, 74, 0.28), 8, 0, 0, 2);
+}
+
+.nx-btn-secure:hover {
+    -fx-background-color: linear-gradient(to right, #22c55e, #16a34a);
+    -fx-effect: dropshadow(gaussian, rgba(22, 163, 74, 0.36), 12, 0, 0, 4);
+}
+
+.nx-btn-secure:disabled {
+    -fx-opacity: 0.75;
+    -fx-cursor: default;
+}
+
+.nx-btn-secure-icon {
+    -fx-icon-size: 14;
+    -fx-icon-color: white;
+    -fx-fill: white;
+}
+
+.nx-btn-secure-label {
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-text-fill: white;
+}
+
 .nx-btn-warning {
     -fx-background-color: linear-gradient(to right, #f59e0b, #d97706);
     -fx-background-radius: 12px;
@@ -881,6 +911,7 @@
 
 .nx-btn-primary:pressed,
 .nx-btn-accent:pressed,
+.nx-btn-secure:pressed,
 .nx-btn-warning:pressed {
     -fx-scale-x: 0.98;
     -fx-scale-y: 0.98;

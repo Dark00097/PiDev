@@ -22,19 +22,19 @@
             <VBox styleClass="nx-sidebar-glow-overlay" mouseTransparent="true"/>
             
             <!-- Logo Section with Animation -->
-            <HBox styleClass="nx-sidebar-header" alignment="CENTER_LEFT" spacing="12">
+            <HBox fx:id="sidebarHeader" styleClass="nx-sidebar-header" alignment="CENTER_LEFT" spacing="12">
                 <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
-                <StackPane styleClass="nx-logo-container">
+                <StackPane fx:id="sidebarLogoContainer" styleClass="nx-logo-container">
                     <Circle radius="24" styleClass="nx-logo-pulse"/>
                     <ImageView fitHeight="40" fitWidth="40" preserveRatio="true" styleClass="nx-logo-image">
                         <Image url="@../images/logo.png"/>
                     </ImageView>
                 </StackPane>
-                <VBox spacing="2">
+                <VBox fx:id="sidebarBrandText" spacing="2">
                     <Label text="NEXORA" styleClass="nx-sidebar-logo-text"/>
                     <Label text="Banking System" styleClass="nx-sidebar-logo-subtitle"/>
                 </VBox>
-                <Region HBox.hgrow="ALWAYS"/>
+                <Region fx:id="sidebarHeaderSpacer" HBox.hgrow="ALWAYS"/>
                 <Button fx:id="toggleSidebarBtn" styleClass="nx-sidebar-toggle" onAction="#toggleSidebar">
                     <graphic>
                         <FontIcon iconLiteral="fas-angle-left" styleClass="nx-icon"/>
@@ -42,7 +42,7 @@
                 </Button>
             </HBox>
 <!-- Navigation Menu -->
-            <ScrollPane styleClass="nx-sidebar-scroll" fitToWidth="true" VBox.vgrow="ALWAYS">
+            <ScrollPane fx:id="sidebarScroll" styleClass="nx-sidebar-scroll" fitToWidth="true" VBox.vgrow="ALWAYS">
                 <VBox fx:id="sidebarNav" styleClass="nx-sidebar-nav" spacing="4">
                     <padding><Insets top="16" right="12" bottom="16" left="12"/></padding>
 
@@ -134,7 +134,7 @@
             </ScrollPane>
 
             <!-- User Profile Section with Enhanced Design -->
-            <VBox styleClass="nx-sidebar-footer">
+            <VBox fx:id="sidebarFooter" styleClass="nx-sidebar-footer">
 
                 <HBox styleClass="nx-sidebar-user" alignment="CENTER_LEFT" spacing="12">
                     <padding><Insets top="16" right="16" bottom="16" left="16"/></padding>
@@ -145,7 +145,7 @@
                         </ImageView>
                         <Circle radius="6" styleClass="nx-user-status-badge" translateX="14" translateY="14"/>
                     </StackPane>
-                    <VBox spacing="2" HBox.hgrow="ALWAYS">
+                    <VBox fx:id="sidebarUserInfo" spacing="2" HBox.hgrow="ALWAYS">
                         <Label text="Admin User" styleClass="nx-sidebar-user-name"/>
                         <HBox spacing="6" alignment="CENTER_LEFT">
                             <FontIcon iconLiteral="fas-crown" styleClass="nx-role-icon"/>

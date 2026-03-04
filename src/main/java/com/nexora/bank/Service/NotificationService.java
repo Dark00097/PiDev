@@ -1,5 +1,6 @@
 package com.nexora.bank.Service;
 
+import com.nexora.bank.Models.Cashback;
 import com.nexora.bank.Models.Notification;
 import com.nexora.bank.Models.User;
 import com.nexora.bank.Utils.MyDB;
@@ -12,6 +13,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class NotificationService {
 
@@ -99,6 +101,122 @@ public class NotificationService {
             "Your account password was reset by admin. Please use your new password to sign in.",
             userId
         );
+    }
+
+    public void notifyAdminsCashbackSubmitted(Cashback cashback) {
+        if (cashback == null) {
+            return;
+        }
+        String partnerName = safePartnerName(cashback);
+        String amount = formatAmount(cashback.getMontantAchat());
+        String title = "New cashback submitted";
+        String message = "User #" + cashback.getIdUser()
+            + " submitted a cashback request at partner \"" + partnerName
+            + "\" for purchase amount " + amount + " DT.";
+        createAdminNotification("CASHBACK_SUBMITTED", title, message, cashback.getIdUser());
+    }
+
+    public void notifyAdminsCashbackRatingSubmitted(Cashback cashback) {
+        if (cashback == null) {
+            return;
+        }
+
+        String partnerName = safePartnerName(cashback);
+        String ratingValue = formatRating(cashback.getUserRating());
+        String comment = safe(cashback.getUserRatingComment());
+
+        String title = "New cashback rating submitted";
+        String message = "User #" + cashback.getIdUser()
+            + " rated partner \"" + partnerName + "\" with " + ratingValue + ".";
+        if (!comment.isBlank()) {
+            message += " Comment: " + shorten(comment, 150);
+        }
+
+        createAdminNotification("CASHBACK_RATING", title, message, cashback.getIdUser());
+    }
+
+    public void notifyUserCashbackRatingSubmitted(Cashback cashback) {
+        if (cashback == null || cashback.getIdUser() <= 0) {
+            return;
+        }
+
+        String partnerName = safePartnerName(cashback);
+        String ratingValue = formatRating(cashback.getUserRating());
+        String comment = safe(cashback.getUserRatingComment());
+
+        String title = "Rating sent";
+        String message = "Your rating " + ratingValue + " for partner \"" + partnerName + "\" was sent to admin.";
+        if (!comment.isBlank()) {
+            message += " Your comment: " + shorten(comment, 120);
+        }
+
+        createUserNotification(cashback.getIdUser(), "CASHBACK_RATING", title, message, cashback.getIdUser());
+    }
+
+    public void notifyAdminsCashbackRewardGranted(Cashback cashback, double bonusAmount, String rewardNote) {
+        if (cashback == null) {
+            return;
+        }
+
+        String title = "Cashback reward granted";
+        String message = "Admin granted +" + formatAmount(bonusAmount) + " DT to user #"
+            + cashback.getIdUser() + " for partner \"" + safePartnerName(cashback) + "\".";
+        String note = safe(rewardNote);
+        if (!note.isBlank()) {
+            message += " Note: " + shorten(note, 140);
+        }
+
+        createAdminNotification("CASHBACK_REWARD", title, message, cashback.getIdUser());
+    }
+
+    public void notifyUserCashbackRewardGranted(Cashback cashback, double bonusAmount, String rewardNote) {
+        if (cashback == null || cashback.getIdUser() <= 0) {
+            return;
+        }
+
+        String title = "Reward received";
+        String message = "Admin granted you +" + formatAmount(bonusAmount) + " DT for partner \""
+            + safePartnerName(cashback) + "\".";
+        String note = safe(rewardNote);
+        if (!note.isBlank()) {
+            message += " Note: " + shorten(note, 140);
+        }
+
+        createUserNotification(cashback.getIdUser(), "CASHBACK_REWARD", title, message, cashback.getIdUser());
+    }
+
+    public void notifyAdminsCashbackBonusDecision(Cashback cashback, boolean approved, String decisionNote) {
+        if (cashback == null) {
+            return;
+        }
+
+        String decision = approved ? "approved" : "rejected";
+        String title = "Cashback bonus decision";
+        String message = "Admin " + decision + " bonus request for user #" + cashback.getIdUser()
+            + " on partner \"" + safePartnerName(cashback) + "\".";
+        String note = safe(decisionNote);
+        if (!note.isBlank()) {
+            message += " Note: " + shorten(note, 140);
+        }
+
+        createAdminNotification("CASHBACK_BONUS_DECISION", title, message, cashback.getIdUser());
+    }
+
+    public void notifyUserCashbackBonusDecision(Cashback cashback, boolean approved, String decisionNote) {
+        if (cashback == null || cashback.getIdUser() <= 0) {
+            return;
+        }
+
+        String decision = approved ? "approved" : "rejected";
+        String title = approved ? "Bonus approved" : "Bonus rejected";
+        String message = "Admin " + decision + " your cashback bonus request for partner \""
+            + safePartnerName(cashback) + "\".";
+        String note = safe(decisionNote);
+        if (!note.isBlank()) {
+            message += " Note: " + shorten(note, 140);
+        }
+
+        createUserNotification(cashback.getIdUser(), "CASHBACK_BONUS_DECISION", title, message, cashback.getIdUser());
     }
 
     public List<Notification> getRecentNotificationsFor(User user) {
@@ -298,6 +416,36 @@ public class NotificationService {
         } catch (SQLException ex) {
             throw new RuntimeException("Failed to ensure notifications table.", ex);
         }
+    }
+
+    private String safePartnerName(Cashback cashback) {
+        if (cashback == null) {
+            return "Unknown partner";
+        }
+        String value = safe(cashback.getPartenaireNom());
+        return value.isBlank() ? "Unknown partner" : value;
+    }
+
+    private String formatRating(Double rating) {
+        if (rating == null) {
+            return "-/5";
+        }
+        return String.format(Locale.US, "%.1f/5", rating);
+    }
+
+    private String formatAmount(double amount) {
+        return String.format(Locale.US, "%.2f", amount);
+    }
+
+    private String shorten(String value, int maxLength) {
+        String safeValue = safe(value);
+        if (safeValue.length() <= maxLength) {
+            return safeValue;
+        }
+        if (maxLength <= 3) {
+            return safeValue.substring(0, Math.max(0, maxLength));
+        }
+        return safeValue.substring(0, maxLength - 3) + "...";
     }
 
     private String safe(String value) {

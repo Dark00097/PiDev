@@ -2,6 +2,7 @@ package com.nexora.bank.Service;
 
 import com.nexora.bank.Models.User;
 import com.nexora.bank.Models.UserActionLog;
+import com.nexora.bank.Utils.AIResponseFormatter.FormattedAnalysis;
 import com.nexora.bank.Utils.EmailTemplates;
 import com.nexora.bank.Utils.MyDB;
 import com.nexora.bank.Utils.PasswordUtils;
@@ -26,6 +27,7 @@ import java.sql.Types;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -48,6 +50,12 @@ public class UserService {
     private static final String STATUS_DECLINED = "DECLINED";
     private static final String STATUS_INACTIVE = "INACTIVE";
     private static final String STATUS_BANNED = "BANNED";
+    private static final int AI_STRONG_PASSWORD_LENGTH = 14;
+    private static final String PASSWORD_LOWER = "abcdefghijklmnopqrstuvwxyz";
+    private static final String PASSWORD_UPPER = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    private static final String PASSWORD_DIGITS = "0123456789";
+    private static final String PASSWORD_SYMBOLS = "!@#$%^&*()-_=+[]{}<>?";
+    private static final String PASSWORD_ALL = PASSWORD_LOWER + PASSWORD_UPPER + PASSWORD_DIGITS + PASSWORD_SYMBOLS;
     private static final int MYSQL_TABLE_NOT_IN_ENGINE = 1932;
     private static final String USER_SELECT_COLUMNS = """
         idUser, nom, prenom, email, telephone, role, status, password,
@@ -532,6 +540,30 @@ public class UserService {
         }
     }
 
+    public List<UserActionLog> getAllUserActions(int limit) {
+        int effectiveLimit = limit <= 0 ? 500 : Math.min(limit, 5000);
+        String sql = """
+            SELECT idAction, idUser, action_type, action_source, details, created_at
+            FROM user_activity_log
+            ORDER BY created_at DESC, idAction DESC
+            LIMIT ?
+            """;
+
+        List<UserActionLog> actions = new ArrayList<>();
+        Connection db = requireConnection();
+        try (PreparedStatement preparedStatement = db.prepareStatement(sql)) {
+            preparedStatement.setInt(1, effectiveLimit);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                while (resultSet.next()) {
+                    actions.add(mapUserAction(resultSet));
+                }
+            }
+            return actions;
+        } catch (SQLException ex) {
+            throw new RuntimeException("Failed to fetch all user activity logs.", ex);
+        }
+    }
+
     public boolean updateUser(User user) {
         if (user == null || user.getIdUser() <= 0) {
             return false;
@@ -649,6 +681,142 @@ public class UserService {
             return updated;
         } catch (SQLException ex) {
             throw new RuntimeException("Failed to update password.", ex);
+        }
+    }
+
+    public record AiSecurityUpdateResult(
+        boolean profileUpdated,
+        boolean passwordStrengthened,
+        boolean emailSent,
+        String temporaryPassword,
+        String riskLevel
+    ) {
+    }
+
+    public AiSecurityUpdateResult secureUserOwnAccountWithAi(
+        int idUser,
+        String nom,
+        String prenom,
+        String email,
+        String telephone,
+        FormattedAnalysis analysis
+    ) {
+        if (idUser <= 0) {
+            throw new IllegalArgumentException("Invalid user id.");
+        }
+
+        String cleanedNom = safeText(nom);
+        String cleanedPrenom = safeText(prenom);
+        String cleanedTelephone = safeText(telephone);
+        String normalizedEmail = normalizeEmail(email);
+
+        if (cleanedNom.isBlank() || cleanedPrenom.isBlank() || cleanedTelephone.isBlank()) {
+            throw new IllegalArgumentException("All profile fields are required.");
+        }
+
+        validateEmailFormat(normalizedEmail);
+        if (emailExistsForAnotherUser(normalizedEmail, idUser)) {
+            throw new IllegalStateException("This email is already used by another account.");
+        }
+
+        User target = requireRegularUser(idUser);
+        boolean profileNeedsUpdate =
+            !Objects.equals(safeText(target.getNom()), cleanedNom)
+                || !Objects.equals(safeText(target.getPrenom()), cleanedPrenom)
+                || !Objects.equals(normalizeEmail(target.getEmail()), normalizedEmail)
+                || !Objects.equals(safeText(target.getTelephone()), cleanedTelephone);
+
+        String riskLevel = normalizeAiRiskLevel(analysis == null ? null : analysis.getRiskLevel());
+        boolean passwordNeedsStrengthening = true;
+        String generatedPassword = passwordNeedsStrengthening ? generateStrongPassword() : null;
+
+        Connection db = requireConnection();
+        boolean previousAutoCommit;
+        try {
+            previousAutoCommit = db.getAutoCommit();
+        } catch (SQLException ex) {
+            throw new RuntimeException("Failed to start secure account update.", ex);
+        }
+
+        boolean profileUpdated = false;
+        boolean passwordUpdated = false;
+        boolean emailSent = false;
+
+        try {
+            db.setAutoCommit(false);
+
+            if (profileNeedsUpdate) {
+                String profileSql = """
+                    UPDATE users
+                    SET nom = ?, prenom = ?, email = ?, telephone = ?
+                    WHERE idUser = ? AND role = ?
+                    """;
+                try (PreparedStatement preparedStatement = db.prepareStatement(profileSql)) {
+                    preparedStatement.setString(1, cleanedNom);
+                    preparedStatement.setString(2, cleanedPrenom);
+                    preparedStatement.setString(3, normalizedEmail);
+                    preparedStatement.setString(4, cleanedTelephone);
+                    preparedStatement.setInt(5, idUser);
+                    preparedStatement.setString(6, ROLE_USER);
+                    profileUpdated = preparedStatement.executeUpdate() > 0;
+                }
+                if (!profileUpdated) {
+                    throw new IllegalStateException("Unable to secure account profile fields.");
+                }
+            }
+
+            if (passwordNeedsStrengthening) {
+                String passwordSql = "UPDATE users SET password = ? WHERE idUser = ? AND role = ?";
+                String passwordHash = PasswordUtils.hashPassword(generatedPassword);
+                try (PreparedStatement preparedStatement = db.prepareStatement(passwordSql)) {
+                    preparedStatement.setString(1, passwordHash);
+                    preparedStatement.setInt(2, idUser);
+                    preparedStatement.setString(3, ROLE_USER);
+                    passwordUpdated = preparedStatement.executeUpdate() > 0;
+                }
+                if (!passwordUpdated) {
+                    throw new IllegalStateException("Unable to strengthen account password.");
+                }
+            }
+
+            String firstName = cleanedPrenom.isBlank() ? cleanedNom : cleanedPrenom;
+            sendPlainEmail(
+                normalizedEmail,
+                EmailTemplates.accountSecuredSubject(),
+                EmailTemplates.accountSecuredBody(
+                    firstName,
+                    profileUpdated,
+                    passwordUpdated,
+                    generatedPassword,
+                    riskLevel,
+                    collectAiSecurityHighlights(analysis)
+                )
+            );
+            emailSent = true;
+
+            logUserAction(
+                idUser,
+                "AI_ACCOUNT_SECURED",
+                resolveClientContext(),
+                buildAiSecurityActionDetails(profileUpdated, passwordUpdated, riskLevel)
+            );
+
+            db.commit();
+            return new AiSecurityUpdateResult(profileUpdated, passwordUpdated, emailSent, generatedPassword, riskLevel);
+        } catch (Exception ex) {
+            try {
+                db.rollback();
+            } catch (SQLException rollbackEx) {
+                ex.addSuppressed(rollbackEx);
+            }
+            throw ex instanceof RuntimeException
+                ? (RuntimeException) ex
+                : new RuntimeException("Failed to secure account with AI.", ex);
+        } finally {
+            try {
+                db.setAutoCommit(previousAutoCommit);
+            } catch (SQLException ignored) {
+            }
         }
     }
 
@@ -1264,6 +1432,124 @@ public class UserService {
             return value;
         }
         return STATUS_PENDING;
+    }
+
+    private String normalizeAiRiskLevel(String riskLevel) {
+        String normalized = riskLevel == null ? "" : riskLevel.trim().toUpperCase(Locale.ROOT);
+        return switch (normalized) {
+            case "LOW", "FAIBLE" -> "LOW";
+            case "HIGH", "ELEVE", "HAUT" -> "HIGH";
+            case "CRITICAL", "CRITIQUE" -> "CRITICAL";
+            default -> "MEDIUM";
+        };
+    }
+
+    private boolean shouldStrengthenPasswordFromAi(FormattedAnalysis analysis, String riskLevel) {
+        if ("HIGH".equals(riskLevel) || "CRITICAL".equals(riskLevel)) {
+            return true;
+        }
+
+        if (analysis == null) {
+            return false;
+        }
+
+        return containsPasswordHardeningHint(analysis.getSecurityAdvice())
+            || containsPasswordHardeningHint(analysis.getRiskReasons())
+            || containsPasswordHardeningHint(analysis.getSuspiciousItems());
+    }
+
+    private boolean containsPasswordHardeningHint(List<String> items) {
+        if (items == null || items.isEmpty()) {
+            return false;
+        }
+
+        for (String item : items) {
+            String text = safeText(item).toLowerCase(Locale.ROOT);
+            if (text.contains("password") || text.contains("mot de passe")) {
+                if (text.contains("weak")
+                    || text.contains("faible")
+                    || text.contains("reuse")
+                    || text.contains("reused")
+                    || text.contains("comprom")
+                    || text.contains("breach")
+                    || text.contains("change")
+                    || text.contains("rotate")
+                    || text.contains("renouvel")) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private String generateStrongPassword() {
+        StringBuilder passwordBuilder = new StringBuilder(AI_STRONG_PASSWORD_LENGTH);
+        passwordBuilder.append(randomChar(PASSWORD_LOWER));
+        passwordBuilder.append(randomChar(PASSWORD_UPPER));
+        passwordBuilder.append(randomChar(PASSWORD_DIGITS));
+        passwordBuilder.append(randomChar(PASSWORD_SYMBOLS));
+
+        while (passwordBuilder.length() < AI_STRONG_PASSWORD_LENGTH) {
+            passwordBuilder.append(randomChar(PASSWORD_ALL));
+        }
+
+        char[] chars = passwordBuilder.toString().toCharArray();
+        for (int i = chars.length - 1; i > 0; i--) {
+            int j = RANDOM.nextInt(i + 1);
+            char tmp = chars[i];
+            chars[i] = chars[j];
+            chars[j] = tmp;
+        }
+        return new String(chars);
+    }
+
+    private char randomChar(String source) {
+        return source.charAt(RANDOM.nextInt(source.length()));
+    }
+
+    private String buildAiSecurityActionDetails(boolean profileUpdated, boolean passwordUpdated, String riskLevel) {
+        List<String> details = new ArrayList<>();
+        details.add("AI risk level: " + (riskLevel == null || riskLevel.isBlank() ? "MEDIUM" : riskLevel));
+        if (profileUpdated) {
+            details.add("Profile fields updated");
+        }
+        if (passwordUpdated) {
+            details.add("Password strengthened");
+        }
+        return String.join("; ", details);
+    }
+
+    private List<String> collectAiSecurityHighlights(FormattedAnalysis analysis) {
+        List<String> highlights = new ArrayList<>();
+        if (analysis == null) {
+            return highlights;
+        }
+
+        appendHighlights(highlights, analysis.getSecurityAdvice());
+        appendHighlights(highlights, analysis.getRiskReasons());
+        appendHighlights(highlights, analysis.getSuspiciousItems());
+
+        if (highlights.size() > 5) {
+            return new ArrayList<>(highlights.subList(0, 5));
+        }
+        return highlights;
+    }
+
+    private void appendHighlights(List<String> target, List<String> source) {
+        if (target == null || source == null) {
+            return;
+        }
+
+        for (String item : source) {
+            String cleaned = safeText(item);
+            if (cleaned.isBlank()) {
+                continue;
+            }
+            boolean exists = target.stream().anyMatch(existing -> existing.equalsIgnoreCase(cleaned));
+            if (!exists) {
+                target.add(cleaned);
+            }
+        }
     }
 
     private String safeText(String value) {

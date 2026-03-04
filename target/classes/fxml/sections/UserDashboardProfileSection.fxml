@@ -376,14 +376,24 @@
                     <Label text="Activite du compte et analyse IA" styleClass="nx-card-title"/>
                     <Label text="Historique des actions et diagnostic intelligent" styleClass="nx-card-subtitle"/>
                 </VBox>
-                <Button styleClass="nx-btn-accent" onAction="#handleAnalyzeAccountSecurity">
-                    <graphic>
-                        <HBox spacing="8" alignment="CENTER">
-                            <FontIcon iconLiteral="fas-robot" styleClass="nx-btn-accent-icon"/>
-                            <Label text="Analyser avec IA" styleClass="nx-btn-accent-label"/>
-                        </HBox>
-                    </graphic>
-                </Button>
+                <HBox spacing="10" alignment="CENTER_RIGHT">
+                    <Button styleClass="nx-btn-accent" onAction="#handleAnalyzeAccountSecurity">
+                        <graphic>
+                            <HBox spacing="8" alignment="CENTER">
+                                <FontIcon iconLiteral="fas-robot" styleClass="nx-btn-accent-icon"/>
+                                <Label text="Analyser avec IA" styleClass="nx-btn-accent-label"/>
+                            </HBox>
+                        </graphic>
+                    </Button>
+                    <Button fx:id="btnSecureAccount" styleClass="nx-btn-secure" onAction="#handleSecureMyAccount" managed="false" visible="false">
+                        <graphic>
+                            <HBox spacing="8" alignment="CENTER">
+                                <FontIcon iconLiteral="fas-shield-alt" styleClass="nx-btn-secure-icon"/>
+                                <Label text="Secure my account" styleClass="nx-btn-secure-label"/>
+                            </HBox>
+                        </graphic>
+                    </Button>
+                </HBox>
             </HBox>
 
             <HBox styleClass="nx-card-body" spacing="24" VBox.vgrow="ALWAYS">

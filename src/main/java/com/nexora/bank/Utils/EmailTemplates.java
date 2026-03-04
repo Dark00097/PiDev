@@ -1,6 +1,7 @@
 package com.nexora.bank.Utils;
 
 import java.time.Instant;
+import java.util.List;
 
 public class EmailTemplates {
 
@@ -646,5 +647,107 @@ public class EmailTemplates {
             + "</table>";
 
         return getEmailTemplate(content, "Your NEXORA account access has been restored.");
+    }
+
+    // 9. AI ACCOUNT SECURED
+    public static String accountSecuredSubject() {
+        return "NEXORA Account Security Update Completed";
+    }
+
+    public static String accountSecuredBody(
+        String firstName,
+        boolean profileUpdated,
+        boolean passwordStrengthened,
+        String temporaryPassword,
+        String riskLevel,
+        List<String> highlights
+    ) {
+        String safeFirstName = firstName == null || firstName.isBlank() ? "User" : escapeHtml(firstName);
+        String safeRisk = riskLevel == null || riskLevel.isBlank() ? "MEDIUM" : escapeHtml(riskLevel);
+
+        StringBuilder updates = new StringBuilder();
+        updates.append("<ul style='margin:0;padding-left:18px;color:").append(TEXT_SECONDARY).append(";font-size:14px;line-height:21px;'>");
+        if (profileUpdated) {
+            updates.append("<li>Profile information was normalized and secured.</li>");
+        }
+        if (passwordStrengthened) {
+            updates.append("<li>Password was upgraded to a stronger value.</li>");
+        }
+        updates.append("</ul>");
+
+        StringBuilder aiHighlights = new StringBuilder();
+        if (highlights != null && !highlights.isEmpty()) {
+            aiHighlights.append("<ul style='margin:0;padding-left:18px;color:").append(TEXT_SECONDARY).append(";font-size:14px;line-height:21px;'>");
+            int max = Math.min(highlights.size(), 5);
+            for (int i = 0; i < max; i++) {
+                String item = highlights.get(i);
+                if (item == null || item.isBlank()) {
+                    continue;
+                }
+                aiHighlights.append("<li>").append(escapeHtml(item)).append("</li>");
+            }
+            aiHighlights.append("</ul>");
+        } else {
+            aiHighlights.append("<p style='margin:0;font-size:14px;line-height:21px;color:").append(TEXT_SECONDARY)
+                .append(";'>No additional AI recommendations were produced.</p>");
+        }
+
+        String passwordBox = "";
+        if (passwordStrengthened && temporaryPassword != null && !temporaryPassword.isBlank()) {
+            passwordBox =
+                "<table role='presentation' width='100%' cellpadding='0' cellspacing='0' border='0' style='margin:24px 0;'>"
+                    + "<tr><td align='center' style='background-color:" + LIGHT_GRAY + ";border:2px solid " + BORDER_GRAY + ";border-radius:12px;padding:24px;'>"
+                    + "<p style='margin:0 0 8px;font-size:12px;font-weight:600;letter-spacing:1px;color:" + TEXT_SECONDARY + ";text-transform:uppercase;'>"
+                    + "Temporary Strong Password"
+                    + "</p>"
+                    + "<p style='margin:0;font-size:20px;font-weight:700;letter-spacing:2px;color:" + NAVY_BLUE + ";font-family:Courier New,Consolas,monospace;word-break:break-all;'>"
+                    + escapeHtml(temporaryPassword)
+                    + "</p>"
+                    + "</td></tr>"
+                    + "</table>";
+        }
+
+        String content =
+            "<h1 style='margin:0 0 16px;font-size:28px;font-weight:700;line-height:36px;color:" + NAVY_BLUE + ";letter-spacing:-0.5px;' class='mobile-heading'>"
+                + "Security hardening complete"
+                + "</h1>"
+                + "<p style='margin:0 0 24px;font-size:16px;line-height:24px;color:" + TEXT_SECONDARY + ";' class='mobile-text'>"
+                + "Hello " + safeFirstName + ", your account was secured successfully after your request from the profile page."
+                + "</p>"
+                + createInfoBox(
+                "<p style='margin:0 0 8px;font-size:14px;line-height:21px;color:" + TEXT_SECONDARY + ";'>"
+                    + "<strong style='color:" + TEXT_PRIMARY + ";'>AI risk level:</strong> " + safeRisk
+                    + "</p>"
+                    + "<p style='margin:0;font-size:14px;line-height:21px;color:" + TEXT_SECONDARY + ";'>"
+                    + "<strong style='color:" + TEXT_PRIMARY + ";'>Applied updates:</strong>"
+                    + "</p>"
+                    + updates,
+                SUCCESS_BG,
+                SUCCESS_BORDER
+            )
+                + passwordBox
+                + createInfoBox(
+                "<p style='margin:0 0 10px;font-size:14px;font-weight:600;color:" + TEXT_PRIMARY + ";'>AI security highlights</p>"
+                    + aiHighlights,
+                LIGHT_GRAY,
+                BORDER_GRAY
+            )
+                + "<p style='margin:24px 0 0;font-size:14px;line-height:21px;color:" + TEXT_SECONDARY + ";'>"
+                + "If you did not trigger this action, contact security@nexora.bank immediately."
+                + "</p>";
+
+        return getEmailTemplate(content, "Your account security update was completed.");
+    }
+
+    private static String escapeHtml(String value) {
+        if (value == null) {
+            return "";
+        }
+        return value
+            .replace("&", "&amp;")
+            .replace("<", "&lt;")
+            .replace(">", "&gt;")
+            .replace("\"", "&quot;")
+            .replace("'", "&#39;");
     }
 }

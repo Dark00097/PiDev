@@ -132,6 +132,37 @@
     -fx-pref-width: 80px;
 }
 
+.nx-sidebar-collapsed .nx-sidebar-header {
+    -fx-padding: 12px 8px;
+    -fx-spacing: 0;
+    -fx-alignment: center;
+}
+
+.nx-sidebar-collapsed .nx-sidebar-nav {
+    -fx-padding: 10px 8px 12px 8px;
+    -fx-spacing: 8px;
+}
+
+.nx-sidebar-collapsed .nx-sidebar-link {
+    -fx-padding: 12px 0;
+    -fx-alignment: center;
+}
+
+.nx-sidebar-collapsed .nx-sidebar-link-active,
+.nx-sidebar-collapsed .nx-sidebar-link-active:hover {
+    -fx-background-radius: 14px;
+    -fx-background-insets: 0;
+    -fx-border-insets: 0;
+    -fx-padding: 12px 0;
+    -fx-effect: null;
+}
+
+.nx-sidebar-collapsed .nx-sidebar-scroll .scroll-bar:horizontal {
+    -fx-opacity: 0;
+    -fx-pref-height: 0;
+    -fx-max-height: 0;
+}
+
 /* Remove any glow overlay - keep it clean */
 .nx-sidebar-glow-overlay {
     -fx-background-color: transparent;
@@ -2631,5 +2662,4 @@
 /* =============================================
    END OF STYLESHEET
    ============================================= */
-
 

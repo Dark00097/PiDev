@@ -53,6 +53,13 @@ public class MainController implements Initializable {
     // =============================================
     
     @FXML private VBox sidebar;
+    @FXML private HBox sidebarHeader;
+    @FXML private StackPane sidebarLogoContainer;
+    @FXML private VBox sidebarBrandText;
+    @FXML private Region sidebarHeaderSpacer;
+    @FXML private ScrollPane sidebarScroll;
+    @FXML private VBox sidebarFooter;
+    @FXML private VBox sidebarUserInfo;
     @FXML private Button toggleSidebarBtn;
     @FXML private HBox topBar;
     @FXML private TextField searchField;
@@ -99,6 +106,8 @@ public class MainController implements Initializable {
     private static final double PILL_INSET_X = 12;
     private static final Duration PILL_ANIM_DURATION = Duration.millis(250);
     private static final Interpolator PILL_EASE = Interpolator.SPLINE(0.2, 0.8, 0.2, 1.0);
+    private static final double SIDEBAR_EXPANDED_WIDTH = 280;
+    private static final double SIDEBAR_COLLAPSED_WIDTH = 80;
     
     // Animation Timelines
     private final Map<Node, Timeline> nodeAnimations = new HashMap<>();
@@ -295,6 +304,22 @@ public class MainController implements Initializable {
         addSidebarButtonEffects(btnGestionTransaction);
         addSidebarButtonEffects(btnGestionCredit);
         addSidebarButtonEffects(btnGestionCashback);
+
+        if (sidebarScroll != null) {
+            sidebarScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+            sidebarScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        }
+
+        sidebarCollapsed = isSidebarCollapsedByLayout();
+        applySidebarState(false);
+    }
+
+    private boolean isSidebarCollapsedByLayout() {
+        if (sidebar == null) {
+            return false;
+        }
+        return sidebar.getStyleClass().contains("nx-sidebar-collapsed")
+                || sidebar.getPrefWidth() <= SIDEBAR_COLLAPSED_WIDTH + 1;
     }
 
     private void setupSidebarPill() {
@@ -303,6 +328,7 @@ public class MainController implements Initializable {
         activePill.getStyleClass().add("nx-sidebar-pill");
         activePill.setManaged(false);
         activePill.setMouseTransparent(true);
+        activePill.setVisible(!sidebarCollapsed);
         sidebarNav.getChildren().add(0, activePill);
         sidebarNav.widthProperty().addListener((obs, oldW, newW) -> updatePillWidth());
         updatePillWidth();
@@ -362,63 +388,106 @@ public class MainController implements Initializable {
     @FXML
     private void toggleSidebar() {
         sidebarCollapsed = !sidebarCollapsed;
-        
-        double targetWidth = sidebarCollapsed ? 80 : 300;
-        
-        Timeline timeline = new Timeline(
-            new KeyFrame(Duration.millis(300),
-                new KeyValue(sidebar.prefWidthProperty(), targetWidth, Interpolator.EASE_BOTH),
-                new KeyValue(sidebar.minWidthProperty(), targetWidth, Interpolator.EASE_BOTH),
-                new KeyValue(sidebar.maxWidthProperty(), targetWidth, Interpolator.EASE_BOTH)
-            )
-        );
-        
-        timeline.play();
-        
-        // Rotate toggle icon
-        if (toggleSidebarBtn != null && toggleSidebarBtn.getGraphic() != null) {
+        applySidebarState(true);
+    }
+
+    private void applySidebarState(boolean animateWidth) {
+        if (sidebar == null) {
+            return;
+        }
+
+        double targetWidth = sidebarCollapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_EXPANDED_WIDTH;
+
+        if (animateWidth) {
+            Timeline timeline = new Timeline(
+                new KeyFrame(Duration.millis(300),
+                    new KeyValue(sidebar.prefWidthProperty(), targetWidth, Interpolator.EASE_BOTH),
+                    new KeyValue(sidebar.minWidthProperty(), targetWidth, Interpolator.EASE_BOTH),
+                    new KeyValue(sidebar.maxWidthProperty(), targetWidth, Interpolator.EASE_BOTH)
+                )
+            );
+            timeline.play();
+        } else {
+            sidebar.setPrefWidth(targetWidth);
+            sidebar.setMinWidth(targetWidth);
+            sidebar.setMaxWidth(targetWidth);
+        }
+
+        if (sidebarCollapsed) {
+            if (!sidebar.getStyleClass().contains("nx-sidebar-collapsed")) {
+                sidebar.getStyleClass().add("nx-sidebar-collapsed");
+            }
+            hideSidebarText();
+        } else {
+            sidebar.getStyleClass().remove("nx-sidebar-collapsed");
+            showSidebarText();
+        }
+
+        if (animateWidth && toggleSidebarBtn != null && toggleSidebarBtn.getGraphic() != null) {
             RotateTransition rotate = new RotateTransition(Duration.millis(300), toggleSidebarBtn.getGraphic());
             rotate.setByAngle(sidebarCollapsed ? 180 : -180);
             rotate.play();
         }
-        
-        // Toggle collapsed style class
-        if (sidebarCollapsed) {
-            sidebar.getStyleClass().add("nx-sidebar-collapsed");
-            hideSidebarText();
-            if (activePill != null) {
-                activePill.setVisible(false);
-            }
-        } else {
-            sidebar.getStyleClass().remove("nx-sidebar-collapsed");
-            showSidebarText();
-            if (activePill != null) {
-                activePill.setVisible(true);
+
+        if (activePill != null) {
+            activePill.setVisible(!sidebarCollapsed);
+            if (!sidebarCollapsed) {
                 updatePillWidth();
                 moveActivePill(currentActiveButton, false);
             }
         }
     }
-    
+
     private void hideSidebarText() {
-        // Fade out text elements when collapsing
-        sidebar.lookupAll(".nx-sidebar-text, .nx-sidebar-subtext, .nx-sidebar-section-title").forEach(node -> {
-            FadeTransition fade = new FadeTransition(Duration.millis(150), node);
-            fade.setToValue(0);
-            fade.setOnFinished(e -> node.setVisible(false));
-            fade.play();
-        });
+        applySidebarContentVisibility(false);
     }
-    
+
     private void showSidebarText() {
-        // Fade in text elements when expanding
-        sidebar.lookupAll(".nx-sidebar-text, .nx-sidebar-subtext, .nx-sidebar-section-title").forEach(node -> {
-            node.setVisible(true);
-            FadeTransition fade = new FadeTransition(Duration.millis(300), node);
-            fade.setFromValue(0);
-            fade.setToValue(1);
-            fade.play();
-        });
+        applySidebarContentVisibility(true);
+    }
+
+    private void applySidebarContentVisibility(boolean expanded) {
+        setVisibleAndManaged(sidebarLogoContainer, expanded);
+        setVisibleAndManaged(sidebarBrandText, expanded);
+        setVisibleAndManaged(sidebarHeaderSpacer, expanded);
+        setVisibleAndManaged(sidebarFooter, expanded);
+        setVisibleAndManaged(sidebarUserInfo, expanded);
+
+        if (sidebarHeader != null) {
+            sidebarHeader.setAlignment(expanded ? Pos.CENTER_LEFT : Pos.CENTER);
+        }
+
+        if (sidebar != null) {
+            sidebar.lookupAll(".nx-sidebar-text, .nx-sidebar-subtext, .nx-sidebar-section-title")
+                .forEach(node -> setVisibleAndManaged(node, expanded));
+        }
+
+        for (Button button : getSidebarButtons()) {
+            if (button == null) {
+                continue;
+            }
+            button.setAlignment(expanded ? Pos.CENTER_LEFT : Pos.CENTER);
+        }
+    }
+
+    private List<Button> getSidebarButtons() {
+        return Arrays.asList(
+            btnDashboard,
+            btnGestionUser,
+            btnAdminAccount,
+            btnGestionCompte,
+            btnGestionTransaction,
+            btnGestionCredit,
+            btnGestionCashback
+        );
+    }
+
+    private void setVisibleAndManaged(Node node, boolean visible) {
+        if (node == null) {
+            return;
+        }
+        node.setManaged(visible);
+        node.setVisible(visible);
     }
 
     // =============================================
@@ -1167,8 +1236,8 @@ public class MainController implements Initializable {
         setActiveButton(btnAdminAccount);
         loadModulePage(
             "Admin Account Management",
-            new String[]{"Security Settings"},
-            new String[]{"AdminSecuritySettingsView.fxml"}
+            new String[]{"Security Settings", "User Actions"},
+            new String[]{"AdminSecuritySettingsView.fxml", "AdminUserActionsView.fxml"}
         );
     }
     
@@ -1404,7 +1473,8 @@ public class MainController implements Initializable {
             "-fx-background-radius: 8px;" +
             "-fx-cursor: hand;"
         );
-        statsBtn.setOnAction(e -> loadStatisticsView());
+        StatisticsController.StatisticsContext statisticsContext = resolveStatisticsContext(fxmlFiles);
+        statsBtn.setOnAction(e -> loadStatisticsView(statisticsContext));
         
         tabContainer.getChildren().add(statsBtn);
         
@@ -1433,7 +1503,7 @@ public class MainController implements Initializable {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/" + fxmlFile));
             Node content = loader.load();
             normalizeStyleClasses(content);
-            attachResponsiveStylesheet(content);
+            attachResponsiveStylesheet(content, fxmlFile);
             applyEntityLayoutTuning(content);
             
             // Animated transition
@@ -1457,12 +1527,31 @@ public class MainController implements Initializable {
         }
     }
     
-    private void loadStatisticsView() {
+    private StatisticsController.StatisticsContext resolveStatisticsContext(String[] fxmlFiles) {
+        if (fxmlFiles == null) {
+            return StatisticsController.StatisticsContext.GENERIC;
+        }
+        for (String fxmlFile : fxmlFiles) {
+            if ("User.fxml".equalsIgnoreCase(fxmlFile)) {
+                return StatisticsController.StatisticsContext.USER_MANAGEMENT;
+            }
+            if ("AdminSecuritySettingsView.fxml".equalsIgnoreCase(fxmlFile)) {
+                return StatisticsController.StatisticsContext.ADMIN_SECURITY;
+            }
+        }
+        return StatisticsController.StatisticsContext.GENERIC;
+    }
+
+    private void loadStatisticsView(StatisticsController.StatisticsContext context) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/Statistics.fxml"));
             Node content = loader.load();
+            StatisticsController statisticsController = loader.getController();
+            if (statisticsController != null) {
+                statisticsController.setContext(context);
+            }
             normalizeStyleClasses(content);
-            attachResponsiveStylesheet(content);
+            attachResponsiveStylesheet(content, "Statistics.fxml");
             applyEntityLayoutTuning(content);
             
             VBox moduleContent = (VBox) contentArea.getChildren().get(0);
@@ -1512,8 +1601,12 @@ public class MainController implements Initializable {
         });
     }
 
-    private void attachResponsiveStylesheet(Node content) {
+    private void attachResponsiveStylesheet(Node content, String fxmlFile) {
         if (!(content instanceof Parent parent)) {
+            return;
+        }
+
+        if (shouldSkipResponsiveStylesheet(fxmlFile)) {
             return;
         }
 
@@ -1521,6 +1614,15 @@ public class MainController implements Initializable {
         if (!parent.getStylesheets().contains(responsiveUrl)) {
             parent.getStylesheets().add(responsiveUrl);
         }
+    }
+
+    private boolean shouldSkipResponsiveStylesheet(String fxmlFile) {
+        if (fxmlFile == null) {
+            return false;
+        }
+        return "User.fxml".equalsIgnoreCase(fxmlFile)
+            || "AdminSecuritySettingsView.fxml".equalsIgnoreCase(fxmlFile)
+            || "AdminUserActionsView.fxml".equalsIgnoreCase(fxmlFile);
     }
 
     private void applyCompactClass(Parent root, double width) {
@@ -1837,15 +1939,34 @@ public class MainController implements Initializable {
         if (currentUser == null || !"ROLE_ADMIN".equalsIgnoreCase(safeLabel(currentUser.getRole()))) {
             return;
         }
-        if (notification == null || notification.getRelatedUserId() == null || notification.getRelatedUserId() <= 0) {
+        if (notification == null) {
             return;
         }
 
-        AuthSession.setPendingUserManagementTargetId(notification.getRelatedUserId());
         if (notificationsMenu != null) {
             notificationsMenu.hide();
         }
-        showGestionUser();
+
+        if (isCashbackNotification(notification)) {
+            showGestionCashback();
+            return;
+        }
+
+        if (notification.getRelatedUserId() != null && notification.getRelatedUserId() > 0) {
+            AuthSession.setPendingUserManagementTargetId(notification.getRelatedUserId());
+            showGestionUser();
+        }
+    }
+
+    private boolean isCashbackNotification(Notification notification) {
+        if (notification == null) {
+            return false;
+        }
+        String type = notification.getType();
+        if (type == null) {
+            return false;
+        }
+        return type.trim().toUpperCase(Locale.ROOT).startsWith("CASHBACK");
     }
     
     private void showNotificationPopup(String title, String message, String iconLiteral) {
