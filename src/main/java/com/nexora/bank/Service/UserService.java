@@ -1831,6 +1831,18 @@ public class UserService {
         sendPlainEmail(recipientEmail, subject, content);
     }
 
+    public void sendCustomEmail(String recipientEmail, String subject, String content) {
+        String normalizedEmail = normalizeEmail(recipientEmail);
+        validateEmailFormat(normalizedEmail);
+        if (subject == null || subject.isBlank()) {
+            throw new IllegalArgumentException("Email subject is required.");
+        }
+        if (content == null || content.isBlank()) {
+            throw new IllegalArgumentException("Email content is required.");
+        }
+        sendPlainEmail(normalizedEmail, subject.trim(), content);
+    }
+
     private void sendPlainEmail(String recipientEmail, String subject, String content) {
         Properties properties = new Properties();
         properties.put("mail.smtp.auth", "true");
