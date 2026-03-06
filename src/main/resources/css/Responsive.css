@@ -1,0 +1,236 @@
+/* Global responsive fixes for module pages loaded inside MainView */
+
+.root .nx-page-btn,
+.root .nx-page-btn-active {
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-min-width: 34;
+    -fx-min-height: 30;
+    -fx-pref-width: 34;
+    -fx-pref-height: 30;
+    -fx-padding: 0;
+    -fx-alignment: center;
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+}
+
+.root .nx-page-btn {
+    -fx-background-color: #f3f7fb;
+    -fx-border-color: #c9d7e6;
+    -fx-text-fill: #173a5e;
+}
+
+.root .nx-page-btn:hover {
+    -fx-background-color: #e8f0f8;
+    -fx-border-color: #a5bdd4;
+}
+
+.root .nx-page-btn-active {
+    -fx-background-color: #00b4a0;
+    -fx-border-color: #00b4a0;
+    -fx-text-fill: white;
+}
+
+.root .nx-table .table-row-cell {
+    -fx-cell-size: 38px;
+}
+
+.root .nx-table .column-header,
+.root .nx-table .table-cell {
+    -fx-font-size: 12px;
+    -fx-text-fill: #334155;
+}
+
+.root .nx-table .column-header {
+    -fx-padding: 10 10;
+}
+
+.root .nx-table .column-header .label {
+    -fx-text-fill: #64748b;
+    -fx-font-weight: 700;
+}
+
+.root .nx-table .table-cell {
+    -fx-padding: 8 10;
+    -fx-text-overrun: CLIP;
+}
+
+.root .nx-table .table-row-cell:selected .table-cell {
+    -fx-text-fill: #0f2f4a;
+}
+
+.root .nx-btn,
+.root .nx-btn-outline,
+.root .nx-btn-primary,
+.root .nx-btn-danger,
+.root .nx-btn-gold,
+.root .nx-btn-secondary-sm,
+.root .nx-btn-outline-sm {
+    -fx-font-size: 12px;
+    -fx-padding: 8 12;
+}
+
+.root .nx-btn-primary {
+    -fx-background-color: #00b4a0;
+    -fx-text-fill: white;
+    -fx-border-color: transparent;
+}
+
+.root .nx-btn-danger {
+    -fx-background-color: #ef4444;
+    -fx-text-fill: white;
+    -fx-border-color: transparent;
+}
+
+.root .nx-btn-gold {
+    -fx-background-color: #f4c430;
+    -fx-text-fill: #0a2540;
+    -fx-border-color: transparent;
+}
+
+.root .nx-btn-secondary-sm {
+    -fx-background-color: white;
+    -fx-text-fill: #173a5e;
+    -fx-border-color: #cbd5e1;
+}
+
+.root .nx-btn-outline,
+.root .nx-btn-outline-sm {
+    -fx-background-color: white;
+    -fx-text-fill: #475569;
+    -fx-border-color: #cbd5e1;
+}
+
+.root .nx-table-info,
+.root .nx-card-subtitle,
+.root .nx-stat-card-label,
+.root .nx-label {
+    -fx-font-size: 12px;
+}
+
+.root .nx-card-title,
+.root .nx-stat-card-value {
+    -fx-font-size: 20px;
+}
+
+.root .nx-input,
+.root .nx-select,
+.root .nx-datepicker,
+.root .nx-textarea,
+.root .nx-search-input-sm {
+    -fx-font-size: 12px;
+}
+
+.root .nx-card-header .button,
+.root .nx-card-footer .button {
+    -fx-opacity: 1;
+    -fx-text-fill: #1f3f5f;
+    -fx-text-overrun: CLIP;
+}
+
+.root .nx-card-header .menu-button > .label,
+.root .nx-card-header .menu-button .label {
+    -fx-text-fill: #1f3f5f;
+}
+
+.root.nx-compact .nx-content-area {
+    -fx-padding: 16;
+}
+
+.root.nx-compact .nx-module-content {
+    -fx-spacing: 16;
+}
+
+.root.nx-compact .nx-table .table-row-cell {
+    -fx-cell-size: 34px;
+}
+
+.root.nx-compact .nx-table .column-header,
+.root.nx-compact .nx-table .table-cell {
+    -fx-font-size: 12px;
+    -fx-text-fill: #334155;
+}
+
+.root.nx-compact .nx-card-title,
+.root.nx-compact .nx-stat-card-value {
+    -fx-font-size: 18px;
+}
+
+.root .nx-card-footer .nx-btn,
+.root .nx-card-footer .nx-btn-outline,
+.root .nx-card-footer .nx-btn-primary,
+.root .nx-card-footer .nx-btn-danger,
+.root .nx-card-footer .nx-btn-gold,
+.root .nx-card-footer .nx-btn-secondary-sm,
+.root .nx-card-footer .nx-btn-outline-sm {
+    -fx-padding: 8 12;
+    -fx-min-width: 0;
+    -fx-pref-width: -1;
+}
+
+.root .nx-card-footer {
+    -fx-spacing: 8;
+}
+
+.root .nx-btn-icon,
+.root .nx-action-icon,
+.root .nx-search-icon-sm,
+.root .nx-stat-card-icon SVGPath,
+.root .nx-card-header-icon SVGPath {
+    -fx-fill: #64748b;
+    -fx-icon-color: #64748b;
+    -fx-scale-x: 0.8;
+    -fx-scale-y: 0.8;
+}
+
+.root .nx-btn-primary .nx-btn-icon,
+.root .nx-btn-danger .nx-btn-icon {
+    -fx-fill: #ffffff;
+    -fx-icon-color: #ffffff;
+}
+
+.root .nx-btn-gold .nx-btn-icon {
+    -fx-fill: #0a2540;
+    -fx-icon-color: #0a2540;
+}
+
+.root .nx-btn-outline .nx-btn-icon,
+.root .nx-btn-outline-sm .nx-btn-icon {
+    -fx-fill: #64748b;
+    -fx-icon-color: #64748b;
+}
+
+.root .nx-table-action {
+    -fx-padding: 4;
+    -fx-min-width: 26;
+    -fx-min-height: 26;
+    -fx-pref-width: 26;
+    -fx-pref-height: 26;
+}
+
+.root.nx-compact .nx-stat-card,
+.root.nx-compact .nx-card {
+    -fx-padding: 12;
+}
+
+.root.nx-compact .nx-card-header,
+.root.nx-compact .nx-card-footer {
+    -fx-padding: 10 12;
+}
+
+.root.nx-compact .nx-page-btn,
+.root.nx-compact .nx-page-btn-active {
+    -fx-min-width: 30;
+    -fx-min-height: 28;
+    -fx-pref-width: 30;
+    -fx-pref-height: 28;
+    -fx-font-size: 11px;
+}
+
+.root.nx-compact .nx-topbar {
+    -fx-padding: 10 14;
+}
+
+.root.nx-compact .nx-sidebar {
+    -fx-pref-width: 240;
+}
