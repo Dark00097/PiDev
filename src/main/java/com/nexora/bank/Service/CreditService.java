@@ -35,22 +35,43 @@ public class CreditService {
         try (PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                Credit c = new Credit();
-                c.setIdCredit(rs.getInt("idCredit"));
-                c.setTypeCredit(rs.getString("typeCredit"));
-                c.setMontantDemande(rs.getDouble("montantDemande"));
-                c.setMontantAccord(rs.getDouble("montantAccord"));
-                c.setDuree(rs.getInt("duree"));
-                c.setTauxInteret(rs.getDouble("tauxInteret"));
-                c.setMensualite(rs.getDouble("mensualite"));
-                c.setMontantRestant(rs.getDouble("montantRestant"));
-                c.setDateDemande(rs.getString("dateDemande"));
-                c.setStatut(rs.getString("statut"));
-                credits.add(c);
+                credits.add(mapCredit(rs));
             }
         } catch (SQLException e) {
             System.err.println("Error getting credits: " + e.getMessage());
         }
         return credits;
+    }
+
+    public List<Credit> getCreditsByUser(int idUser) {
+        List<Credit> credits = new ArrayList<>();
+        Connection conn = MyDB.getInstance().getConn();
+        String sql = "SELECT * FROM credit WHERE idUser = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, idUser);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    credits.add(mapCredit(rs));
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error getting user credits: " + e.getMessage());
+        }
+        return credits;
+    }
+
+    private Credit mapCredit(ResultSet rs) throws SQLException {
+        Credit c = new Credit();
+        c.setIdCredit(rs.getInt("idCredit"));
+        c.setTypeCredit(rs.getString("typeCredit"));
+        c.setMontantDemande(rs.getDouble("montantDemande"));
+        c.setMontantAccord(rs.getDouble("montantAccord"));
+        c.setDuree(rs.getInt("duree"));
+        c.setTauxInteret(rs.getDouble("tauxInteret"));
+        c.setMensualite(rs.getDouble("mensualite"));
+        c.setMontantRestant(rs.getDouble("montantRestant"));
+        c.setDateDemande(rs.getString("dateDemande"));
+        c.setStatut(rs.getString("statut"));
+        return c;
     }
 }

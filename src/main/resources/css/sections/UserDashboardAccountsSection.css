@@ -996,6 +996,107 @@
     -fx-border-color: #3DD9C6;
     -fx-effect: dropshadow(gaussian, rgba(10, 37, 64, 0.1), 12, 0, 0, 3);
 }
+/* ═══════════════════ AI SUGGESTION CARDS ═══════════════════ */
+.ai-card {
+    -fx-background-color: #FFFFFF;
+    -fx-background-radius: 16;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 16;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(10, 37, 64, 0.08), 14, 0, 0, 3);
+}
+.ai-card:hover {
+    -fx-border-color: #14C9B3;
+    -fx-effect: dropshadow(gaussian, rgba(0, 180, 160, 0.18), 18, 0, 0, 4);
+}
+.ai-card-header {
+    -fx-background-color: linear-gradient(to right, #0A2540 0%, #00B4A0 100%);
+    -fx-background-radius: 16 16 0 0;
+    -fx-padding: 12 16;
+}
+.ai-card-title {
+    -fx-font-size: 13;
+    -fx-font-weight: 700;
+    -fx-text-fill: #FFFFFF;
+}
+.ai-card-subtitle {
+    -fx-font-size: 11;
+    -fx-text-fill: rgba(255,255,255,0.85);
+}
+.ai-source-chip {
+    -fx-background-color: rgba(255,255,255,0.2);
+    -fx-background-radius: 999;
+    -fx-padding: 2 8;
+}
+.ai-source-chip .label {
+    -fx-font-size: 10;
+    -fx-font-weight: 700;
+    -fx-text-fill: #FFFFFF;
+}
+.ai-card-body {
+    -fx-padding: 12 16;
+}
+.ai-score-badge {
+    -fx-background-color: #FDE68A;
+    -fx-background-radius: 999;
+    -fx-padding: 4 10;
+    -fx-border-color: #F59E0B;
+    -fx-border-width: 1;
+    -fx-border-radius: 999;
+}
+.ai-score-badge .label {
+    -fx-font-size: 11;
+    -fx-font-weight: 800;
+    -fx-text-fill: #92400E;
+}
+.ai-metric {
+    -fx-font-size: 11.5;
+    -fx-text-fill: #64748B;
+}
+.ai-metric-strong {
+    -fx-font-size: 13;
+    -fx-font-weight: 700;
+    -fx-text-fill: #0A2540;
+}
+.ai-justify {
+    -fx-font-size: 11.5;
+    -fx-text-fill: #475569;
+}
+.ai-actions {
+    -fx-padding: 8 16 16 16;
+    -fx-background-radius: 0 0 16 16;
+}
+.ai-add-btn {
+    -fx-background-color: linear-gradient(to right, #00B4A0 0%, #14C9B3 100%);
+    -fx-background-radius: 10;
+    -fx-padding: 9 14;
+    -fx-cursor: hand;
+}
+.ai-add-btn .label {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 12;
+    -fx-font-weight: 700;
+}
+.ai-refuse-btn {
+    -fx-background-color: #FFFFFF;
+    -fx-border-color: #CBD5E1;
+    -fx-border-width: 1;
+    -fx-border-radius: 10;
+    -fx-background-radius: 10;
+    -fx-padding: 9 14;
+    -fx-cursor: hand;
+}
+.ai-refuse-btn:hover {
+    -fx-background-color: #F8FAFC;
+    -fx-border-color: #94A3B8;
+}
+.ai-refuse-btn .label {
+    -fx-text-fill: #334155;
+    -fx-font-size: 12;
+    -fx-font-weight: 700;
+}
+    -fx-effect: dropshadow(gaussian, rgba(10, 37, 64, 0.1), 12, 0, 0, 3);
+}
 
 .vault-icon-wrapper {
     -fx-min-width: 36;
@@ -1116,6 +1217,23 @@
 .progress-fill-warning {
     -fx-background-color: linear-gradient(to right, #F59E0B 0%, #FBBF24 100%);
 }
+
+/* ═══════════════════ DRAGON TAMAGOTCHI (icône dans carte coffre) ═══════════════════ */
+.dragon-icon-wrapper {
+    -fx-alignment: center;
+    -fx-cursor: hand;
+}
+
+.dragon-icon-small {
+    -fx-font-size: 20;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(99, 102, 241, 0.35), 6, 0, 0, 1);
+}
+
+.dragon-icon-small:hover {
+    -fx-effect: dropshadow(gaussian, rgba(245, 158, 11, 0.5), 8, 0, 0, 2);
+}
+
 /* -----------------------------------------------------------------------
    FORM INPUTS - Complete JavaFX Styling
    TextField, ComboBox, DatePicker, TextArea, CheckBox

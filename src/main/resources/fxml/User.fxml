@@ -59,9 +59,9 @@
                 
                 <!-- Decorative Line -->
                 <HBox styleClass="nx-hero-decoration" alignment="CENTER_LEFT">
-                    <Region styleClass="nx-hero-line nx-hero-line-primary" HBox.hgrow="ALWAYS"/>
-                    <Region styleClass="nx-hero-line nx-hero-line-accent" prefWidth="120"/>
-                    <Region styleClass="nx-hero-line nx-hero-line-secondary" prefWidth="80"/>
+                    <Region styleClass="nx-hero-line, nx-hero-line-primary" HBox.hgrow="ALWAYS"/>
+                    <Region styleClass="nx-hero-line, nx-hero-line-accent" prefWidth="120"/>
+                    <Region styleClass="nx-hero-line, nx-hero-line-secondary" prefWidth="80"/>
                 </HBox>
             </VBox>
 
@@ -70,7 +70,7 @@
                  ═══════════════════════════════════════════════════════════════ -->
             <HBox spacing="20" styleClass="nx-stats-dashboard">
                 <!-- Stat Card 1: Total Users -->
-                <VBox styleClass="nx-stat-card nx-stat-card-gradient-teal" HBox.hgrow="ALWAYS">
+                <VBox styleClass="nx-stat-card, nx-stat-card-gradient-teal" HBox.hgrow="ALWAYS">
                     <HBox alignment="CENTER_LEFT" spacing="16">
                         <StackPane styleClass="nx-stat-icon-wrap">
                             <Circle radius="24" styleClass="nx-stat-icon-bg"/>
@@ -84,7 +84,7 @@
                                 <Label text="users" styleClass="nx-stat-unit"/>
                             </HBox>
                         </VBox>
-                        <VBox alignment="CENTER_RIGHT" styleClass="nx-stat-trend nx-stat-trend-up">
+                        <VBox alignment="CENTER_RIGHT" styleClass="nx-stat-trend, nx-stat-trend-up">
                             <SVGPath content="M7 17l5-5 5 5" styleClass="nx-trend-icon"/>
                         </VBox>
                     </HBox>
@@ -94,7 +94,7 @@
                 </VBox>
 
                 <!-- Stat Card 2: Active Users -->
-                <VBox styleClass="nx-stat-card nx-stat-card-gradient-success" HBox.hgrow="ALWAYS">
+                <VBox styleClass="nx-stat-card, nx-stat-card-gradient-success" HBox.hgrow="ALWAYS">
                     <HBox alignment="CENTER_LEFT" spacing="16">
                         <StackPane styleClass="nx-stat-icon-wrap">
                             <Circle radius="24" styleClass="nx-stat-icon-bg"/>
@@ -108,7 +108,7 @@
                                 <Label text="actifs" styleClass="nx-stat-unit"/>
                             </HBox>
                         </VBox>
-                        <VBox alignment="CENTER_RIGHT" styleClass="nx-stat-trend nx-stat-trend-up">
+                        <VBox alignment="CENTER_RIGHT" styleClass="nx-stat-trend, nx-stat-trend-up">
                             <SVGPath content="M7 17l5-5 5 5" styleClass="nx-trend-icon"/>
                         </VBox>
                     </HBox>
@@ -118,7 +118,7 @@
                 </VBox>
 
                 <!-- Stat Card 3: Administrators -->
-                <VBox styleClass="nx-stat-card nx-stat-card-gradient-purple" HBox.hgrow="ALWAYS">
+                <VBox styleClass="nx-stat-card, nx-stat-card-gradient-purple" HBox.hgrow="ALWAYS">
                     <HBox alignment="CENTER_LEFT" spacing="16">
                         <StackPane styleClass="nx-stat-icon-wrap">
                             <Circle radius="24" styleClass="nx-stat-icon-bg"/>
@@ -148,7 +148,7 @@
             <HBox spacing="24" VBox.vgrow="ALWAYS" styleClass="nx-main-grid">
                 
                 <!-- LEFT PANEL: DATA TABLE -->
-                <VBox styleClass="nx-panel nx-table-panel" HBox.hgrow="ALWAYS" spacing="0">
+                <VBox styleClass="nx-panel, nx-table-panel" HBox.hgrow="ALWAYS" spacing="0">
                     
                     <!-- Panel Header -->
                     <HBox styleClass="nx-panel-header" alignment="CENTER_LEFT" spacing="16">
@@ -172,12 +172,12 @@
                         
                         <!-- Filter & Export Buttons -->
                         <HBox spacing="8">
-                            <Button text="Filtres" styleClass="nx-btn nx-btn-subtle nx-btn-sm">
+                            <Button text="Filtres" styleClass="nx-btn, nx-btn-subtle, nx-btn-sm">
                                 <graphic>
                                     <SVGPath content="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/>
                                 </graphic>
                             </Button>
-                            <Button text="Export" styleClass="nx-btn nx-btn-outline-primary nx-btn-sm" onAction="#exporterPDF">
+                            <Button text="Export" styleClass="nx-btn, nx-btn-outline-primary, nx-btn-sm" onAction="#exporterPDF">
                                 <graphic>
                                     <SVGPath content="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
                                 </graphic>
@@ -215,7 +215,7 @@
                             <Label fx:id="lblTableInfo" text="Affichage de 0 entrées" styleClass="nx-footer-info"/>
                         </HBox>
                         <Region HBox.hgrow="ALWAYS"/>
-                        <Button text="Relancer Emails Pending" styleClass="nx-btn nx-btn-gold nx-btn-sm" onAction="#envoyerSMS">
+                        <Button text="Relancer Emails Pending" styleClass="nx-btn, nx-btn-gold, nx-btn-sm" onAction="#envoyerSMS">
                             <graphic>
                                 <SVGPath content="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z M22 6l-10 7L2 6"/>
                             </graphic>
@@ -224,18 +224,18 @@
                 </VBox>
 
                 <!-- RIGHT PANEL: FORM -->
-                <VBox styleClass="nx-panel nx-form-panel" prefWidth="480" minWidth="420" spacing="0">
+                <VBox styleClass="nx-panel, nx-form-panel" prefWidth="480" minWidth="420" spacing="0">
                     
                     <!-- Form Header -->
-                    <HBox styleClass="nx-panel-header nx-form-header" alignment="CENTER_LEFT" spacing="12">
-                        <StackPane styleClass="nx-panel-icon nx-panel-icon-purple">
+                    <HBox styleClass="nx-panel-header, nx-form-header" alignment="CENTER_LEFT" spacing="12">
+                        <StackPane styleClass="nx-panel-icon, nx-panel-icon-purple">
                             <SVGPath content="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/>
                         </StackPane>
                         <VBox spacing="2" HBox.hgrow="ALWAYS">
                             <Label text="Détails Utilisateur" styleClass="nx-panel-title"/>
                             <Label text="Créer ou modifier un compte" styleClass="nx-panel-subtitle"/>
                         </VBox>
-                        <Button styleClass="nx-icon-btn nx-icon-btn-subtle" onAction="#handleAnnuler">
+                        <Button styleClass="nx-icon-btn, nx-icon-btn-subtle" onAction="#handleAnnuler">
                             <graphic>
                                 <SVGPath content="M18 6L6 18M6 6l12 12"/>
                             </graphic>
@@ -373,21 +373,21 @@
                     </ScrollPane>
 
                     <!-- Form Footer with Actions -->
-                    <VBox styleClass="nx-panel-footer nx-form-footer" spacing="12">
+                    <VBox styleClass="nx-panel-footer, nx-form-footer" spacing="12">
                         <!-- Primary Actions Row -->
                         <HBox spacing="10" alignment="CENTER_RIGHT">
-                            <Button text="Annuler" styleClass="nx-btn nx-btn-ghost" onAction="#handleAnnuler">
+                            <Button text="Annuler" styleClass="nx-btn, nx-btn-ghost" onAction="#handleAnnuler">
                                 <graphic>
                                     <SVGPath content="M18 6L6 18M6 6l12 12"/>
                                 </graphic>
                             </Button>
-                            <Button text="Changer MDP" styleClass="nx-btn nx-btn-secondary" 
+                            <Button text="Changer MDP" styleClass="nx-btn, nx-btn-secondary" 
                                    onAction="#handleUpdatePasswordSelected">
                                 <graphic>
                                     <SVGPath content="M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2z"/>
                                 </graphic>
                             </Button>
-                            <Button fx:id="btnAjouter" text="Enregistrer" styleClass="nx-btn nx-btn-primary" 
+                            <Button fx:id="btnAjouter" text="Enregistrer" styleClass="nx-btn, nx-btn-primary" 
                                    onAction="#handleAjouter">
                                 <graphic>
                                     <SVGPath content="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z M17 21v-8H7v8 M7 3v5h8"/>
@@ -397,19 +397,19 @@
                         
                         <!-- Secondary Actions Row -->
                         <HBox spacing="10" alignment="CENTER" styleClass="nx-secondary-actions">
-                            <Button text="Approuver" styleClass="nx-btn nx-btn-success-soft nx-btn-sm" 
+                            <Button text="Approuver" styleClass="nx-btn, nx-btn-success-soft, nx-btn-sm" 
                                    onAction="#handleApproveSelected">
                                 <graphic>
                                     <SVGPath content="M20 6L9 17l-5-5"/>
                                 </graphic>
                             </Button>
-                            <Button text="Refuser" styleClass="nx-btn nx-btn-warning-soft nx-btn-sm" 
+                            <Button text="Refuser" styleClass="nx-btn, nx-btn-warning-soft, nx-btn-sm" 
                                    onAction="#handleDeclineSelected">
                                 <graphic>
                                     <SVGPath content="M18 6L6 18M6 6l12 12"/>
                                 </graphic>
                             </Button>
-                            <Button text="Supprimer" styleClass="nx-btn nx-btn-danger-soft nx-btn-sm" 
+                            <Button text="Supprimer" styleClass="nx-btn, nx-btn-danger-soft, nx-btn-sm" 
                                    onAction="#handleSupprimer">
                                 <graphic>
                                     <SVGPath content="M19 7l-.867 12.142A2 2 0 0 1 16.138 21H7.862a2 2 0 0 1-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v3M4 7h16"/>
@@ -449,20 +449,20 @@
                 </HBox>
 
                 <HBox spacing="16" alignment="CENTER_LEFT">
-                    <VBox styleClass="nx-field nx-ban-reason-field" spacing="8" HBox.hgrow="ALWAYS">
+                    <VBox styleClass="nx-field, nx-ban-reason-field" spacing="8" HBox.hgrow="ALWAYS">
                         <Label text="Motif de la restriction" styleClass="nx-field-label"/>
                         <TextArea fx:id="txtBanReason" promptText="Saisissez le motif du bannissement (obligatoire)..." 
                                  prefRowCount="2" wrapText="true" styleClass="nx-textarea"/>
                     </VBox>
                     
                     <VBox spacing="10" alignment="CENTER">
-                        <Button text="Bannir l'utilisateur" styleClass="nx-btn nx-btn-danger" 
+                        <Button text="Bannir l'utilisateur" styleClass="nx-btn, nx-btn-danger" 
                                onAction="#handleBanSelectedUser" prefWidth="180">
                             <graphic>
                                 <SVGPath content="M18.36 6.64a9 9 0 1 1-12.73 0M12 2v10"/>
                             </graphic>
                         </Button>
-                        <Button text="Lever la restriction" styleClass="nx-btn nx-btn-success" 
+                        <Button text="Lever la restriction" styleClass="nx-btn, nx-btn-success" 
                                onAction="#handleUnbanSelectedUser" prefWidth="180">
                             <graphic>
                                 <SVGPath content="M22 11.08V12a10 10 0 1 1-5.93-9.14M22 4L12 14.01l-3-3"/>

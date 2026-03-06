@@ -1,0 +1,909 @@
+/* ══════════════════════════════════════════════════════════════════════════════
+   NEXORA BANK - CLIENT DASHBOARD OVERVIEW SECTION
+   JavaFX-Compatible CSS (No web-only properties)
+   Prefix: ov- to avoid collisions
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   SCROLL PANE & ROOT
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+.ov-scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+
+.ov-scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+.ov-scroll-pane .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 8;
+}
+
+.ov-scroll-pane .scroll-bar:vertical .track {
+    -fx-background-color: #e2e8f0;
+    -fx-background-radius: 4;
+}
+
+.ov-scroll-pane .scroll-bar:vertical .thumb {
+    -fx-background-color: #94a3b8;
+    -fx-background-radius: 4;
+}
+
+.ov-scroll-pane .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #64748b;
+}
+
+.ov-root {
+    -fx-background-color: linear-gradient(to bottom, #f1f5f9, #e2e8f0);
+    -fx-min-width: 1100;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   HEADER SECTION
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+.ov-header {
+    -fx-background-color: linear-gradient(to right, #0A2540, #0E355A);
+    -fx-background-radius: 0 0 24 24;
+    -fx-effect: dropshadow(gaussian, rgba(10, 37, 64, 0.35), 20, 0, 0, 6);
+}
+
+/* User Profile */
+.ov-user-profile {
+    -fx-padding: 0;
+}
+
+.ov-avatar-container {
+    -fx-min-width: 60;
+    -fx-min-height: 60;
+}
+
+.ov-avatar-bg {
+    -fx-fill: linear-gradient(to bottom right, #00D09C, #10B981);
+}
+
+.ov-avatar-icon {
+    -fx-icon-size: 22;
+    -fx-icon-color: white;
+}
+
+.ov-avatar-status {
+    -fx-fill: #10B981;
+    -fx-stroke: #0A2540;
+    -fx-stroke-width: 2;
+}
+
+.ov-welcome-text {
+    -fx-font-size: 12;
+    -fx-font-weight: normal;
+    -fx-text-fill: rgba(255, 255, 255, 0.7);
+}
+
+.ov-user-name {
+    -fx-font-size: 20;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.ov-verified-icon {
+    -fx-icon-size: 11;
+    -fx-icon-color: #10B981;
+}
+
+.ov-verified-text {
+    -fx-font-size: 10;
+    -fx-font-weight: bold;
+    -fx-text-fill: #10B981;
+}
+
+/* Refresh Section */
+.ov-refresh-label {
+    -fx-font-size: 10;
+    -fx-text-fill: rgba(255, 255, 255, 0.6);
+}
+
+.ov-refresh-date {
+    -fx-font-size: 11;
+    -fx-font-weight: bold;
+    -fx-text-fill: rgba(255, 255, 255, 0.9);
+}
+
+.ov-refresh-btn {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+    -fx-background-radius: 10;
+    -fx-border-color: rgba(255, 255, 255, 0.2);
+    -fx-border-radius: 10;
+    -fx-padding: 8 16;
+    -fx-cursor: hand;
+}
+
+.ov-refresh-btn:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+    -fx-border-color: rgba(255, 255, 255, 0.3);
+}
+
+.ov-refresh-btn:pressed {
+    -fx-background-color: rgba(255, 255, 255, 0.25);
+}
+
+.ov-refresh-icon {
+    -fx-icon-size: 13;
+    -fx-icon-color: #00D09C;
+}
+
+.ov-refresh-btn-text {
+    -fx-font-size: 12;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   BALANCE CARD
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+.ov-balance-card {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+    -fx-background-radius: 18;
+    -fx-border-color: rgba(255, 255, 255, 0.15);
+    -fx-border-radius: 18;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 12, 0, 0, 4);
+}
+
+.ov-balance-icon-box {
+    -fx-background-color: linear-gradient(to bottom right, #00D09C, #10B981);
+    -fx-background-radius: 12;
+    -fx-padding: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0, 208, 156, 0.4), 8, 0, 0, 2);
+}
+
+.ov-balance-icon {
+    -fx-icon-size: 18;
+    -fx-icon-color: white;
+}
+
+.ov-balance-title {
+    -fx-font-size: 13;
+    -fx-font-weight: bold;
+    -fx-text-fill: rgba(255, 255, 255, 0.8);
+}
+
+.ov-balance-amount {
+    -fx-font-size: 38;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.ov-balance-currency {
+    -fx-font-size: 18;
+    -fx-font-weight: bold;
+    -fx-text-fill: rgba(255, 255, 255, 0.7);
+}
+
+.ov-trend-badge {
+    -fx-background-radius: 5;
+    -fx-padding: 3 6;
+}
+
+.ov-trend-up {
+    -fx-background-color: rgba(16, 185, 129, 0.25);
+}
+
+.ov-trend-down {
+    -fx-background-color: rgba(239, 68, 68, 0.25);
+}
+
+.ov-trend-icon {
+    -fx-icon-size: 10;
+    -fx-icon-color: #10B981;
+}
+
+.ov-trend-down .ov-trend-icon {
+    -fx-icon-color: #ef4444;
+}
+
+.ov-trend-text {
+    -fx-font-size: 11;
+    -fx-font-weight: bold;
+    -fx-text-fill: rgba(255, 255, 255, 0.85);
+}
+
+.ov-card-separator {
+    -fx-background-color: rgba(255, 255, 255, 0.15);
+    -fx-pref-width: 1;
+    -fx-max-width: 1;
+}
+
+.ov-stat-label {
+    -fx-font-size: 11;
+    -fx-text-fill: rgba(255, 255, 255, 0.6);
+}
+
+.ov-stat-value {
+    -fx-font-size: 28;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.ov-status-dot-active {
+    -fx-fill: #10B981;
+    -fx-effect: dropshadow(gaussian, rgba(16, 185, 129, 0.6), 4, 0, 0, 0);
+}
+
+.ov-stat-status {
+    -fx-font-size: 11;
+    -fx-text-fill: rgba(255, 255, 255, 0.75);
+}
+
+/* Hero Action Buttons */
+.ov-hero-action-btn {
+    -fx-background-color: rgba(255, 255, 255, 0.12);
+    -fx-background-radius: 8;
+    -fx-border-color: rgba(255, 255, 255, 0.2);
+    -fx-border-radius: 8;
+    -fx-padding: 8 14;
+    -fx-cursor: hand;
+    -fx-min-width: 140;
+}
+
+.ov-hero-action-btn:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+    -fx-border-color: rgba(255, 255, 255, 0.35);
+}
+
+.ov-hero-action-icon {
+    -fx-icon-size: 12;
+    -fx-icon-color: #00D09C;
+}
+
+.ov-hero-action-text {
+    -fx-font-size: 12;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.ov-hero-action-btn-alt {
+    -fx-background-color: transparent;
+    -fx-background-radius: 8;
+    -fx-border-color: rgba(255, 255, 255, 0.25);
+    -fx-border-radius: 8;
+    -fx-padding: 8 14;
+    -fx-cursor: hand;
+    -fx-min-width: 140;
+}
+
+.ov-hero-action-btn-alt:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+}
+
+.ov-hero-action-icon-alt {
+    -fx-icon-size: 12;
+    -fx-icon-color: rgba(255, 255, 255, 0.8);
+}
+
+.ov-hero-action-text-alt {
+    -fx-font-size: 12;
+    -fx-font-weight: bold;
+    -fx-text-fill: rgba(255, 255, 255, 0.9);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   METRICS SECTION
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+.ov-metrics-section {
+    -fx-padding: 20 0;
+}
+
+.ov-section-badge {
+    -fx-background-color: linear-gradient(to bottom right, #0A2540, #0E355A);
+    -fx-background-radius: 8;
+    -fx-padding: 8;
+}
+
+.ov-section-badge-icon {
+    -fx-icon-size: 14;
+    -fx-icon-color: #00D09C;
+}
+
+.ov-section-title {
+    -fx-font-size: 18;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0A2540;
+}
+
+.ov-period-badge {
+    -fx-font-size: 11;
+    -fx-font-weight: bold;
+    -fx-text-fill: #64748b;
+    -fx-background-color: #e2e8f0;
+    -fx-background-radius: 12;
+    -fx-padding: 5 12;
+}
+
+/* KPI Cards */
+.ov-kpi-flow {
+    -fx-background-color: transparent;
+}
+
+.ov-kpi-card {
+    -fx-background-color: white;
+    -fx-background-radius: 16;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 16;
+    -fx-border-width: 1;
+    -fx-padding: 18 20;
+    -fx-min-width: 260;
+    -fx-pref-width: 280;
+    -fx-max-width: 320;
+    -fx-effect: dropshadow(gaussian, rgba(10, 37, 64, 0.08), 12, 0, 0, 3);
+}
+
+.ov-kpi-card:hover {
+    -fx-border-color: #cbd5e1;
+    -fx-effect: dropshadow(gaussian, rgba(10, 37, 64, 0.14), 18, 0, 0, 5);
+}
+
+.ov-kpi-icon-box {
+    -fx-min-width: 40;
+    -fx-min-height: 40;
+    -fx-max-width: 40;
+    -fx-max-height: 40;
+    -fx-background-radius: 10;
+}
+
+.ov-kpi-icon-blue {
+    -fx-background-color: linear-gradient(to bottom right, #3b82f6, #2563eb);
+}
+
+.ov-kpi-icon-purple {
+    -fx-background-color: linear-gradient(to bottom right, #8b5cf6, #7c3aed);
+}
+
+.ov-kpi-icon-green {
+    -fx-background-color: linear-gradient(to bottom right, #10B981, #059669);
+}
+
+.ov-kpi-icon-amber {
+    -fx-background-color: linear-gradient(to bottom right, #f59e0b, #d97706);
+}
+
+.ov-kpi-icon {
+    -fx-icon-size: 18;
+    -fx-icon-color: white;
+}
+
+.ov-kpi-label {
+    -fx-font-size: 13;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e293b;
+}
+
+.ov-kpi-sublabel {
+    -fx-font-size: 10;
+    -fx-text-fill: #94a3b8;
+}
+
+.ov-kpi-value {
+    -fx-font-size: 28;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0A2540;
+}
+
+.ov-value-green {
+    -fx-text-fill: #059669;
+}
+
+.ov-kpi-unit {
+    -fx-font-size: 12;
+    -fx-text-fill: #64748b;
+}
+
+.ov-kpi-progress {
+    -fx-pref-height: 6;
+    -fx-max-width: 180;
+    -fx-background-radius: 3;
+}
+
+.ov-kpi-progress .track {
+    -fx-background-color: #e2e8f0;
+    -fx-background-radius: 3;
+}
+
+.ov-progress-blue .bar {
+    -fx-background-color: linear-gradient(to right, #3b82f6, #60a5fa);
+    -fx-background-radius: 3;
+}
+
+.ov-kpi-compare {
+    -fx-font-size: 10;
+    -fx-text-fill: #94a3b8;
+}
+
+.ov-kpi-detail-icon {
+    -fx-icon-size: 11;
+    -fx-icon-color: #94a3b8;
+}
+
+.ov-kpi-detail {
+    -fx-font-size: 11;
+    -fx-text-fill: #64748b;
+}
+
+.ov-kpi-mini {
+    -fx-font-size: 10;
+    -fx-text-fill: #64748b;
+}
+
+.ov-dot-open {
+    -fx-fill: #f59e0b;
+}
+
+.ov-dot-resolved {
+    -fx-fill: #10B981;
+}
+
+.ov-kpi-action-btn {
+    -fx-background-color: linear-gradient(to right, #10B981, #059669);
+    -fx-background-radius: 8;
+    -fx-padding: 8 16;
+    -fx-cursor: hand;
+}
+
+.ov-kpi-action-btn:hover {
+    -fx-background-color: linear-gradient(to right, #059669, #047857);
+}
+
+.ov-kpi-action-icon {
+    -fx-icon-size: 11;
+    -fx-icon-color: white;
+}
+
+.ov-kpi-action-text {
+    -fx-font-size: 11;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   PANELS
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+.ov-panels-row {
+    -fx-alignment: top-center;
+}
+
+.ov-panel {
+    -fx-background-color: white;
+    -fx-background-radius: 16;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 16;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(10, 37, 64, 0.08), 12, 0, 0, 3);
+}
+
+.ov-panel:hover {
+    -fx-effect: dropshadow(gaussian, rgba(10, 37, 64, 0.12), 16, 0, 0, 5);
+}
+
+.ov-panel-header {
+    -fx-padding: 16 20;
+    -fx-border-color: transparent transparent #f1f5f9 transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.ov-panel-icon-box {
+    -fx-min-width: 36;
+    -fx-min-height: 36;
+    -fx-max-width: 36;
+    -fx-max-height: 36;
+    -fx-background-radius: 10;
+}
+
+.ov-panel-icon-indigo {
+    -fx-background-color: linear-gradient(to bottom right, #6366f1, #4f46e5);
+}
+
+.ov-panel-icon-cyan {
+    -fx-background-color: linear-gradient(to bottom right, #0ea5e9, #0284c7);
+}
+
+.ov-panel-icon-pink {
+    -fx-background-color: linear-gradient(to bottom right, #ec4899, #db2777);
+}
+
+.ov-panel-icon {
+    -fx-icon-size: 16;
+    -fx-icon-color: white;
+}
+
+.ov-panel-title {
+    -fx-font-size: 14;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0A2540;
+}
+
+.ov-panel-subtitle {
+    -fx-font-size: 11;
+    -fx-text-fill: #94a3b8;
+}
+
+.ov-panel-body {
+    -fx-padding: 16 20 20 20;
+}
+
+.ov-panel-divider {
+    -fx-background-color: #f1f5f9;
+    -fx-pref-height: 1;
+}
+
+/* Finance Panel */
+.ov-bar-income {
+    -fx-fill: #10B981;
+    -fx-arc-width: 2;
+    -fx-arc-height: 2;
+}
+
+.ov-bar-expense {
+    -fx-fill: #ef4444;
+    -fx-arc-width: 2;
+    -fx-arc-height: 2;
+}
+
+.ov-finance-label {
+    -fx-font-size: 12;
+    -fx-font-weight: bold;
+    -fx-text-fill: #475569;
+}
+
+.ov-finance-value-in {
+    -fx-font-size: 14;
+    -fx-font-weight: bold;
+    -fx-text-fill: #059669;
+}
+
+.ov-finance-value-out {
+    -fx-font-size: 14;
+    -fx-font-weight: bold;
+    -fx-text-fill: #dc2626;
+}
+
+.ov-finance-progress {
+    -fx-pref-height: 6;
+    -fx-background-radius: 3;
+}
+
+.ov-finance-progress .track {
+    -fx-background-color: #f1f5f9;
+    -fx-background-radius: 3;
+}
+
+.ov-progress-income .bar {
+    -fx-background-color: linear-gradient(to right, #10B981, #34d399);
+    -fx-background-radius: 3;
+}
+
+.ov-progress-expense .bar {
+    -fx-background-color: linear-gradient(to right, #ef4444, #f87171);
+    -fx-background-radius: 3;
+}
+
+.ov-net-label {
+    -fx-font-size: 13;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e293b;
+}
+
+.ov-net-sublabel {
+    -fx-font-size: 10;
+    -fx-text-fill: #94a3b8;
+}
+
+.ov-net-value {
+    -fx-font-size: 18;
+    -fx-font-weight: bold;
+    -fx-text-fill: #059669;
+}
+
+.ov-net-value-negative {
+    -fx-text-fill: #dc2626;
+}
+
+.ov-net-trend-icon {
+    -fx-icon-size: 11;
+    -fx-icon-color: #059669;
+}
+
+.ov-net-trend-icon-negative {
+    -fx-icon-color: #dc2626;
+}
+
+.ov-net-trend-text {
+    -fx-font-size: 11;
+    -fx-font-weight: bold;
+    -fx-text-fill: #059669;
+}
+
+.ov-net-trend-text-negative {
+    -fx-text-fill: #dc2626;
+}
+
+/* Service Status Panel */
+.ov-overall-badge {
+    -fx-background-radius: 16;
+    -fx-padding: 5 12;
+}
+
+.ov-status-ok {
+    -fx-background-color: rgba(16, 185, 129, 0.15);
+}
+
+.ov-status-warn {
+    -fx-background-color: rgba(245, 158, 11, 0.15);
+}
+
+.ov-status-error {
+    -fx-background-color: rgba(239, 68, 68, 0.15);
+}
+
+.ov-overall-text {
+    -fx-font-size: 11;
+    -fx-font-weight: bold;
+    -fx-text-fill: #059669;
+}
+
+.ov-status-warn .ov-overall-text {
+    -fx-text-fill: #d97706;
+}
+
+.ov-status-error .ov-overall-text {
+    -fx-text-fill: #dc2626;
+}
+
+.ov-service-row {
+    -fx-padding: 10 0;
+    -fx-border-color: transparent transparent #f8fafc transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.ov-service-icon-box {
+    -fx-background-color: #f1f5f9;
+    -fx-background-radius: 6;
+    -fx-padding: 6;
+}
+
+.ov-service-icon {
+    -fx-icon-size: 12;
+    -fx-icon-color: #64748b;
+}
+
+.ov-service-name {
+    -fx-font-size: 12;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e293b;
+}
+
+.ov-service-detail {
+    -fx-font-size: 10;
+    -fx-text-fill: #94a3b8;
+}
+
+.ov-service-dot {
+    -fx-stroke-width: 0;
+}
+
+.ov-dot-active {
+    -fx-fill: #10B981;
+    -fx-effect: dropshadow(gaussian, rgba(16, 185, 129, 0.5), 4, 0, 0, 0);
+}
+
+.ov-dot-warning {
+    -fx-fill: #f59e0b;
+    -fx-effect: dropshadow(gaussian, rgba(245, 158, 11, 0.5), 4, 0, 0, 0);
+}
+
+.ov-dot-error {
+    -fx-fill: #ef4444;
+    -fx-effect: dropshadow(gaussian, rgba(239, 68, 68, 0.5), 4, 0, 0, 0);
+}
+
+/* Activity Panel */
+.ov-activity-list {
+    -fx-spacing: 0;
+}
+
+.ov-activity-item {
+    -fx-padding: 12 0;
+    -fx-border-color: transparent transparent #f8fafc transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.ov-activity-icon-box {
+    -fx-min-width: 36;
+    -fx-min-height: 36;
+    -fx-max-width: 36;
+    -fx-max-height: 36;
+    -fx-background-radius: 8;
+}
+
+.ov-activity-tx {
+    -fx-background-color: rgba(59, 130, 246, 0.15);
+}
+
+.ov-activity-credit {
+    -fx-background-color: rgba(139, 92, 246, 0.15);
+}
+
+.ov-activity-cashback {
+    -fx-background-color: rgba(16, 185, 129, 0.15);
+}
+
+.ov-activity-rec {
+    -fx-background-color: rgba(245, 158, 11, 0.15);
+}
+
+.ov-activity-icon {
+    -fx-icon-size: 14;
+}
+
+.ov-activity-tx .ov-activity-icon {
+    -fx-icon-color: #3b82f6;
+}
+
+.ov-activity-credit .ov-activity-icon {
+    -fx-icon-color: #8b5cf6;
+}
+
+.ov-activity-cashback .ov-activity-icon {
+    -fx-icon-color: #10B981;
+}
+
+.ov-activity-rec .ov-activity-icon {
+    -fx-icon-color: #f59e0b;
+}
+
+.ov-activity-type {
+    -fx-font-size: 11;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e293b;
+}
+
+.ov-activity-detail {
+    -fx-font-size: 10;
+    -fx-text-fill: #64748b;
+    -fx-max-width: 200;
+}
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   QUICK ACTIONS & ACCOUNT CARD
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+.ov-bottom-section {
+    -fx-alignment: top-left;
+}
+
+.ov-quick-actions {
+    -fx-padding: 0;
+}
+
+.ov-quick-title {
+    -fx-font-size: 16;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0A2540;
+}
+
+.ov-quick-btn {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-border-color: #e2e8f0;
+    -fx-border-radius: 12;
+    -fx-padding: 16 20;
+    -fx-cursor: hand;
+    -fx-min-width: 90;
+    -fx-effect: dropshadow(gaussian, rgba(10, 37, 64, 0.06), 6, 0, 0, 2);
+}
+
+.ov-quick-btn:hover {
+    -fx-border-color: #cbd5e1;
+    -fx-effect: dropshadow(gaussian, rgba(10, 37, 64, 0.12), 12, 0, 0, 4);
+}
+
+.ov-qa-icon-box {
+    -fx-min-width: 42;
+    -fx-min-height: 42;
+    -fx-max-width: 42;
+    -fx-max-height: 42;
+    -fx-background-radius: 12;
+}
+
+.ov-qa-transfer {
+    -fx-background-color: linear-gradient(to bottom right, #3b82f6, #2563eb);
+}
+
+.ov-qa-bills {
+    -fx-background-color: linear-gradient(to bottom right, #8b5cf6, #7c3aed);
+}
+
+.ov-qa-credit {
+    -fx-background-color: linear-gradient(to bottom right, #10B981, #059669);
+}
+
+.ov-qa-statements {
+    -fx-background-color: linear-gradient(to bottom right, #f59e0b, #d97706);
+}
+
+.ov-qa-support {
+    -fx-background-color: linear-gradient(to bottom right, #ec4899, #db2777);
+}
+
+.ov-qa-icon {
+    -fx-icon-size: 18;
+    -fx-icon-color: white;
+}
+
+.ov-qa-label {
+    -fx-font-size: 11;
+    -fx-font-weight: bold;
+    -fx-text-fill: #475569;
+}
+
+/* Account Card */
+.ov-account-card {
+    -fx-background-color: linear-gradient(to bottom right, #0A2540, #1a4a7a);
+    -fx-background-radius: 16;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, rgba(10, 37, 64, 0.3), 18, 0, 0, 6);
+}
+
+.ov-chip {
+    -fx-fill: linear-gradient(to bottom right, #d4af37, #c5a028);
+}
+
+.ov-card-brand {
+    -fx-icon-size: 36;
+    -fx-icon-color: rgba(255, 255, 255, 0.8);
+}
+
+.ov-card-number {
+    -fx-font-size: 20;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-font-family: "Consolas", monospace;
+}
+
+.ov-card-label {
+    -fx-font-size: 9;
+    -fx-text-fill: rgba(255, 255, 255, 0.6);
+}
+
+.ov-card-holder {
+    -fx-font-size: 12;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.ov-card-balance {
+    -fx-font-size: 14;
+    -fx-font-weight: bold;
+    -fx-text-fill: #10B981;
+}
+
+.ov-card-type {
+    -fx-font-size: 11;
+    -fx-text-fill: rgba(255, 255, 255, 0.7);
+}
+
+.ov-card-status-badge {
+    -fx-background-color: rgba(16, 185, 129, 0.2);
+    -fx-background-radius: 5;
+    -fx-padding: 3 8;
+}
+
+.ov-card-status-text {
+    -fx-font-size: 10;
+    -fx-font-weight: bold;
+    -fx-text-fill: #10B981;
+}

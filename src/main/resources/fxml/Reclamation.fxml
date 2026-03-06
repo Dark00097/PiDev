@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <?import java.lang.String?>
 <?import javafx.collections.FXCollections?>
 <?import javafx.geometry.Insets?>
@@ -11,56 +10,142 @@
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.nexora.bank.controllers.ReclamationController"
       stylesheets="@../css/Reclamation.css"
-      styleClass="nx-entity-container" spacing="24">
+      styleClass="nx-entity-container"
+      spacing="20">
 
-    <HBox spacing="24" styleClass="nx-stats-row">
-        <VBox styleClass="nx-stat-card" HBox.hgrow="ALWAYS">
-            <HBox alignment="CENTER_LEFT" spacing="16">
-                <StackPane styleClass="nx-stat-card-icon, nx-stat-card-icon-teal">
-                    <SVGPath content="M12 2l10 4v6c0 5.55-3.84 10.74-10 12-6.16-1.26-10-6.45-10-12V6l10-4z"/>
-                </StackPane>
-                <VBox spacing="4">
-                    <Label fx:id="lblNombreReclamations" text="0" styleClass="nx-stat-card-value"/>
-                    <Label text="Total Reclamations" styleClass="nx-stat-card-label"/>
-                </VBox>
-            </HBox>
-        </VBox>
+    <padding><Insets top="24" right="28" bottom="24" left="28"/></padding>
 
-        <VBox styleClass="nx-stat-card" HBox.hgrow="ALWAYS">
-            <HBox alignment="CENTER_LEFT" spacing="16">
-                <StackPane styleClass="nx-stat-card-icon, nx-stat-card-icon-warning">
-                    <SVGPath content="M12 8v4m0 4h.01M2.5 19h19L12 3 2.5 19z"/>
-                </StackPane>
-                <VBox spacing="4">
-                    <Label fx:id="lblEnAttente" text="0" styleClass="nx-stat-card-value"/>
-                    <Label text="En attente" styleClass="nx-stat-card-label"/>
-                </VBox>
-            </HBox>
-        </VBox>
-
-        <VBox styleClass="nx-stat-card" HBox.hgrow="ALWAYS">
-            <HBox alignment="CENTER_LEFT" spacing="16">
-                <StackPane styleClass="nx-stat-card-icon, nx-stat-card-icon-gold">
-                    <SVGPath content="M20 6L9 17l-5-5"/>
-                </StackPane>
-                <VBox spacing="4">
-                    <Label fx:id="lblResolues" text="0" styleClass="nx-stat-card-value"/>
-                    <Label text="Resolues" styleClass="nx-stat-card-label"/>
-                </VBox>
-            </HBox>
-        </VBox>
+    <!-- ═══════════════ TITRE + BOUTON ANALYSE ═══════════════ -->
+    <HBox alignment="CENTER_LEFT" spacing="12">
+        <Label text="📋 Gestion des Réclamations"
+               style="-fx-font-size:20px;-fx-font-weight:700;-fx-text-fill:#1e293b;"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label text="Banque Digitale Nexora"
+               style="-fx-font-size:11px;-fx-text-fill:#94a3b8;-fx-font-style:italic;"/>
+        <Button text="📊 Voir les analyses"
+                onAction="#ouvrirAnalyse"
+                style="-fx-background-color:#4f46e5;-fx-text-fill:#FFFFFF;
+                       -fx-font-size:12px;-fx-font-weight:700;
+                       -fx-background-radius:10;-fx-padding:9 20;-fx-cursor:hand;
+                       -fx-effect:dropshadow(gaussian,rgba(79,70,229,0.4),8,0,0,2);
+                       -fx-border-width:0;"/>
     </HBox>
 
+    <!-- ═══════════════ KPI CARDS ═══════════════ -->
+    <HBox spacing="14">
+
+        <VBox HBox.hgrow="ALWAYS"
+              style="-fx-background-color:#FFFFFF;-fx-background-radius:14;
+                     -fx-border-color:#E2E8F0;-fx-border-radius:14;-fx-border-width:1;
+                     -fx-padding:16;-fx-effect:dropshadow(gaussian,rgba(0,0,0,0.06),6,0,0,2);">
+            <HBox alignment="CENTER_LEFT" spacing="14">
+                <StackPane style="-fx-background-color:#EEF2FF;-fx-background-radius:10;-fx-padding:10;">
+                    <Label text="📋" style="-fx-font-size:16px;"/>
+                </StackPane>
+                <VBox spacing="3">
+                    <Label fx:id="lblNombreReclamations" text="—"
+                           style="-fx-font-size:24px;-fx-font-weight:700;-fx-text-fill:#4f46e5;"/>
+                    <Label text="Total" style="-fx-font-size:11px;-fx-text-fill:#64748B;"/>
+                </VBox>
+            </HBox>
+        </VBox>
+
+        <VBox HBox.hgrow="ALWAYS"
+              style="-fx-background-color:#FFFFFF;-fx-background-radius:14;
+                     -fx-border-color:#E2E8F0;-fx-border-radius:14;-fx-border-width:1;
+                     -fx-padding:16;-fx-effect:dropshadow(gaussian,rgba(0,0,0,0.06),6,0,0,2);">
+            <HBox alignment="CENTER_LEFT" spacing="14">
+                <StackPane style="-fx-background-color:#FEF3C7;-fx-background-radius:10;-fx-padding:10;">
+                    <Label text="🕐" style="-fx-font-size:16px;"/>
+                </StackPane>
+                <VBox spacing="3">
+                    <Label fx:id="lblEnAttente" text="—"
+                           style="-fx-font-size:24px;-fx-font-weight:700;-fx-text-fill:#D97706;"/>
+                    <Label text="En attente" style="-fx-font-size:11px;-fx-text-fill:#64748B;"/>
+                </VBox>
+            </HBox>
+        </VBox>
+
+        <VBox HBox.hgrow="ALWAYS"
+              style="-fx-background-color:#FFFFFF;-fx-background-radius:14;
+                     -fx-border-color:#E2E8F0;-fx-border-radius:14;-fx-border-width:1;
+                     -fx-padding:16;-fx-effect:dropshadow(gaussian,rgba(0,0,0,0.06),6,0,0,2);">
+            <HBox alignment="CENTER_LEFT" spacing="14">
+                <StackPane style="-fx-background-color:#E0E7FF;-fx-background-radius:10;-fx-padding:10;">
+                    <Label text="🔄" style="-fx-font-size:16px;"/>
+                </StackPane>
+                <VBox spacing="3">
+                    <Label fx:id="lblEnCours" text="—"
+                           style="-fx-font-size:24px;-fx-font-weight:700;-fx-text-fill:#4f46e5;"/>
+                    <Label text="En cours" style="-fx-font-size:11px;-fx-text-fill:#64748B;"/>
+                </VBox>
+            </HBox>
+        </VBox>
+
+        <VBox HBox.hgrow="ALWAYS"
+              style="-fx-background-color:#FFFFFF;-fx-background-radius:14;
+                     -fx-border-color:#E2E8F0;-fx-border-radius:14;-fx-border-width:1;
+                     -fx-padding:16;-fx-effect:dropshadow(gaussian,rgba(0,0,0,0.06),6,0,0,2);">
+            <HBox alignment="CENTER_LEFT" spacing="14">
+                <StackPane style="-fx-background-color:#D1FAE5;-fx-background-radius:10;-fx-padding:10;">
+                    <Label text="✅" style="-fx-font-size:16px;"/>
+                </StackPane>
+                <VBox spacing="3">
+                    <Label fx:id="lblResolues" text="—"
+                           style="-fx-font-size:24px;-fx-font-weight:700;-fx-text-fill:#059669;"/>
+                    <Label text="Résolues" style="-fx-font-size:11px;-fx-text-fill:#64748B;"/>
+                </VBox>
+            </HBox>
+        </VBox>
+
+        <VBox HBox.hgrow="ALWAYS"
+              style="-fx-background-color:#FFFFFF;-fx-background-radius:14;
+                     -fx-border-color:#E2E8F0;-fx-border-radius:14;-fx-border-width:1;
+                     -fx-padding:16;-fx-effect:dropshadow(gaussian,rgba(0,0,0,0.06),6,0,0,2);">
+            <HBox alignment="CENTER_LEFT" spacing="14">
+                <StackPane style="-fx-background-color:#F1F5F9;-fx-background-radius:10;-fx-padding:10;">
+                    <Label text="❌" style="-fx-font-size:16px;"/>
+                </StackPane>
+                <VBox spacing="3">
+                    <Label fx:id="lblRejetees" text="—"
+                           style="-fx-font-size:24px;-fx-font-weight:700;-fx-text-fill:#64748B;"/>
+                    <Label text="Rejetées" style="-fx-font-size:11px;-fx-text-fill:#64748B;"/>
+                </VBox>
+            </HBox>
+        </VBox>
+
+        <VBox HBox.hgrow="ALWAYS"
+              style="-fx-background-color:#FFF5F5;-fx-background-radius:14;
+                     -fx-border-color:#FECACA;-fx-border-radius:14;-fx-border-width:2;
+                     -fx-padding:16;-fx-effect:dropshadow(gaussian,rgba(220,38,38,0.1),6,0,0,2);">
+            <HBox alignment="CENTER_LEFT" spacing="14">
+                <StackPane style="-fx-background-color:#FEE2E2;-fx-background-radius:10;-fx-padding:10;">
+                    <Label text="⚠️" style="-fx-font-size:16px;"/>
+                </StackPane>
+                <VBox spacing="3">
+                    <Label fx:id="lblInappropriees" text="—"
+                           style="-fx-font-size:24px;-fx-font-weight:700;-fx-text-fill:#DC2626;"/>
+                    <Label text="Signalées"
+                           style="-fx-font-size:11px;-fx-text-fill:#DC2626;-fx-font-weight:700;"/>
+                </VBox>
+            </HBox>
+        </VBox>
+
+    </HBox>
+
+    <!-- ═══════════════ FORMULAIRE & TABLE ═══════════════ -->
     <HBox spacing="24" VBox.vgrow="ALWAYS">
 
-        <VBox styleClass="nx-card" prefWidth="560" minWidth="560" spacing="0">
+        <!-- ══════ FORMULAIRE ══════ -->
+        <VBox styleClass="nx-card" prefWidth="560" minWidth="520" spacing="0">
+
             <HBox styleClass="nx-card-header" alignment="CENTER_LEFT" spacing="12">
                 <StackPane styleClass="nx-card-header-icon">
                     <SVGPath content="M12 2l10 4v6c0 5.55-3.84 10.74-10 12-6.16-1.26-10-6.45-10-12V6l10-4z"/>
                 </StackPane>
                 <VBox spacing="2">
-                    <Label text="Reclamation" styleClass="nx-card-title"/>
-                    <Label text="Gerer les reclamations clients" styleClass="nx-card-subtitle"/>
+                    <Label text="Réclamation" styleClass="nx-card-title"/>
+                    <Label text="Gérer les réclamations clients" styleClass="nx-card-subtitle"/>
                 </VBox>
             </HBox>
 
@@ -68,109 +153,114 @@
                 <VBox styleClass="nx-card-body" spacing="16">
 
                     <VBox styleClass="nx-form-group" spacing="8">
-                        <Label text="ID Reclamation" styleClass="nx-label"/>
-                        <HBox styleClass="nx-input-wrapper">
-                            <SVGPath content="M9 12h6m-6 4h6M8 4h8l4 4v12a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" styleClass="nx-input-icon"/>
-                            <TextField fx:id="txtIdReclamation" promptText="Auto ou Ex: REC-2026-001" styleClass="nx-input" HBox.hgrow="ALWAYS"/>
-                        </HBox>
+                        <Label text="Transaction associée *" styleClass="nx-label"/>
+                        <ComboBox fx:id="cmbTransaction" promptText="Sélectionner"
+                                  styleClass="nx-select" maxWidth="Infinity"/>
+                        <Label fx:id="lblTransactionError" styleClass="nx-error-label" text=""/>
                     </VBox>
 
                     <VBox styleClass="nx-form-group" spacing="8">
-                        <Label text="Date Reclamation" styleClass="nx-label, nx-label-required"/>
-                        <HBox styleClass="nx-input-wrapper">
-                            <SVGPath content="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z" styleClass="nx-input-icon"/>
-                            <DatePicker fx:id="dpDateReclamation" styleClass="nx-datepicker" HBox.hgrow="ALWAYS"/>
-                        </HBox>
+                        <Label text="Date de réclamation *" styleClass="nx-label"/>
+                        <DatePicker fx:id="dpDateReclamation"
+                                    styleClass="nx-datepicker" maxWidth="Infinity"/>
+                        <Label fx:id="lblDateError" styleClass="nx-error-label" text=""/>
                     </VBox>
 
                     <VBox styleClass="nx-form-group" spacing="8">
-                        <Label text="Type Reclamation" styleClass="nx-label, nx-label-required"/>
-                        <ComboBox fx:id="cmbTypeReclamation" promptText="Selectionner un type" styleClass="nx-select" maxWidth="Infinity">
-                            <items>
-                                <FXCollections fx:factory="observableArrayList">
-                                    <String fx:value="VIREMENT_NON_RECU"/>
-                                    <String fx:value="ERREUR_MONTANT"/>
-                                    <String fx:value="TRANSACTION_INCONNUE"/>
-                                    <String fx:value="PROBLEME_CARTE"/>
-                                    <String fx:value="AUTRE"/>
-                                </FXCollections>
-                            </items>
+                        <Label text="Type de réclamation *" styleClass="nx-label"/>
+                        <ComboBox fx:id="cmbTypeReclamation" promptText="Sélectionner"
+                                  styleClass="nx-select" maxWidth="Infinity">
+                            <items><FXCollections fx:factory="observableArrayList">
+                                <String fx:value="VIREMENT_NON_RECU"/>
+                                <String fx:value="ERREUR_MONTANT"/>
+                                <String fx:value="TRANSACTION_INCONNUE"/>
+                                <String fx:value="PROBLEME_CARTE"/>
+                                <String fx:value="AUTRE"/>
+                            </FXCollections></items>
                         </ComboBox>
+                        <Label fx:id="lblTypeError" styleClass="nx-error-label" text=""/>
                     </VBox>
 
                     <VBox styleClass="nx-form-group" spacing="8">
-                        <Label text="Description" styleClass="nx-label, nx-label-required"/>
-                        <TextArea fx:id="txtDescription" promptText="Decrire la reclamation..." styleClass="nx-textarea" prefRowCount="3"/>
+                        <HBox alignment="CENTER_LEFT" spacing="8">
+                            <Label text="Description *" styleClass="nx-label"/>
+                            <Label text="⚠️ Les mots inappropriés seront signalés"
+                                   style="-fx-font-size:9px;-fx-text-fill:#ea580c;-fx-font-style:italic;"/>
+                        </HBox>
+                        <TextArea fx:id="txtDescription"
+                                  promptText="Décrivez la réclamation en détail..."
+                                  styleClass="nx-textarea" prefRowCount="3"/>
+                        <Label fx:id="lblDescriptionError" styleClass="nx-error-label" text=""/>
                     </VBox>
 
                     <VBox styleClass="nx-form-group" spacing="8">
-                        <Label text="Statut" styleClass="nx-label, nx-label-required"/>
-                        <ComboBox fx:id="cmbStatut" promptText="Selectionner un statut" styleClass="nx-select" maxWidth="Infinity">
-                            <items>
-                                <FXCollections fx:factory="observableArrayList">
-                                    <String fx:value="En attente"/>
-                                    <String fx:value="En cours"/>
-                                    <String fx:value="Resolue"/>
-                                    <String fx:value="Rejetee"/>
-                                </FXCollections>
-                            </items>
+                        <Label text="Statut *" styleClass="nx-label"/>
+                        <ComboBox fx:id="cmbStatut" promptText="Sélectionner"
+                                  styleClass="nx-select" maxWidth="Infinity">
+                            <items><FXCollections fx:factory="observableArrayList">
+                                <String fx:value="En attente"/>
+                                <String fx:value="En cours"/>
+                                <String fx:value="Résolue"/>
+                                <String fx:value="Rejetée"/>
+                            </FXCollections></items>
                         </ComboBox>
+                        <Label fx:id="lblStatutError" styleClass="nx-error-label" text=""/>
                     </VBox>
+
                 </VBox>
             </ScrollPane>
 
             <HBox styleClass="nx-card-footer" spacing="12" alignment="CENTER_RIGHT">
-                <Button text="Annuler" styleClass="nx-btn, nx-btn-outline" onAction="#handleAnnuler"/>
-                <Button text="Supprimer" styleClass="nx-btn, nx-btn-danger" onAction="#handleSupprimer"/>
-                <Button fx:id="btnAjouter" text="Ajouter" styleClass="nx-btn, nx-btn-primary" onAction="#handleAjouter"/>
+                <Button fx:id="btnAnnuler"   text="Annuler"      styleClass="nx-btn, nx-btn-outline" onAction="#handleAnnuler"/>
+                <Button fx:id="btnSupprimer" text="🗑 Supprimer" styleClass="nx-btn, nx-btn-danger"  onAction="#handleSupprimer"/>
+                <Button fx:id="btnAjouter"   text="✅ Ajouter"   styleClass="nx-btn, nx-btn-primary" onAction="#handleAjouter"/>
             </HBox>
         </VBox>
 
+        <!-- ══════ TABLE ══════ -->
         <VBox styleClass="nx-card" HBox.hgrow="ALWAYS" spacing="0">
+
             <HBox styleClass="nx-card-header" alignment="CENTER_LEFT" spacing="16">
                 <VBox spacing="2" HBox.hgrow="ALWAYS">
-                    <Label text="Liste des Reclamations" styleClass="nx-card-title"/>
-                    <Label text="Suivi des dossiers clients" styleClass="nx-card-subtitle"/>
+                    <Label text="Liste des Réclamations" styleClass="nx-card-title"/>
+                    <Label text="Suivi et traitement des dossiers" styleClass="nx-card-subtitle"/>
                 </VBox>
-                <HBox styleClass="nx-table-search" alignment="CENTER_LEFT" spacing="8">
-                    <SVGPath content="M21 21l-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0z" styleClass="nx-search-icon-sm"/>
-                    <TextField fx:id="txtRecherche" promptText="Rechercher..." styleClass="nx-search-input-sm" prefWidth="200"/>
-                </HBox>
-                <MenuButton text="Trier" styleClass="nx-btn, nx-btn-outline-sm">
-                    <items>
-                        <MenuItem text="Par Date" onAction="#trierParDate"/>
-                        <MenuItem text="Par Type" onAction="#trierParType"/>
-                        <MenuItem text="Par Statut" onAction="#trierParStatut"/>
-                    </items>
-                </MenuButton>
-                <Button text="Export PDF" styleClass="nx-btn, nx-btn-secondary-sm" onAction="#exporterPDF"/>
+                <CheckBox fx:id="chkFiltreInappropriees"
+                          text="⚠️ Voir signalées"
+                          style="-fx-text-fill:#dc2626;-fx-font-size:11px;-fx-font-weight:bold;"/>
+                <TextField fx:id="txtRecherche" promptText="🔍 Rechercher..."
+                           styleClass="nx-search-input-sm" prefWidth="180"/>
+                <Button text="📄 PDF" styleClass="nx-btn, nx-btn-secondary-sm"
+                        onAction="#exporterPDF"/>
             </HBox>
 
             <VBox styleClass="nx-table-container" VBox.vgrow="ALWAYS">
-                <TableView fx:id="tableReclamations" styleClass="nx-table" VBox.vgrow="ALWAYS">
+                <TableView fx:id="tableReclamations"
+                           styleClass="nx-table"
+                           VBox.vgrow="ALWAYS">
                     <columns>
-                        <TableColumn fx:id="colIdReclamation" text="ID" prefWidth="120"/>
-                        <TableColumn fx:id="colDateReclamation" text="Date" prefWidth="110"/>
-                        <TableColumn fx:id="colTypeReclamation" text="Type" prefWidth="170"/>
-                        <TableColumn fx:id="colDescription" text="Description" prefWidth="220"/>
-                        <TableColumn fx:id="colIdUser" text="ID User" prefWidth="110"/>
-                        <TableColumn fx:id="colIdTransaction" text="ID Transaction" prefWidth="130"/>
-                        <TableColumn fx:id="colStatut" text="Statut" prefWidth="110"/>
-                        <TableColumn fx:id="colActions" text="Actions" prefWidth="100"/>
+                        <TableColumn fx:id="colId"          text="ID"          prefWidth="45"/>
+                        <TableColumn fx:id="colTransaction" text="Transaction" prefWidth="95"/>
+                        <TableColumn fx:id="colDate"        text="Date"        prefWidth="90"/>
+                        <TableColumn fx:id="colType"        text="Type"        prefWidth="130"/>
+                        <TableColumn fx:id="colDescription" text="Description" prefWidth="160"/>
+                        <TableColumn fx:id="colStatut"      text="Statut"      prefWidth="100"/>
+                        <TableColumn fx:id="colActions"     text="Actions IA"  prefWidth="360"/>
                     </columns>
+                    <placeholder>
+                        <Label text="Aucune réclamation trouvée 😊"
+                               style="-fx-text-fill:#94a3b8;-fx-font-size:13px;"/>
+                    </placeholder>
                 </TableView>
             </VBox>
 
             <HBox styleClass="nx-card-footer, nx-table-footer" alignment="CENTER" spacing="16">
-                <Label fx:id="lblTableInfo" text="Affichage de 0 entrees" styleClass="nx-table-info"/>
+                <Label fx:id="lblTableInfo" text="Total : 0" styleClass="nx-table-info"/>
                 <Region HBox.hgrow="ALWAYS"/>
-                <Button text="Notifier client" styleClass="nx-btn, nx-btn-gold" onAction="#envoyerSMS"/>
-                <HBox styleClass="nx-pagination" spacing="4">
-                    <Button text="1" styleClass="nx-page-btn, nx-page-btn-active"/>
-                    <Button text="2" styleClass="nx-page-btn"/>
-                </HBox>
+                <Button text="📱 Notifier client" styleClass="nx-btn, nx-btn-gold"
+                        onAction="#envoyerSMS"/>
             </HBox>
         </VBox>
+
     </HBox>
 </VBox>
-

@@ -2,9 +2,19 @@ package com.nexora.bank.controllers;
 
 import com.nexora.bank.SceneRouter;
 import com.nexora.bank.AuthSession;
+import com.nexora.bank.Models.Cashback;
+import com.nexora.bank.Models.CompteBancaire;
+import com.nexora.bank.Models.Credit;
 import com.nexora.bank.Models.Notification;
+import com.nexora.bank.Models.Transaction;
 import com.nexora.bank.Models.User;
+import com.nexora.bank.Service.CashbackService;
+import com.nexora.bank.Service.CompteBancaireService;
+import com.nexora.bank.Service.CreditService;
 import com.nexora.bank.Service.NotificationService;
+import com.nexora.bank.Service.PendingCompteNotificationService;
+import com.nexora.bank.Service.TransactionService;
+import com.nexora.bank.Service.UserService;
 import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -31,18 +41,23 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.stage.Window;
 import javafx.util.Duration;
 
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.io.IOException;
 import java.net.URL;
+import java.text.Normalizer;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 public class MainController implements Initializable {
     private static final String RESPONSIVE_CSS = "/css/Responsive.css";
@@ -80,6 +95,32 @@ public class MainController implements Initializable {
     
     // Table
     @FXML private TableView<TransactionRow> recentTransactionsTable;
+
+    // Dashboard dynamic labels
+    @FXML private Label lblTotalUsersValue;
+    @FXML private Label lblActiveAccountsValue;
+    @FXML private Label lblTotalDepositsValue;
+    @FXML private Label lblTransactionsValue;
+    @FXML private Label lblQuickAccountsSub;
+    @FXML private Label lblQuickTransactionsSub;
+    @FXML private Label lblQuickCreditsSub;
+    @FXML private Label lblQuickCashbackSub;
+    @FXML private Label lblPendingCount;
+    @FXML private Label lblPendingItem1Title;
+    @FXML private Label lblPendingItem1Desc;
+    @FXML private Label lblPendingItem1Time;
+    @FXML private Label lblPendingItem2Title;
+    @FXML private Label lblPendingItem2Desc;
+    @FXML private Label lblPendingItem2Time;
+    @FXML private Label lblPendingItem3Title;
+    @FXML private Label lblPendingItem3Desc;
+    @FXML private Label lblPendingItem3Time;
+    @FXML private Label lblPendingItem4Title;
+    @FXML private Label lblPendingItem4Desc;
+    @FXML private Label lblPendingItem4Time;
+    @FXML private Label lblPendingItem5Title;
+    @FXML private Label lblPendingItem5Desc;
+    @FXML private Label lblPendingItem5Time;
     
     // Sidebar Navigation Buttons
     @FXML private Button btnDashboard;
@@ -112,6 +153,18 @@ public class MainController implements Initializable {
     // Animation Timelines
     private final Map<Node, Timeline> nodeAnimations = new HashMap<>();
     private final NotificationService notificationService = new NotificationService();
+    private final PendingCompteNotificationService pendingCompteNotificationService = new PendingCompteNotificationService();
+    private final UserService userService = new UserService();
+    private final CompteBancaireService compteBancaireService = new CompteBancaireService();
+    private final TransactionService transactionService = new TransactionService();
+    private final CreditService creditService = new CreditService();
+    private final CashbackService cashbackService = new CashbackService();
+    private List<User> dashboardUsers = List.of();
+    private List<CompteBancaire> dashboardAccounts = List.of();
+    private List<Transaction> dashboardTransactions = List.of();
+    private List<Credit> dashboardCredits = List.of();
+    private List<Cashback> dashboardCashbacks = List.of();
+    private Map<Integer, String> userNamesById = Map.of();
     private ContextMenu notificationsMenu;
 
     // =============================================
@@ -127,8 +180,7 @@ public class MainController implements Initializable {
         initializeSidebar();
         initializeSearch();
         initializeClock();
-        initializeCharts();
-        initializeTable();
+        refreshDashboardData();
         initializeResponsiveMode();
         startNotificationAutoRefresh();
         refreshNotificationBadge();
@@ -597,6 +649,216 @@ public class MainController implements Initializable {
     }
 
     // =============================================
+    // DASHBOARD DATA INITIALIZATION
+    // =============================================
+
+    private void refreshDashboardData() {
+        loadDashboardData();
+        updateDashboardSummary();
+        initializeCharts();
+        initializeTable();
+        updatePendingServicesSummary();
+    }
+
+    private void loadDashboardData() {
+        dashboardUsers = safeFetchList(userService::getAllUsers);
+        dashboardAccounts = safeFetchList(compteBancaireService::getAll);
+        dashboardTransactions = safeFetchList(transactionService::getAll);
+        dashboardCredits = safeFetchList(creditService::getAll);
+        dashboardCashbacks = safeFetchList(cashbackService::getAllCashbacks);
+
+        userNamesById = dashboardUsers.stream()
+            .collect(Collectors.toMap(User::getIdUser, this::buildUserDisplayName, (left, right) -> left));
+    }
+
+    private void updateDashboardSummary() {
+        long totalUsers = dashboardUsers.size();
+        long activeAccounts = dashboardAccounts.stream().filter(this::isActiveAccount).count();
+        double totalDeposits = dashboardAccounts.stream().mapToDouble(CompteBancaire::getSolde).sum();
+        long totalTransactions = dashboardTransactions.size();
+
+        setLabelText(lblTotalUsersValue, formatCount(totalUsers));
+        setLabelText(lblActiveAccountsValue, formatCount(activeAccounts));
+        setLabelText(lblTotalDepositsValue, formatAmount(totalDeposits));
+        setLabelText(lblTransactionsValue, formatCount(totalTransactions));
+
+        long transactionsThisMonth = dashboardTransactions.stream()
+            .filter(t -> isInCurrentMonth(t.getDateTransaction()))
+            .count();
+        long creditsPending = dashboardCredits.stream()
+            .filter(c -> isPendingLike(c.getStatut()))
+            .count();
+        double cashbackCredited = dashboardCashbacks.stream()
+            .filter(c -> isCreditedCashback(c.getStatut()))
+            .mapToDouble(Cashback::getMontantCashback)
+            .sum();
+
+        setLabelText(lblQuickAccountsSub, formatCount(activeAccounts) + " actifs");
+        setLabelText(lblQuickTransactionsSub, formatCount(transactionsThisMonth) + " ce mois");
+        setLabelText(lblQuickCreditsSub, formatCount(creditsPending) + " demandes en attente");
+        setLabelText(lblQuickCashbackSub, formatAmountWithCurrency(cashbackCredited));
+    }
+
+    private void updatePendingServicesSummary() {
+        long pendingUsers = dashboardUsers.stream().filter(user -> isPendingLike(user.getStatus())).count();
+        int pendingAccountValidation = safeFetchInt(pendingCompteNotificationService::countPending);
+        long pendingTransactions = dashboardTransactions.stream()
+            .filter(tx -> isPendingLike(tx.getStatutTransaction()))
+            .count();
+        long pendingCredits = dashboardCredits.stream()
+            .filter(credit -> isPendingLike(credit.getStatut()))
+            .count();
+        long pendingCashbacks = dashboardCashbacks.stream()
+            .filter(cashback -> isPendingCashback(cashback.getStatut()))
+            .count();
+
+        long totalPending = pendingUsers + pendingAccountValidation + pendingTransactions + pendingCredits + pendingCashbacks;
+        setLabelText(lblPendingCount, formatCount(totalPending));
+
+        updatePendingItem(lblPendingItem1Title, lblPendingItem1Desc, lblPendingItem1Time,
+            "Utilisateurs a valider",
+            formatCount(pendingUsers) + " compte(s) en attente",
+            "Service Utilisateurs");
+        updatePendingItem(lblPendingItem2Title, lblPendingItem2Desc, lblPendingItem2Time,
+            "Comptes bancaires a valider",
+            formatCount(pendingAccountValidation) + " demande(s) de compte",
+            "Service Compte Bancaire");
+        updatePendingItem(lblPendingItem3Title, lblPendingItem3Desc, lblPendingItem3Time,
+            "Transactions a traiter",
+            formatCount(pendingTransactions) + " transaction(s) en attente",
+            "Service Transactions");
+        updatePendingItem(lblPendingItem4Title, lblPendingItem4Desc, lblPendingItem4Time,
+            "Credits en attente",
+            formatCount(pendingCredits) + " dossier(s) en attente",
+            "Service Credit");
+        updatePendingItem(lblPendingItem5Title, lblPendingItem5Desc, lblPendingItem5Time,
+            "Cashback a confirmer",
+            formatCount(pendingCashbacks) + " cashback(s) a valider",
+            "Service Cashback");
+    }
+
+    private void updatePendingItem(Label title, Label desc, Label time, String titleValue, String descValue, String timeValue) {
+        setLabelText(title, titleValue);
+        setLabelText(desc, descValue);
+        setLabelText(time, timeValue);
+    }
+
+    private <T> List<T> safeFetchList(Supplier<List<T>> supplier) {
+        try {
+            List<T> result = supplier.get();
+            return result == null ? List.of() : result;
+        } catch (Exception ex) {
+            System.err.println("Dashboard data fetch failed: " + ex.getMessage());
+            return List.of();
+        }
+    }
+
+    private int safeFetchInt(Supplier<Integer> supplier) {
+        try {
+            Integer value = supplier.get();
+            return value == null ? 0 : Math.max(value, 0);
+        } catch (Exception ex) {
+            System.err.println("Dashboard pending count fetch failed: " + ex.getMessage());
+            return 0;
+        }
+    }
+
+    private void setLabelText(Label label, String value) {
+        if (label != null) {
+            label.setText(value);
+        }
+    }
+
+    private String buildUserDisplayName(User user) {
+        String firstName = user == null ? "" : safeLabel(user.getPrenom()).trim();
+        String lastName = user == null ? "" : safeLabel(user.getNom()).trim();
+        String fullName = (firstName + " " + lastName).trim();
+        return fullName.isBlank() ? "User #" + (user == null ? "?" : user.getIdUser()) : fullName;
+    }
+
+    private boolean isActiveAccount(CompteBancaire account) {
+        return normalized(account == null ? null : account.getStatutCompte()).contains("actif")
+            || normalized(account == null ? null : account.getStatutCompte()).contains("active");
+    }
+
+    private boolean isPendingLike(String status) {
+        String value = normalized(status);
+        return value.contains("pending")
+            || value.contains("attente")
+            || value.contains("en cours")
+            || value.contains("a valider")
+            || value.contains("processing");
+    }
+
+    private boolean isCreditedCashback(String status) {
+        String value = normalized(status);
+        return value.contains("credite") || value.contains("credited");
+    }
+
+    private boolean isPendingCashback(String status) {
+        String value = normalized(status);
+        return value.contains("pending") || value.contains("attente") || value.contains("valide");
+    }
+
+    private boolean isInboundTransaction(String transactionType) {
+        String value = normalized(transactionType);
+        return value.contains("credit")
+            || value.contains("depot")
+            || value.contains("versement")
+            || value.contains("inbound");
+    }
+
+    private boolean isInCurrentMonth(LocalDate date) {
+        if (date == null) {
+            return false;
+        }
+        LocalDate now = LocalDate.now();
+        return date.getYear() == now.getYear() && date.getMonthValue() == now.getMonthValue();
+    }
+
+    private String normalized(String value) {
+        if (value == null) {
+            return "";
+        }
+        String clean = Normalizer.normalize(value, Normalizer.Form.NFD).replaceAll("\\p{M}", "");
+        return clean.toLowerCase(Locale.ROOT).replace('_', ' ').trim();
+    }
+
+    private String formatCount(long value) {
+        return String.format(Locale.US, "%,d", Math.max(value, 0));
+    }
+
+    private String formatAmount(double value) {
+        return String.format(Locale.US, "%,.2f", value);
+    }
+
+    private String formatAmountWithCurrency(double value) {
+        return formatAmount(value) + " DT";
+    }
+
+    private double safeAmount(Double value) {
+        return value == null ? 0.0 : Math.max(value, 0.0);
+    }
+
+    private LocalDate safeDate(LocalDate value) {
+        return value == null ? LocalDate.MIN : value;
+    }
+
+    private String formatTableDate(LocalDate date) {
+        if (date == null) {
+            return "-";
+        }
+        return date.format(DateTimeFormatter.ofPattern("dd MMM yyyy", Locale.FRENCH));
+    }
+
+    private String resolveTableClientName(int userId) {
+        if (userId <= 0) {
+            return "N/A";
+        }
+        return userNamesById.getOrDefault(userId, "User #" + userId);
+    }
+
+    // =============================================
     // CHARTS INITIALIZATION
     // =============================================
     
@@ -608,50 +870,47 @@ public class MainController implements Initializable {
     
     private void initializeTransactionChart() {
         if (transactionChart == null) return;
-        
+
         transactionChart.setLegendVisible(false);
         transactionChart.setAnimated(true);
         transactionChart.setCreateSymbols(true);
-        
-        // Income series
+
+        String[] months = {"Jan", "Fev", "Mar", "Avr", "Mai", "Juin", "Juil", "Aout", "Sep", "Oct", "Nov", "Dec"};
+        double[] inboundByMonth = new double[12];
+        double[] outboundByMonth = new double[12];
+        int currentYear = LocalDate.now().getYear();
+
+        for (Transaction transaction : dashboardTransactions) {
+            if (transaction == null || transaction.getDateTransaction() == null) {
+                continue;
+            }
+            LocalDate txDate = transaction.getDateTransaction();
+            if (txDate.getYear() != currentYear) {
+                continue;
+            }
+
+            int monthIndex = txDate.getMonthValue() - 1;
+            double amount = safeAmount(transaction.getMontant());
+            if (isInboundTransaction(transaction.getTypeTransaction())) {
+                inboundByMonth[monthIndex] += amount;
+            } else {
+                outboundByMonth[monthIndex] += amount;
+            }
+        }
+
         XYChart.Series<String, Number> incomeSeries = new XYChart.Series<>();
-        incomeSeries.setName("Entrées");
-        incomeSeries.getData().addAll(
-            new XYChart.Data<>("Jan", 320000),
-            new XYChart.Data<>("Fév", 380000),
-            new XYChart.Data<>("Mar", 420000),
-            new XYChart.Data<>("Avr", 390000),
-            new XYChart.Data<>("Mai", 510000),
-            new XYChart.Data<>("Juin", 580000),
-            new XYChart.Data<>("Juil", 620000),
-            new XYChart.Data<>("Août", 710000),
-            new XYChart.Data<>("Sep", 680000),
-            new XYChart.Data<>("Oct", 750000),
-            new XYChart.Data<>("Nov", 820000),
-            new XYChart.Data<>("Déc", 890000)
-        );
-        
-        // Expense series
+        incomeSeries.setName("Entrees");
         XYChart.Series<String, Number> expenseSeries = new XYChart.Series<>();
         expenseSeries.setName("Sorties");
-        expenseSeries.getData().addAll(
-            new XYChart.Data<>("Jan", 250000),
-            new XYChart.Data<>("Fév", 290000),
-            new XYChart.Data<>("Mar", 310000),
-            new XYChart.Data<>("Avr", 280000),
-            new XYChart.Data<>("Mai", 350000),
-            new XYChart.Data<>("Juin", 420000),
-            new XYChart.Data<>("Juil", 480000),
-            new XYChart.Data<>("Août", 520000),
-            new XYChart.Data<>("Sep", 490000),
-            new XYChart.Data<>("Oct", 560000),
-            new XYChart.Data<>("Nov", 610000),
-            new XYChart.Data<>("Déc", 680000)
-        );
-        
+
+        for (int i = 0; i < months.length; i++) {
+            incomeSeries.getData().add(new XYChart.Data<>(months[i], inboundByMonth[i]));
+            expenseSeries.getData().add(new XYChart.Data<>(months[i], outboundByMonth[i]));
+        }
+
         transactionChart.getData().clear();
         transactionChart.getData().addAll(incomeSeries, expenseSeries);
-        
+
         // Style the chart series
         Platform.runLater(() -> {
             // Style income series (teal)
@@ -659,13 +918,13 @@ public class MainController implements Initializable {
             if (incomeLine != null) {
                 incomeLine.setStyle("-fx-stroke: #00B4A0; -fx-stroke-width: 3px;");
             }
-            
-            // Style expense series (gold)  
+
+            // Style expense series (gold)
             Node expenseLine = transactionChart.lookup(".series1");
             if (expenseLine != null) {
                 expenseLine.setStyle("-fx-stroke: #F4C430; -fx-stroke-width: 3px;");
             }
-            
+
             // Style area fills
             Set<Node> areaFills = transactionChart.lookupAll(".chart-series-area-fill");
             int index = 0;
@@ -677,7 +936,7 @@ public class MainController implements Initializable {
                 }
                 index++;
             }
-            
+
             // Add hover effects to data points
             for (XYChart.Series<String, Number> series : transactionChart.getData()) {
                 for (XYChart.Data<String, Number> data : series.getData()) {
@@ -688,12 +947,12 @@ public class MainController implements Initializable {
                         );
                         tooltip.getStyleClass().add("nx-tooltip");
                         Tooltip.install(node, tooltip);
-                        
+
                         node.setOnMouseEntered(e -> {
                             node.setScaleX(1.5);
                             node.setScaleY(1.5);
                         });
-                        
+
                         node.setOnMouseExited(e -> {
                             node.setScaleX(1.0);
                             node.setScaleY(1.0);
@@ -703,53 +962,77 @@ public class MainController implements Initializable {
             }
         });
     }
-    
+
     private void initializePieChart() {
         if (accountPieChart == null) return;
-        
+
         accountPieChart.setClockwise(true);
         accountPieChart.setLabelsVisible(false);
         accountPieChart.setStartAngle(90);
         accountPieChart.setAnimated(true);
-        
-        ObservableList<PieChart.Data> pieData = FXCollections.observableArrayList(
-            new PieChart.Data("Épargne", 45),
-            new PieChart.Data("Courant", 35),
-            new PieChart.Data("Professionnel", 20)
-        );
-        
+
+        Map<String, Long> typeCounts = new LinkedHashMap<>();
+        typeCounts.put("Epargne", 0L);
+        typeCounts.put("Courant", 0L);
+        typeCounts.put("Professionnel", 0L);
+        typeCounts.put("Autre", 0L);
+
+        for (CompteBancaire account : dashboardAccounts) {
+            String type = normalized(account == null ? null : account.getTypeCompte());
+            if (type.contains("epargne")) {
+                typeCounts.put("Epargne", typeCounts.get("Epargne") + 1);
+            } else if (type.contains("courant")) {
+                typeCounts.put("Courant", typeCounts.get("Courant") + 1);
+            } else if (type.contains("professionnel") || type.contains("business")) {
+                typeCounts.put("Professionnel", typeCounts.get("Professionnel") + 1);
+            } else {
+                typeCounts.put("Autre", typeCounts.get("Autre") + 1);
+            }
+        }
+
+        ObservableList<PieChart.Data> pieData = FXCollections.observableArrayList();
+        for (Map.Entry<String, Long> entry : typeCounts.entrySet()) {
+            if (entry.getValue() > 0) {
+                pieData.add(new PieChart.Data(entry.getKey(), entry.getValue()));
+            }
+        }
+
+        if (pieData.isEmpty()) {
+            pieData.add(new PieChart.Data("Aucun compte", 1));
+        }
+
         accountPieChart.setData(pieData);
-        
+
         // Style pie slices
         Platform.runLater(() -> {
-            String[] colors = {"#00B4A0", "#0A2540", "#F4C430"};
+            String[] colors = {"#00B4A0", "#0A2540", "#F4C430", "#8B5CF6", "#CBD5E1"};
             int i = 0;
             for (PieChart.Data data : pieData) {
                 Node slice = data.getNode();
                 if (slice != null) {
                     slice.setStyle("-fx-pie-color: " + colors[i % colors.length] + ";");
-                    
+
                     // Add hover effect
                     final int index = i;
                     slice.setOnMouseEntered(e -> {
                         slice.setScaleX(1.05);
                         slice.setScaleY(1.05);
-                        
+
                         DropShadow shadow = new DropShadow();
                         shadow.setColor(Color.web(colors[index % colors.length], 0.5));
                         shadow.setRadius(15);
                         slice.setEffect(shadow);
                     });
-                    
+
                     slice.setOnMouseExited(e -> {
                         slice.setScaleX(1.0);
                         slice.setScaleY(1.0);
                         slice.setEffect(null);
                     });
-                    
+
                     // Add tooltip
                     Tooltip tooltip = new Tooltip(
-                        data.getName() + ": " + String.format("%.0f", data.getPieValue()) + "%"
+                        data.getName() + ": " + String.format("%.0f", data.getPieValue()) + " compte(s)"
                     );
                     tooltip.getStyleClass().add("nx-tooltip");
                     Tooltip.install(slice, tooltip);
@@ -758,42 +1041,53 @@ public class MainController implements Initializable {
             }
         });
     }
-    
+
     private void initializeBarChart() {
         if (weeklyBarChart == null) return;
-        
+
         weeklyBarChart.setAnimated(true);
         weeklyBarChart.setLegendVisible(false);
         weeklyBarChart.setCategoryGap(20);
         weeklyBarChart.setBarGap(4);
-        
+
+        String[] weekDays = {"Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"};
+        int[] inboundByDay = new int[7];
+        int[] outboundByDay = new int[7];
+
+        LocalDate today = LocalDate.now();
+        LocalDate startDay = today.minusDays(6);
+
+        for (Transaction transaction : dashboardTransactions) {
+            if (transaction == null || transaction.getDateTransaction() == null) {
+                continue;
+            }
+
+            LocalDate txDate = transaction.getDateTransaction();
+            if (txDate.isBefore(startDay) || txDate.isAfter(today)) {
+                continue;
+            }
+
+            int dayIndex = txDate.getDayOfWeek().getValue() - 1;
+            if (isInboundTransaction(transaction.getTypeTransaction())) {
+                inboundByDay[dayIndex]++;
+            } else {
+                outboundByDay[dayIndex]++;
+            }
+        }
+
         XYChart.Series<String, Number> inbound = new XYChart.Series<>();
-        inbound.setName("Entrées");
-        inbound.getData().addAll(
-            new XYChart.Data<>("Lun", 145),
-            new XYChart.Data<>("Mar", 188),
-            new XYChart.Data<>("Mer", 156),
-            new XYChart.Data<>("Jeu", 210),
-            new XYChart.Data<>("Ven", 245),
-            new XYChart.Data<>("Sam", 132),
-            new XYChart.Data<>("Dim", 98)
-        );
-        
+        inbound.setName("Entrees");
         XYChart.Series<String, Number> outbound = new XYChart.Series<>();
         outbound.setName("Sorties");
-        outbound.getData().addAll(
-            new XYChart.Data<>("Lun", 95),
-            new XYChart.Data<>("Mar", 125),
-            new XYChart.Data<>("Mer", 108),
-            new XYChart.Data<>("Jeu", 152),
-            new XYChart.Data<>("Ven", 178),
-            new XYChart.Data<>("Sam", 112),
-            new XYChart.Data<>("Dim", 75)
-        );
-        
+
+        for (int i = 0; i < weekDays.length; i++) {
+            inbound.getData().add(new XYChart.Data<>(weekDays[i], inboundByDay[i]));
+            outbound.getData().add(new XYChart.Data<>(weekDays[i], outboundByDay[i]));
+        }
+
         weeklyBarChart.getData().clear();
         weeklyBarChart.getData().addAll(inbound, outbound);
-        
+
         // Style bars
         Platform.runLater(() -> {
             // Style inbound bars (teal)
@@ -802,7 +1096,7 @@ public class MainController implements Initializable {
                 bar.setStyle("-fx-bar-fill: linear-gradient(to top, #009485, #00B4A0);");
                 addBarHoverEffect(bar);
             }
-            
+
             // Style outbound bars (gold)
             Set<Node> outboundBars = weeklyBarChart.lookupAll(".series1.chart-bar");
             for (Node bar : outboundBars) {
@@ -811,7 +1105,7 @@ public class MainController implements Initializable {
             }
         });
     }
-    
+
     private void addBarHoverEffect(Node bar) {
         bar.setOnMouseEntered(e -> {
             ScaleTransition scale = new ScaleTransition(Duration.millis(150), bar);
@@ -837,63 +1131,70 @@ public class MainController implements Initializable {
     
     private void initializeTable() {
         if (recentTransactionsTable == null) return;
-        
+
         recentTransactionsTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-        
+
         // Create columns programmatically for better control
         TableColumn<TransactionRow, String> colId = new TableColumn<>("ID");
         colId.setCellValueFactory(data -> data.getValue().idProperty());
         colId.setPrefWidth(100);
         colId.setCellFactory(col -> createAnimatedCell());
-        
+
         TableColumn<TransactionRow, String> colClient = new TableColumn<>("Client");
         colClient.setCellValueFactory(data -> data.getValue().clientProperty());
         colClient.setPrefWidth(180);
         colClient.setCellFactory(col -> createClientCell());
-        
+
         TableColumn<TransactionRow, String> colType = new TableColumn<>("Type");
         colType.setCellValueFactory(data -> data.getValue().typeProperty());
         colType.setPrefWidth(120);
         colType.setCellFactory(col -> createTypeCell());
-        
+
         TableColumn<TransactionRow, String> colAmount = new TableColumn<>("Montant");
         colAmount.setCellValueFactory(data -> data.getValue().amountProperty());
         colAmount.setPrefWidth(130);
         colAmount.setCellFactory(col -> createAmountCell());
-        
+
         TableColumn<TransactionRow, String> colDate = new TableColumn<>("Date");
         colDate.setCellValueFactory(data -> data.getValue().dateProperty());
         colDate.setPrefWidth(140);
         colDate.setCellFactory(col -> createAnimatedCell());
-        
+
         TableColumn<TransactionRow, String> colStatus = new TableColumn<>("Statut");
         colStatus.setCellValueFactory(data -> data.getValue().statusProperty());
         colStatus.setPrefWidth(120);
         colStatus.setCellFactory(col -> createStatusCell());
-        
+
         TableColumn<TransactionRow, Void> colActions = new TableColumn<>("Actions");
         colActions.setPrefWidth(100);
         colActions.setCellFactory(col -> createActionsCell());
-        
+
         recentTransactionsTable.getColumns().clear();
         recentTransactionsTable.getColumns().addAll(
             colId, colClient, colType, colAmount, colDate, colStatus, colActions
         );
-        
-        // Add sample data
-        ObservableList<TransactionRow> rows = FXCollections.observableArrayList(
-            new TransactionRow("TX-3021", "Nadia Karim", "Virement", "12,500 DT", "15 Jan 2025", "Succès"),
-            new TransactionRow("TX-3020", "Hassan Mansour", "Dépôt", "4,200 DT", "15 Jan 2025", "Succès"),
-            new TransactionRow("TX-3019", "Sami Belhadj", "Retrait", "1,800 DT", "14 Jan 2025", "En attente"),
-            new TransactionRow("TX-3018", "Yasmine Amara", "Virement", "9,750 DT", "14 Jan 2025", "Succès"),
-            new TransactionRow("TX-3017", "Mehdi Rahal", "Paiement", "2,300 DT", "13 Jan 2025", "Échec"),
-            new TransactionRow("TX-3016", "Amine Trabelsi", "Dépôt", "15,000 DT", "13 Jan 2025", "Succès"),
-            new TransactionRow("TX-3015", "Leïla Sassi", "Virement", "6,450 DT", "12 Jan 2025", "En cours"),
-            new TransactionRow("TX-3014", "Rim Hammami", "Paiement", "980 DT", "12 Jan 2025", "Succès")
+
+        List<Transaction> sortedTransactions = new ArrayList<>(dashboardTransactions);
+        sortedTransactions.sort(
+            Comparator.comparing((Transaction tx) -> safeDate(tx.getDateTransaction())).reversed()
+                .thenComparing(Comparator.comparingInt(Transaction::getIdTransaction).reversed())
         );
-        
+
+        ObservableList<TransactionRow> rows = FXCollections.observableArrayList();
+        int limit = Math.min(sortedTransactions.size(), 8);
+        for (int i = 0; i < limit; i++) {
+            Transaction tx = sortedTransactions.get(i);
+            String rowId = "TX-" + tx.getIdTransaction();
+            String client = resolveTableClientName(tx.getIdUser());
+            String type = safeLabel(tx.getTypeTransaction());
+            String amount = formatAmountWithCurrency(safeAmount(tx.getMontant()));
+            String date = formatTableDate(tx.getDateTransaction());
+            String status = safeLabel(tx.getStatutTransaction());
+            rows.add(new TransactionRow(rowId, client, type, amount, date, status));
+        }
+
         recentTransactionsTable.setItems(rows);
-        
+
         // Add row hover animation
         recentTransactionsTable.setRowFactory(tv -> {
             TableRow<TransactionRow> row = new TableRow<>();
@@ -908,7 +1209,7 @@ public class MainController implements Initializable {
             return row;
         });
     }
-    
+
     private TableCell<TransactionRow, String> createAnimatedCell() {
         return new TableCell<>() {
             @Override
@@ -997,26 +1298,26 @@ public class MainController implements Initializable {
                     String iconLiteral;
                     String color;
                     
-                    switch (item.toLowerCase()) {
-                        case "virement":
-                            iconLiteral = "fas-exchange-alt";
-                            color = "#8B5CF6";
-                            break;
-                        case "dépôt":
-                            iconLiteral = "fas-arrow-down";
-                            color = "#10B981";
-                            break;
-                        case "retrait":
-                            iconLiteral = "fas-arrow-up";
-                            color = "#F59E0B";
-                            break;
-                        case "paiement":
-                            iconLiteral = "fas-credit-card";
-                            color = "#3B82F6";
-                            break;
-                        default:
-                            iconLiteral = "fas-circle";
-                            color = "#6B7280";
+                    String normalizedType = normalized(item);
+                    if (normalizedType.contains("virement") || normalizedType.contains("transfer")) {
+                        iconLiteral = "fas-exchange-alt";
+                        color = "#8B5CF6";
+                    } else if (normalizedType.contains("depot")
+                        || normalizedType.contains("credit")
+                        || normalizedType.contains("entree")) {
+                        iconLiteral = "fas-arrow-down";
+                        color = "#10B981";
+                    } else if (normalizedType.contains("retrait")
+                        || normalizedType.contains("debit")
+                        || normalizedType.contains("sortie")) {
+                        iconLiteral = "fas-arrow-up";
+                        color = "#F59E0B";
+                    } else if (normalizedType.contains("paiement") || normalizedType.contains("payment")) {
+                        iconLiteral = "fas-credit-card";
+                        color = "#3B82F6";
+                    } else {
+                        iconLiteral = "fas-circle";
+                        color = "#6B7280";
                     }
                     
                     icon.setIconLiteral(iconLiteral);
@@ -1064,17 +1365,24 @@ public class MainController implements Initializable {
                     badge.getStyleClass().add("nx-status-chip");
                     badge.setPadding(new Insets(4, 12, 4, 12));
                     
-                    String value = item.toLowerCase(Locale.FRENCH);
+                    String value = normalized(item);
                     String bgColor, textColor;
                     FontIcon icon = new FontIcon();
                     icon.setIconSize(10);
                     
-                    if (value.contains("succès") || value.contains("valid")) {
+                    if (value.contains("succes")
+                        || value.contains("valid")
+                        || value.contains("terminee")
+                        || value.contains("complete")
+                        || value.contains("approuve")) {
                         bgColor = "rgba(16, 185, 129, 0.15)";
                         textColor = "#059669";
                         icon.setIconLiteral("fas-check-circle");
                         icon.setIconColor(Color.web("#059669"));
-                    } else if (value.contains("attente") || value.contains("en cours")) {
+                    } else if (value.contains("attente")
+                        || value.contains("en cours")
+                        || value.contains("pending")
+                        || value.contains("processing")) {
                         bgColor = "rgba(245, 158, 11, 0.15)";
                         textColor = "#D97706";
                         icon.setIconLiteral("fas-clock");
@@ -1211,6 +1519,7 @@ public class MainController implements Initializable {
         fadeOut.setOnFinished(e -> {
             contentArea.getChildren().clear();
             contentArea.getChildren().add(dashboardContent);
+            refreshDashboardData();
             
             FadeTransition fadeIn = new FadeTransition(Duration.millis(300), contentArea);
             fadeIn.setFromValue(0);
@@ -1826,7 +2135,12 @@ public class MainController implements Initializable {
 
         try {
             int unreadCount = notificationService.countUnreadFor(currentUser);
-            lblAdminNotificationCount.setText(formatNotificationCount(unreadCount));
+            int pendingCount = 0;
+            if ("ROLE_ADMIN".equalsIgnoreCase(safeLabel(currentUser.getRole()))) {
+                pendingCount = pendingCompteNotificationService.countPending();
+            }
+            int totalCount = Math.max(unreadCount, 0) + Math.max(pendingCount, 0);
+            lblAdminNotificationCount.setText(formatNotificationCount(totalCount));
             lblAdminNotificationCount.setVisible(true);
             lblAdminNotificationCount.setManaged(true);
         } catch (Exception ex) {
@@ -1884,6 +2198,51 @@ public class MainController implements Initializable {
 
         Label title = new Label("Notifications");
         title.setStyle("-fx-font-size: 15px; -fx-font-weight: 700; -fx-text-fill: #0A2540;");
+        panel.getChildren().add(title);
+
+        User currentUser = AuthSession.getCurrentUser();
+        boolean isAdmin = currentUser != null && "ROLE_ADMIN".equalsIgnoreCase(safeLabel(currentUser.getRole()));
+        int pendingValidationCount = isAdmin ? pendingCompteNotificationService.countPending() : 0;
+
+        if (isAdmin) {
+            HBox pendingBox = new HBox(10);
+            pendingBox.setAlignment(Pos.CENTER_LEFT);
+            pendingBox.setStyle(
+                "-fx-background-color: #fff8e6;" +
+                "-fx-border-color: #fde68a;" +
+                "-fx-border-radius: 10;" +
+                "-fx-background-radius: 10;" +
+                "-fx-padding: 8 10;"
+            );
+
+            Label pendingLabel = new Label("Pending account validations: " + pendingValidationCount);
+            pendingLabel.setStyle("-fx-font-size: 12px; -fx-font-weight: 700; -fx-text-fill: #92400e;");
+
+            Region pendingSpacer = new Region();
+            HBox.setHgrow(pendingSpacer, Priority.ALWAYS);
+
+            Button openPanelButton = new Button("Open");
+            openPanelButton.setStyle(
+                "-fx-background-color: #f59e0b;" +
+                "-fx-text-fill: white;" +
+                "-fx-font-size: 11px;" +
+                "-fx-font-weight: 700;" +
+                "-fx-background-radius: 8;" +
+                "-fx-padding: 4 10;" +
+                "-fx-cursor: hand;"
+            );
+            openPanelButton.setDisable(pendingValidationCount <= 0);
+            openPanelButton.setOnAction(e -> {
+                if (notificationsMenu != null) {
+                    notificationsMenu.hide();
+                }
+                Window owner = anchor.getScene() == null ? null : anchor.getScene().getWindow();
+                new NotificationPanelController().show(owner, this::refreshNotificationBadge);
+            });
+
+            pendingBox.getChildren().addAll(pendingLabel, pendingSpacer, openPanelButton);
+            panel.getChildren().add(pendingBox);
+        }
 
         VBox listContainer = new VBox(8);
         if (notifications == null || notifications.isEmpty()) {
@@ -1925,7 +2284,7 @@ public class MainController implements Initializable {
         scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         scrollPane.setStyle("-fx-background-color: transparent; -fx-background: transparent;");
 
-        panel.getChildren().addAll(title, scrollPane);
+        panel.getChildren().add(scrollPane);
 
         notificationsMenu = new ContextMenu();
         CustomMenuItem customItem = new CustomMenuItem(panel, false);
@@ -2074,5 +2433,3 @@ public class MainController implements Initializable {
         public String getStatus() { return status.get(); }
     }
 }
-
-
