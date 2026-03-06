@@ -108,52 +108,80 @@
     -fx-min-height: 44px;
     -fx-max-width: 44px;
     -fx-max-height: 44px;
+    -fx-background-color: white;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 1px;
     -fx-background-radius: 12px;
     -fx-border-radius: 12px;
     -fx-cursor: hand;
     -fx-padding: 0;
     -fx-alignment: CENTER;
+    -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.05), 8, 0, 0, 2);
+}
+
+.nx-icon-btn .svg-path,
+.nx-icon-btn SVGPath {
+    -fx-fill: #64748B;
+    -fx-stroke: #64748B;
+    -fx-stroke-width: 1.6;
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
+}
+
+.nx-icon-btn:pressed {
+    -fx-scale-x: 0.96;
+    -fx-scale-y: 0.96;
 }
 
 .nx-icon-btn-ghost {
-    -fx-background-color: transparent;
+    -fx-background-color: rgba(255, 255, 255, 0.92);
     -fx-border-color: #E2E8F0;
     -fx-border-width: 1px;
 }
 
 .nx-icon-btn-ghost:hover {
-    -fx-background-color: rgba(0, 180, 160, 0.08);
+    -fx-background-color: #F0FDFA;
     -fx-border-color: #00B4A0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 180, 160, 0.18), 12, 0, 0, 2);
 }
 
+.nx-icon-btn-ghost .svg-path,
 .nx-icon-btn-ghost SVGPath {
     -fx-fill: #64748B;
-    -fx-scale-x: 0.75;
-    -fx-scale-y: 0.75;
+    -fx-stroke: #64748B;
+    -fx-scale-x: 0.72;
+    -fx-scale-y: 0.72;
 }
 
+.nx-icon-btn-ghost:hover .svg-path,
 .nx-icon-btn-ghost:hover SVGPath {
     -fx-fill: #00B4A0;
+    -fx-stroke: #00B4A0;
 }
 
 .nx-icon-btn-subtle {
-    -fx-background-color: #F1F5F9;
-    -fx-border-color: transparent;
-    -fx-border-width: 0;
+    -fx-background-color: #F8FAFC;
+    -fx-border-color: #E2E8F0;
+    -fx-border-width: 1px;
 }
 
 .nx-icon-btn-subtle:hover {
-    -fx-background-color: #E2E8F0;
+    -fx-background-color: #EEF2F7;
+    -fx-border-color: #CBD5E1;
 }
 
+.nx-icon-btn-subtle .svg-path,
 .nx-icon-btn-subtle SVGPath {
     -fx-fill: #94A3B8;
+    -fx-stroke: #94A3B8;
     -fx-scale-x: 0.7;
     -fx-scale-y: 0.7;
 }
 
+.nx-icon-btn-subtle:hover .svg-path,
 .nx-icon-btn-subtle:hover SVGPath {
     -fx-fill: #475569;
+    -fx-stroke: #475569;
 }
 
 .nx-hero-decoration {
@@ -297,7 +325,6 @@
     -fx-padding: 14px 0 0 0;
     -fx-border-color: #F1F5F9 transparent transparent transparent;
     -fx-border-width: 1px 0 0 0;
-    -fx-margin: 14px 0 0 0;
 }
 
 .nx-stat-footer-text {
@@ -538,6 +565,10 @@
 
 .nx-action-icon {
     -fx-fill: #94A3B8;
+    -fx-stroke: #94A3B8;
+    -fx-stroke-width: 1.8;
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
     -fx-scale-x: 0.7;
     -fx-scale-y: 0.7;
 }
@@ -549,6 +580,7 @@
 
 .nx-table-action-edit:hover .nx-action-icon {
     -fx-fill: #3B82F6;
+    -fx-stroke: #3B82F6;
 }
 
 .nx-table-action-approve:hover {
@@ -558,6 +590,7 @@
 
 .nx-table-action-approve:hover .nx-action-icon {
     -fx-fill: #10B981;
+    -fx-stroke: #10B981;
 }
 
 .nx-table-action-decline:hover {
@@ -567,6 +600,7 @@
 
 .nx-table-action-decline:hover .nx-action-icon {
     -fx-fill: #F59E0B;
+    -fx-stroke: #F59E0B;
 }
 
 .nx-table-action-delete:hover {
@@ -576,6 +610,7 @@
 
 .nx-table-action-delete:hover .nx-action-icon {
     -fx-fill: #EF4444;
+    -fx-stroke: #EF4444;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -831,6 +866,7 @@
     -fx-background-radius: 12px;
     -fx-border-radius: 12px;
     -fx-padding: 12px 20px;
+    -fx-min-height: 40px;
     -fx-font-size: 13px;
     -fx-font-weight: 600;
     -fx-cursor: hand;
@@ -839,16 +875,32 @@
     -fx-border-width: 0;
 }
 
+.nx-btn .svg-path,
 .nx-btn SVGPath {
-    -fx-scale-x: 0.65;
-    -fx-scale-y: 0.65;
+    -fx-fill: #475569;
+    -fx-stroke: #475569;
+    -fx-stroke-width: 1.8;
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
+    -fx-scale-x: 0.66;
+    -fx-scale-y: 0.66;
 }
 
 .nx-btn-sm {
     -fx-padding: 8px 14px;
+    -fx-min-height: 34px;
     -fx-font-size: 12px;
     -fx-background-radius: 10px;
     -fx-border-radius: 10px;
+}
+
+.nx-btn:pressed {
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+}
+
+.nx-btn:disabled {
+    -fx-opacity: 0.55;
 }
 
 .nx-btn-primary {
@@ -857,8 +909,10 @@
     -fx-effect: dropshadow(gaussian, rgba(0, 180, 160, 0.35), 12, 0, 0, 4);
 }
 
+.nx-btn-primary .svg-path,
 .nx-btn-primary SVGPath {
     -fx-fill: white;
+    -fx-stroke: white;
 }
 
 .nx-btn-primary:hover {
@@ -878,8 +932,10 @@
     -fx-effect: dropshadow(gaussian, rgba(99, 102, 241, 0.35), 12, 0, 0, 4);
 }
 
+.nx-btn-secondary .svg-path,
 .nx-btn-secondary SVGPath {
     -fx-fill: white;
+    -fx-stroke: white;
 }
 
 .nx-btn-secondary:hover {
@@ -893,8 +949,10 @@
     -fx-border-color: transparent;
 }
 
+.nx-btn-ghost .svg-path,
 .nx-btn-ghost SVGPath {
     -fx-fill: #64748B;
+    -fx-stroke: #64748B;
 }
 
 .nx-btn-ghost:hover {
@@ -902,8 +960,10 @@
     -fx-text-fill: #475569;
 }
 
+.nx-btn-ghost:hover .svg-path,
 .nx-btn-ghost:hover SVGPath {
     -fx-fill: #475569;
+    -fx-stroke: #475569;
 }
 
 .nx-btn-subtle {
@@ -912,8 +972,10 @@
     -fx-border-color: transparent;
 }
 
+.nx-btn-subtle .svg-path,
 .nx-btn-subtle SVGPath {
     -fx-fill: #64748B;
+    -fx-stroke: #64748B;
 }
 
 .nx-btn-subtle:hover {
@@ -927,8 +989,10 @@
     -fx-border-width: 1.5px;
 }
 
+.nx-btn-outline-primary .svg-path,
 .nx-btn-outline-primary SVGPath {
     -fx-fill: #00B4A0;
+    -fx-stroke: #00B4A0;
 }
 
 .nx-btn-outline-primary:hover {
@@ -941,8 +1005,10 @@
     -fx-effect: dropshadow(gaussian, rgba(16, 185, 129, 0.35), 12, 0, 0, 4);
 }
 
+.nx-btn-success .svg-path,
 .nx-btn-success SVGPath {
     -fx-fill: white;
+    -fx-stroke: white;
 }
 
 .nx-btn-success:hover {
@@ -956,8 +1022,10 @@
     -fx-border-width: 1px;
 }
 
+.nx-btn-success-soft .svg-path,
 .nx-btn-success-soft SVGPath {
     -fx-fill: #059669;
+    -fx-stroke: #059669;
 }
 
 .nx-btn-success-soft:hover {
@@ -971,8 +1039,10 @@
     -fx-border-width: 1px;
 }
 
+.nx-btn-warning-soft .svg-path,
 .nx-btn-warning-soft SVGPath {
     -fx-fill: #D97706;
+    -fx-stroke: #D97706;
 }
 
 .nx-btn-warning-soft:hover {
@@ -985,8 +1055,10 @@
     -fx-effect: dropshadow(gaussian, rgba(239, 68, 68, 0.35), 12, 0, 0, 4);
 }
 
+.nx-btn-danger .svg-path,
 .nx-btn-danger SVGPath {
     -fx-fill: white;
+    -fx-stroke: white;
 }
 
 .nx-btn-danger:hover {
@@ -1000,8 +1072,10 @@
     -fx-border-width: 1px;
 }
 
+.nx-btn-danger-soft .svg-path,
 .nx-btn-danger-soft SVGPath {
     -fx-fill: #DC2626;
+    -fx-stroke: #DC2626;
 }
 
 .nx-btn-danger-soft:hover {
@@ -1015,8 +1089,10 @@
     -fx-effect: dropshadow(gaussian, rgba(245, 158, 11, 0.35), 12, 0, 0, 4);
 }
 
+.nx-btn-gold .svg-path,
 .nx-btn-gold SVGPath {
     -fx-fill: #1F2937;
+    -fx-stroke: #1F2937;
 }
 
 .nx-btn-gold:hover {
@@ -1110,13 +1186,7 @@
    ANIMATIONS & TRANSITIONS
    ───────────────────────────────────────────────────────────────────────────── */
 
-.nx-stat-card,
-.nx-panel,
-.nx-btn,
-.nx-table-action,
-.nx-icon-btn {
-    -fx-transition: all 0.2s ease;
-}
+/* JavaFX has no CSS transition support; interactive states are defined via :hover/:pressed. */
 
 /* ─────────────────────────────────────────────────────────────────────────────
    TOOLTIP STYLES

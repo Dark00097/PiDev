@@ -336,7 +336,7 @@
                                     <VBox HBox.hgrow="ALWAYS">
                                         <Label text="Total Utilisateurs" styleClass="nx-stat-card-label"/>
                                         <HBox alignment="CENTER_LEFT" spacing="8">
-                                            <Label text="1,234" styleClass="nx-stat-card-value"/>
+                                            <Label fx:id="lblTotalUsersValue" text="1,234" styleClass="nx-stat-card-value"/>
                                             <HBox styleClass="nx-stat-trend nx-trend-up" spacing="4">
                                                 <FontIcon iconLiteral="fas-arrow-up" styleClass="nx-trend-icon"/>
                                                 <Label text="+12%" styleClass="nx-trend-value"/>
@@ -374,7 +374,7 @@
                                     <VBox HBox.hgrow="ALWAYS">
                                         <Label text="Comptes Actifs" styleClass="nx-stat-card-label"/>
                                         <HBox alignment="CENTER_LEFT" spacing="8">
-                                            <Label text="856" styleClass="nx-stat-card-value"/>
+                                            <Label fx:id="lblActiveAccountsValue" text="856" styleClass="nx-stat-card-value"/>
                                             <HBox styleClass="nx-stat-trend nx-trend-up" spacing="4">
                                                 <FontIcon iconLiteral="fas-arrow-up" styleClass="nx-trend-icon"/>
                                                 <Label text="+8%" styleClass="nx-trend-value"/>
@@ -412,7 +412,7 @@
                                     <VBox HBox.hgrow="ALWAYS">
                                         <Label text="Total Dépôts" styleClass="nx-stat-card-label"/>
                                         <HBox alignment="CENTER_LEFT" spacing="8">
-                                            <Label text="2,450,000" styleClass="nx-stat-card-value"/>
+                                            <Label fx:id="lblTotalDepositsValue" text="2,450,000" styleClass="nx-stat-card-value"/>
                                             <Label text="DT" styleClass="nx-stat-card-currency"/>
                                         </HBox>
                                     </VBox>
@@ -444,7 +444,7 @@
                                     <VBox HBox.hgrow="ALWAYS">
                                         <Label text="Transactions" styleClass="nx-stat-card-label"/>
                                         <HBox alignment="CENTER_LEFT" spacing="8">
-                                            <Label text="3,421" styleClass="nx-stat-card-value"/>
+                                            <Label fx:id="lblTransactionsValue" text="3,421" styleClass="nx-stat-card-value"/>
                                             <HBox styleClass="nx-stat-trend nx-trend-down" spacing="4">
                                                 <FontIcon iconLiteral="fas-arrow-down" styleClass="nx-trend-icon"/>
                                                 <Label text="-3%" styleClass="nx-trend-value"/>
@@ -586,7 +586,7 @@
                                             <FontIcon iconLiteral="fas-university" styleClass="nx-quick-icon"/>
                                         </StackPane>
                                         <Label text="Comptes Bancaires" styleClass="nx-quick-action-label"/>
-                                        <Label text="856 actifs" styleClass="nx-quick-action-sublabel"/>
+                                        <Label fx:id="lblQuickAccountsSub" text="856 actifs" styleClass="nx-quick-action-sublabel"/>
                                     </VBox>
                                     <VBox styleClass="nx-quick-action" alignment="CENTER" onMouseClicked="#showGestionTransaction" HBox.hgrow="ALWAYS">
                                         <StackPane styleClass="nx-quick-action-icon">
@@ -594,7 +594,7 @@
                                             <FontIcon iconLiteral="fas-exchange-alt" styleClass="nx-quick-icon"/>
                                         </StackPane>
                                         <Label text="Transactions" styleClass="nx-quick-action-label"/>
-                                        <Label text="3,421 ce mois" styleClass="nx-quick-action-sublabel"/>
+                                        <Label fx:id="lblQuickTransactionsSub" text="3,421 ce mois" styleClass="nx-quick-action-sublabel"/>
                                     </VBox>
                                     <VBox styleClass="nx-quick-action" alignment="CENTER" onMouseClicked="#showGestionCredit" HBox.hgrow="ALWAYS">
                                         <StackPane styleClass="nx-quick-action-icon">
@@ -602,7 +602,7 @@
                                             <FontIcon iconLiteral="fas-credit-card" styleClass="nx-quick-icon"/>
                                         </StackPane>
                                         <Label text="Crédits" styleClass="nx-quick-action-label"/>
-                                        <Label text="142 demandes" styleClass="nx-quick-action-sublabel"/>
+                                        <Label fx:id="lblQuickCreditsSub" text="142 demandes" styleClass="nx-quick-action-sublabel"/>
                                     </VBox>
                                     <VBox styleClass="nx-quick-action" alignment="CENTER" onMouseClicked="#showGestionCashback" HBox.hgrow="ALWAYS">
                                         <StackPane styleClass="nx-quick-action-icon">
@@ -610,7 +610,7 @@
                                             <FontIcon iconLiteral="fas-coins" styleClass="nx-quick-icon"/>
                                         </StackPane>
                                         <Label text="Cashback" styleClass="nx-quick-action-label"/>
-                                        <Label text="45,230 DT" styleClass="nx-quick-action-sublabel"/>
+                                        <Label fx:id="lblQuickCashbackSub" text="45,230 DT" styleClass="nx-quick-action-sublabel"/>
                                     </VBox>
                                     <VBox styleClass="nx-quick-action nx-quick-action-add" alignment="CENTER" onMouseClicked="#addNewEntity" HBox.hgrow="ALWAYS">
                                         <StackPane styleClass="nx-quick-action-icon nx-icon-add">
@@ -663,7 +663,7 @@
                                         <Label text="Éléments nécessitant votre attention" styleClass="nx-pending-subtitle"/>
                                     </VBox>
                                     <Region HBox.hgrow="ALWAYS"/>
-                                    <Label text="15" styleClass="nx-pending-count"/>
+                                    <Label fx:id="lblPendingCount" text="15" styleClass="nx-pending-count"/>
                                 </HBox>
                                 
                                 <ScrollPane styleClass="nx-pending-scroll nx-dashboard-pending-scroll" fitToWidth="true" VBox.vgrow="ALWAYS">
@@ -674,9 +674,9 @@
                                                 <FontIcon iconLiteral="fas-credit-card" styleClass="nx-pending-item-icon"/>
                                             </StackPane>
                                             <VBox spacing="2" HBox.hgrow="ALWAYS">
-                                                <Label text="Demande de crédit #CR-2024" styleClass="nx-pending-item-title"/>
-                                                <Label text="Mohamed Ben Ali - 50,000 DT" styleClass="nx-pending-item-desc"/>
-                                                <Label text="Il y a 5 minutes" styleClass="nx-pending-item-time"/>
+                                                <Label fx:id="lblPendingItem1Title" text="Demande de crédit #CR-2024" styleClass="nx-pending-item-title"/>
+                                                <Label fx:id="lblPendingItem1Desc" text="Mohamed Ben Ali - 50,000 DT" styleClass="nx-pending-item-desc"/>
+                                                <Label fx:id="lblPendingItem1Time" text="Il y a 5 minutes" styleClass="nx-pending-item-time"/>
                                             </VBox>
                                             <Button styleClass="nx-pending-action">
                                                 <graphic><FontIcon iconLiteral="fas-arrow-right" styleClass="nx-action-icon"/></graphic>
@@ -689,9 +689,9 @@
                                                 <FontIcon iconLiteral="fas-user-check" styleClass="nx-pending-item-icon"/>
                                             </StackPane>
                                             <VBox spacing="2" HBox.hgrow="ALWAYS">
-                                                <Label text="Vérification KYC requise" styleClass="nx-pending-item-title"/>
-                                                <Label text="3 nouveaux utilisateurs" styleClass="nx-pending-item-desc"/>
-                                                <Label text="Il y a 15 minutes" styleClass="nx-pending-item-time"/>
+                                                <Label fx:id="lblPendingItem2Title" text="Vérification KYC requise" styleClass="nx-pending-item-title"/>
+                                                <Label fx:id="lblPendingItem2Desc" text="3 nouveaux utilisateurs" styleClass="nx-pending-item-desc"/>
+                                                <Label fx:id="lblPendingItem2Time" text="Il y a 15 minutes" styleClass="nx-pending-item-time"/>
                                             </VBox>
                                             <Button styleClass="nx-pending-action">
                                                 <graphic><FontIcon iconLiteral="fas-arrow-right" styleClass="nx-action-icon"/></graphic>
@@ -704,9 +704,9 @@
                                                 <FontIcon iconLiteral="fas-exchange-alt" styleClass="nx-pending-item-icon"/>
                                             </StackPane>
                                             <VBox spacing="2" HBox.hgrow="ALWAYS">
-                                                <Label text="Virement international" styleClass="nx-pending-item-title"/>
-                                                <Label text="Approbation nécessaire" styleClass="nx-pending-item-desc"/>
-                                                <Label text="Il y a 30 minutes" styleClass="nx-pending-item-time"/>
+                                                <Label fx:id="lblPendingItem3Title" text="Virement international" styleClass="nx-pending-item-title"/>
+                                                <Label fx:id="lblPendingItem3Desc" text="Approbation nécessaire" styleClass="nx-pending-item-desc"/>
+                                                <Label fx:id="lblPendingItem3Time" text="Il y a 30 minutes" styleClass="nx-pending-item-time"/>
                                             </VBox>
                                             <Button styleClass="nx-pending-action">
                                                 <graphic><FontIcon iconLiteral="fas-arrow-right" styleClass="nx-action-icon"/></graphic>
@@ -719,9 +719,9 @@
                                                 <FontIcon iconLiteral="fas-gift" styleClass="nx-pending-item-icon"/>
                                             </StackPane>
                                             <VBox spacing="2" HBox.hgrow="ALWAYS">
-                                                <Label text="Cashback à distribuer" styleClass="nx-pending-item-title"/>
-                                                <Label text="12 récompenses prêtes" styleClass="nx-pending-item-desc"/>
-                                                <Label text="Il y a 1 heure" styleClass="nx-pending-item-time"/>
+                                                <Label fx:id="lblPendingItem4Title" text="Cashback à distribuer" styleClass="nx-pending-item-title"/>
+                                                <Label fx:id="lblPendingItem4Desc" text="12 récompenses prêtes" styleClass="nx-pending-item-desc"/>
+                                                <Label fx:id="lblPendingItem4Time" text="Il y a 1 heure" styleClass="nx-pending-item-time"/>
                                             </VBox>
                                             <Button styleClass="nx-pending-action">
                                                 <graphic><FontIcon iconLiteral="fas-arrow-right" styleClass="nx-action-icon"/></graphic>
@@ -734,9 +734,9 @@
                                                 <FontIcon iconLiteral="fas-file-alt" styleClass="nx-pending-item-icon"/>
                                             </StackPane>
                                             <VBox spacing="2" HBox.hgrow="ALWAYS">
-                                                <Label text="Rapport mensuel" styleClass="nx-pending-item-title"/>
-                                                <Label text="Prêt pour révision" styleClass="nx-pending-item-desc"/>
-                                                <Label text="Il y a 2 heures" styleClass="nx-pending-item-time"/>
+                                                <Label fx:id="lblPendingItem5Title" text="Rapport mensuel" styleClass="nx-pending-item-title"/>
+                                                <Label fx:id="lblPendingItem5Desc" text="Prêt pour révision" styleClass="nx-pending-item-desc"/>
+                                                <Label fx:id="lblPendingItem5Time" text="Il y a 2 heures" styleClass="nx-pending-item-time"/>
                                             </VBox>
                                             <Button styleClass="nx-pending-action">
                                                 <graphic><FontIcon iconLiteral="fas-arrow-right" styleClass="nx-action-icon"/></graphic>

@@ -97,8 +97,13 @@
     -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.35), 8, 0, 0, 2);
 }
 
+.nx-admin-indicator .svg-path,
 .nx-admin-indicator SVGPath {
     -fx-fill: white;
+    -fx-stroke: white;
+    -fx-stroke-width: 1.6;
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
     -fx-scale-x: 0.5;
     -fx-scale-y: 0.5;
 }
@@ -258,8 +263,13 @@
     -fx-effect: dropshadow(gaussian, rgba(16, 185, 129, 0.4), 4, 0, 0, 0);
 }
 
+.nx-avatar-badge .svg-path,
 .nx-avatar-badge SVGPath {
     -fx-fill: white;
+    -fx-stroke: white;
+    -fx-stroke-width: 2;
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
     -fx-scale-x: 0.55;
     -fx-scale-y: 0.55;
 }
@@ -294,7 +304,11 @@
 }
 
 .nx-field-icon {
-    -fx-fill: #94A3B8;
+    -fx-fill: transparent;
+    -fx-stroke: #94A3B8;
+    -fx-stroke-width: 1.8;
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
     -fx-scale-x: 0.55;
     -fx-scale-y: 0.55;
 }
@@ -340,8 +354,13 @@
     -fx-alignment: CENTER;
 }
 
+.nx-input-prefix .svg-path,
 .nx-input-prefix SVGPath {
-    -fx-fill: #94A3B8;
+    -fx-fill: transparent;
+    -fx-stroke: #94A3B8;
+    -fx-stroke-width: 1.8;
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
     -fx-scale-x: 0.6;
     -fx-scale-y: 0.6;
 }
@@ -439,7 +458,11 @@
 }
 
 .nx-check-icon {
-    -fx-fill: #10B981;
+    -fx-fill: transparent;
+    -fx-stroke: #10B981;
+    -fx-stroke-width: 2;
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
     -fx-scale-x: 0.6;
     -fx-scale-y: 0.6;
 }
@@ -455,7 +478,11 @@
 }
 
 .nx-footer-icon {
-    -fx-fill: #00B4A0;
+    -fx-fill: transparent;
+    -fx-stroke: #00B4A0;
+    -fx-stroke-width: 1.9;
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
     -fx-scale-x: 0.65;
     -fx-scale-y: 0.65;
 }
@@ -525,8 +552,13 @@
     -fx-alignment: CENTER;
 }
 
+.nx-option-icon .svg-path,
 .nx-option-icon SVGPath {
     -fx-fill: white;
+    -fx-stroke: white;
+    -fx-stroke-width: 1.8;
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
     -fx-scale-x: 0.65;
     -fx-scale-y: 0.65;
 }
@@ -590,7 +622,11 @@
 }
 
 .nx-info-icon {
-    -fx-fill: #3B82F6;
+    -fx-fill: transparent;
+    -fx-stroke: #3B82F6;
+    -fx-stroke-width: 1.9;
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
     -fx-scale-x: 0.7;
     -fx-scale-y: 0.7;
 }
@@ -630,8 +666,13 @@
     -fx-effect: dropshadow(gaussian, rgba(245, 158, 11, 0.3), 6, 0, 0, 2);
 }
 
+.nx-actions-icon-wrap .svg-path,
 .nx-actions-icon-wrap SVGPath {
     -fx-fill: white;
+    -fx-stroke: white;
+    -fx-stroke-width: 1.9;
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
     -fx-scale-x: 0.6;
     -fx-scale-y: 0.6;
 }
@@ -668,8 +709,13 @@
     -fx-alignment: CENTER;
 }
 
+.nx-quick-action-icon .svg-path,
 .nx-quick-action-icon SVGPath {
     -fx-fill: white;
+    -fx-stroke: white;
+    -fx-stroke-width: 1.8;
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
     -fx-scale-x: 0.55;
     -fx-scale-y: 0.55;
 }
@@ -704,7 +750,13 @@
     -fx-border-width: 0;
 }
 
+.nx-btn .svg-path,
 .nx-btn SVGPath {
+    -fx-fill: #475569;
+    -fx-stroke: #475569;
+    -fx-stroke-width: 1.8;
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
     -fx-scale-x: 0.6;
     -fx-scale-y: 0.6;
 }
@@ -719,8 +771,10 @@
     -fx-effect: dropshadow(gaussian, rgba(0, 180, 160, 0.35), 12, 0, 0, 4);
 }
 
+.nx-btn-primary .svg-path,
 .nx-btn-primary SVGPath {
     -fx-fill: white;
+    -fx-stroke: white;
 }
 
 .nx-btn-primary:hover {
@@ -735,8 +789,10 @@
     -fx-effect: dropshadow(gaussian, rgba(99, 102, 241, 0.35), 12, 0, 0, 4);
 }
 
+.nx-btn-secondary .svg-path,
 .nx-btn-secondary SVGPath {
     -fx-fill: white;
+    -fx-stroke: white;
 }
 
 .nx-btn-secondary:hover {
@@ -749,8 +805,10 @@
     -fx-effect: dropshadow(gaussian, rgba(20, 184, 166, 0.35), 12, 0, 0, 4);
 }
 
+.nx-btn-security .svg-path,
 .nx-btn-security SVGPath {
     -fx-fill: white;
+    -fx-stroke: white;
 }
 
 .nx-btn-security:hover {
@@ -762,8 +820,10 @@
     -fx-text-fill: #64748B;
 }
 
+.nx-btn-ghost .svg-path,
 .nx-btn-ghost SVGPath {
     -fx-fill: #64748B;
+    -fx-stroke: #64748B;
 }
 
 .nx-btn-ghost:hover {
@@ -771,8 +831,10 @@
     -fx-text-fill: #475569;
 }
 
+.nx-btn-ghost:hover .svg-path,
 .nx-btn-ghost:hover SVGPath {
     -fx-fill: #475569;
+    -fx-stroke: #475569;
 }
 
 .nx-btn-outline {
@@ -782,8 +844,10 @@
     -fx-border-width: 1.5px;
 }
 
+.nx-btn-outline .svg-path,
 .nx-btn-outline SVGPath {
     -fx-fill: #64748B;
+    -fx-stroke: #64748B;
 }
 
 .nx-btn-outline:hover {
@@ -792,21 +856,16 @@
     -fx-text-fill: #00B4A0;
 }
 
+.nx-btn-outline:hover .svg-path,
 .nx-btn-outline:hover SVGPath {
     -fx-fill: #00B4A0;
+    -fx-stroke: #00B4A0;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────────
    TRANSITIONS & ANIMATIONS
    ───────────────────────────────────────────────────────────────────────────────── */
 
-.nx-card,
-.nx-btn,
-.nx-toggle-option,
-.nx-quick-action-btn,
-.nx-input-container {
-    -fx-transition: all 0.2s ease;
-}
 
 /* ─────────────────────────────────────────────────────────────────────────────────
    TOOLTIP

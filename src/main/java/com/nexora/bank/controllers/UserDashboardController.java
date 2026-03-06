@@ -29,17 +29,20 @@ import java.util.List;
 
 public class UserDashboardController {
 
+    @FXML private Button btnDashboard;
     @FXML private Button btnCompte;
     @FXML private Button btnTransaction;
     @FXML private Button btnCredit;
     @FXML private Button btnCashback;
     @FXML private Button btnSettings;
 
-    @FXML private VBox sectionCompte;
-    @FXML private VBox sectionTransaction;
-    @FXML private VBox sectionCredit;
-    @FXML private VBox sectionCashback;
-    @FXML private VBox sectionProfile;
+    @FXML private Node sectionDashboard;
+    @FXML private Node sectionCompte;
+    @FXML private Node sectionTransaction;
+    @FXML private Node sectionCredit;
+    @FXML private Node sectionCashback;
+    @FXML private Node sectionProfile;
+    @FXML private UserDashboardOverviewSectionController sectionDashboardController;
     @FXML private UserDashboardProfileSectionController sectionProfileController;
 
     @FXML private Label lblUserName;
@@ -54,12 +57,13 @@ public class UserDashboardController {
     private static final Duration TRANSITION_DURATION = Duration.millis(300);
 
     private Button currentActiveButton;
-    private VBox currentActiveSection;
+    private Node currentActiveSection;
     private final NotificationService notificationService = new NotificationService();
     private ContextMenu notificationsMenu;
     private Timeline notificationRefreshTimeline;
 
     private final String[][] pageInfo = {
+        {"Tableau de bord client", "Vue globale de toutes vos activites", "Dashboard"},
         {"Comptes bancaires", "Gerez et suivez vos comptes", "Comptes"},
         {"Transactions", "Consultez l historique de vos transactions", "Transactions"},
         {"Services de credit", "Prets, cartes de credit et financement", "Credit"},
@@ -71,7 +75,7 @@ public class UserDashboardController {
     private void initialize() {
         setupTooltips();
         setupHoverEffects();
-        showCompte();
+        showDashboard();
         startNotificationAutoRefresh();
         refreshNotificationBadge();
 
@@ -83,6 +87,7 @@ public class UserDashboardController {
     }
 
     private void setupTooltips() {
+        createModernTooltip(btnDashboard, "Vue globale de vos services");
         createModernTooltip(btnCompte, "Voir et gerer vos comptes bancaires");
         createModernTooltip(btnTransaction, "Suivre toutes vos transactions");
         createModernTooltip(btnCredit, "Explorer les services de credit");
@@ -100,7 +105,7 @@ public class UserDashboardController {
     }
 
     private void setupHoverEffects() {
-        Button[] buttons = {btnCompte, btnTransaction, btnCredit, btnCashback};
+        Button[] buttons = {btnDashboard, btnCompte, btnTransaction, btnCredit, btnCashback};
         for (Button btn : buttons) {
             if (btn != null) {
                 btn.setOnMouseEntered(e -> {
@@ -126,23 +131,31 @@ public class UserDashboardController {
     }
 
     @FXML
+    private void showDashboard() {
+        if (sectionDashboardController != null) {
+            sectionDashboardController.refreshOverview();
+        }
+        switchSection(sectionDashboard, btnDashboard, 0);
+    }
+
+    @FXML
     private void showCompte() {
-        switchSection(sectionCompte, btnCompte, 0);
+        switchSection(sectionCompte, btnCompte, 1);
     }
 
     @FXML
     private void showTransaction() {
-        switchSection(sectionTransaction, btnTransaction, 1);
+        switchSection(sectionTransaction, btnTransaction, 2);
     }
 
     @FXML
     private void showCredit() {
-        switchSection(sectionCredit, btnCredit, 2);
+        switchSection(sectionCredit, btnCredit, 3);
     }
 
     @FXML
     private void showCashback() {
-        switchSection(sectionCashback, btnCashback, 3);
+        switchSection(sectionCashback, btnCashback, 4);
     }
 
     @FXML
@@ -151,7 +164,7 @@ public class UserDashboardController {
             sectionProfileController.refreshProfile();
         }
         refreshCurrentUserVisuals();
-        switchSection(sectionProfile, null, 4);
+        switchSection(sectionProfile, null, 5);
     }
 
     private void refreshCurrentUserVisuals() {
@@ -185,9 +198,16 @@ public class UserDashboardController {
         }
     }
 
-    private void switchSection(VBox newSection, Button newButton, int pageIndex) {
+    private void switchSection(Node newSection, Button newButton, int pageIndex) {
         if (newSection == currentActiveSection) {
+            if (newSection == sectionDashboard && sectionDashboardController != null) {
+                sectionDashboardController.refreshOverview();
+            }
             return;
+        }
+
+        if (newSection == sectionDashboard && sectionDashboardController != null) {
+            sectionDashboardController.refreshOverview();
         }
 
         // Update page header
@@ -238,6 +258,7 @@ public class UserDashboardController {
     }
 
     private void hideAllSections() {
+        setVisibleManaged(sectionDashboard, false);
         setVisibleManaged(sectionCompte, false);
         setVisibleManaged(sectionTransaction, false);
         setVisibleManaged(sectionCredit, false);
@@ -245,7 +266,7 @@ public class UserDashboardController {
         setVisibleManaged(sectionProfile, false);
     }
 
-    private void animateSectionIn(VBox section) {
+    private void animateSectionIn(Node section) {
         if (section == null) return;
 
         section.setOpacity(0);
@@ -279,7 +300,7 @@ public class UserDashboardController {
         entrance.play();
     }
 
-    private void animateSectionOut(VBox section, Runnable onFinished) {
+    private void animateSectionOut(Node section, Runnable onFinished) {
         if (section == null) {
             if (onFinished != null) onFinished.run();
             return;
@@ -296,7 +317,7 @@ public class UserDashboardController {
     }
 
     private void updateNavigation(Button activeButton) {
-        Button[] allButtons = {btnCompte, btnTransaction, btnCredit, btnCashback};
+        Button[] allButtons = {btnDashboard, btnCompte, btnTransaction, btnCredit, btnCashback};
         
         for (Button btn : allButtons) {
             if (btn != null) {
@@ -508,7 +529,7 @@ public class UserDashboardController {
         notificationsMenu.show(anchor, Side.BOTTOM, -300, 8);
     }
 
-    private void setVisibleManaged(VBox node, boolean visible) {
+    private void setVisibleManaged(Node node, boolean visible) {
         if (node != null) {
             node.setVisible(visible);
             node.setManaged(visible);

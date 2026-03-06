@@ -55,7 +55,18 @@
                         <Insets top="8" right="16" bottom="8" left="16"/>
                     </padding>
 
-                    <Button fx:id="btnCompte" styleClass="nav-button-horizontal,nav-button-active" onAction="#showCompte">
+                    <Button fx:id="btnDashboard" styleClass="nav-button-horizontal,nav-button-active" onAction="#showDashboard">
+                        <graphic>
+                            <HBox spacing="8" alignment="CENTER">
+                                <StackPane styleClass="nav-icon-box-horizontal">
+                                    <FontIcon iconLiteral="fas-chart-line" styleClass="nav-icon"/>
+                                </StackPane>
+                                <Label text="Dashboard" styleClass="nav-button-text-horizontal"/>
+                            </HBox>
+                        </graphic>
+                    </Button>
+
+                    <Button fx:id="btnCompte" styleClass="nav-button-horizontal" onAction="#showCompte">
                         <graphic>
                             <HBox spacing="8" alignment="CENTER">
                                 <StackPane styleClass="nav-icon-box-horizontal">
@@ -179,8 +190,8 @@
                 </padding>
 
                 <VBox spacing="2">
-                    <Label fx:id="lblPageTitle" text="Comptes bancaires" styleClass="page-title"/>
-                    <Label fx:id="lblPageSubtitle" text="Gerez et suivez vos comptes" styleClass="page-subtitle"/>
+                    <Label fx:id="lblPageTitle" text="Tableau de bord client" styleClass="page-title"/>
+                    <Label fx:id="lblPageSubtitle" text="Vue globale de toutes vos activites" styleClass="page-subtitle"/>
                 </VBox>
 
                 <Region HBox.hgrow="ALWAYS"/>
@@ -189,7 +200,7 @@
                 <HBox spacing="8" alignment="CENTER_RIGHT" styleClass="page-header-actions">
                     <Label text="Tableau de bord" styleClass="breadcrumb-text"/>
                     <FontIcon iconLiteral="fas-chevron-right" styleClass="breadcrumb-icon"/>
-                    <Label fx:id="lblBreadcrumb" text="Comptes" styleClass="breadcrumb-text-active"/>
+                    <Label fx:id="lblBreadcrumb" text="Dashboard" styleClass="breadcrumb-text-active"/>
                 </HBox>
             </HBox>
         </VBox>
@@ -211,6 +222,7 @@
                 </Pane>
 
                 
+                <fx:include fx:id="sectionDashboard" source="sections/UserDashboardOverviewSection.fxml"/>
                 <fx:include fx:id="sectionCompte" source="sections/UserDashboardAccountsSection.fxml"/>
                 <fx:include fx:id="sectionTransaction" source="sections/UserDashboardTransactionsSection.fxml"/>
                 <fx:include fx:id="sectionCredit" source="sections/UserDashboardCreditSection.fxml"/>

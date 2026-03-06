@@ -1,0 +1,570 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.shape.Rectangle?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.nexora.bank.controllers.UserDashboardOverviewSectionController"
+            fitToWidth="true"
+            hbarPolicy="NEVER"
+            styleClass="ov-scroll-pane"
+            stylesheets="@../../css/sections/UserDashboardOverviewSection.css"
+            visible="false"
+            managed="false">
+
+    <VBox styleClass="ov-root" spacing="0">
+
+        <!-- ══════════════════════════════════════════════════════════════════ -->
+        <!-- HEADER SECTION -->
+        <!-- ══════════════════════════════════════════════════════════════════ -->
+        <VBox styleClass="ov-header">
+            <padding>
+                <Insets top="28" right="36" bottom="28" left="36"/>
+            </padding>
+
+            <HBox alignment="CENTER_LEFT" spacing="20">
+                <!-- User Profile -->
+                <HBox styleClass="ov-user-profile" alignment="CENTER_LEFT" spacing="14">
+                    <StackPane styleClass="ov-avatar-container">
+                        <Circle styleClass="ov-avatar-bg" radius="28"/>
+                        <FontIcon iconLiteral="fas-user" styleClass="ov-avatar-icon"/>
+                        <Circle styleClass="ov-avatar-status" radius="6" translateX="20" translateY="20"/>
+                    </StackPane>
+                    <VBox spacing="3">
+                        <Label text="Bienvenue," styleClass="ov-welcome-text"/>
+                        <Label fx:id="lblWelcomeName" text="Client" styleClass="ov-user-name"/>
+                        <HBox spacing="5" alignment="CENTER_LEFT">
+                            <FontIcon iconLiteral="fas-shield-alt" styleClass="ov-verified-icon"/>
+                            <Label text="Compte verifie" styleClass="ov-verified-text"/>
+                        </HBox>
+                    </VBox>
+                </HBox>
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <!-- Refresh Info and Button -->
+                <VBox alignment="CENTER_RIGHT" spacing="2">
+                    <Label fx:id="lblLastRefresh" text="Derniere mise a jour" styleClass="ov-refresh-label"/>
+                    <Label fx:id="lblRefreshDate" text="--/--/---- --:--" styleClass="ov-refresh-date"/>
+                </VBox>
+
+                <Button fx:id="btnRefresh" styleClass="ov-refresh-btn" onAction="#handleRefresh">
+                    <graphic>
+                        <HBox spacing="8" alignment="CENTER">
+                            <FontIcon fx:id="iconRefresh" iconLiteral="fas-sync-alt" styleClass="ov-refresh-icon"/>
+                            <Label text="Actualiser" styleClass="ov-refresh-btn-text"/>
+                        </HBox>
+                    </graphic>
+                </Button>
+            </HBox>
+
+            <!-- Main Balance Card -->
+            <HBox styleClass="ov-balance-card" spacing="0">
+                <padding>
+                    <Insets top="24" right="32" bottom="24" left="32"/>
+                </padding>
+
+                <!-- Balance Info -->
+                <VBox spacing="6" HBox.hgrow="ALWAYS">
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <StackPane styleClass="ov-balance-icon-box">
+                            <FontIcon iconLiteral="fas-wallet" styleClass="ov-balance-icon"/>
+                        </StackPane>
+                        <Label text="Solde Total Disponible" styleClass="ov-balance-title"/>
+                    </HBox>
+                    <HBox spacing="10" alignment="BASELINE_LEFT">
+                        <Label fx:id="lblTotalBalanceValue" text="0.00" styleClass="ov-balance-amount"/>
+                        <Label text="DT" styleClass="ov-balance-currency"/>
+                    </HBox>
+                    <HBox spacing="6" alignment="CENTER_LEFT">
+                        <StackPane fx:id="trendIndicator" styleClass="ov-trend-badge ov-trend-up">
+                            <FontIcon fx:id="trendIcon" iconLiteral="fas-arrow-up" styleClass="ov-trend-icon"/>
+                        </StackPane>
+                        <Label fx:id="lblBalanceTrend" text="+0.00% ce mois" styleClass="ov-trend-text"/>
+                    </HBox>
+                </VBox>
+
+                <Separator orientation="VERTICAL" styleClass="ov-card-separator"/>
+
+                <!-- Active Accounts -->
+                <VBox spacing="10" alignment="CENTER">
+                    <padding>
+                        <Insets left="28" right="28"/>
+                    </padding>
+                    <Label text="Comptes Actifs" styleClass="ov-stat-label"/>
+                    <Label fx:id="lblAccountsValue" text="0" styleClass="ov-stat-value"/>
+                    <HBox spacing="6" alignment="CENTER">
+                        <Circle styleClass="ov-status-dot-active" radius="4"/>
+                        <Label fx:id="lblAccountStatus" text="Operationnels" styleClass="ov-stat-status"/>
+                    </HBox>
+                </VBox>
+
+                <Separator orientation="VERTICAL" styleClass="ov-card-separator"/>
+
+                <!-- Quick Actions -->
+                <VBox spacing="10" alignment="CENTER_LEFT">
+                    <padding>
+                        <Insets left="28"/>
+                    </padding>
+                    <Button styleClass="ov-hero-action-btn" onAction="#handleQuickTransfer">
+                        <graphic>
+                            <HBox spacing="8" alignment="CENTER_LEFT">
+                                <FontIcon iconLiteral="fas-paper-plane" styleClass="ov-hero-action-icon"/>
+                                <Label text="Virement Rapide" styleClass="ov-hero-action-text"/>
+                            </HBox>
+                        </graphic>
+                    </Button>
+                    <Button styleClass="ov-hero-action-btn-alt" onAction="#handleViewAccounts">
+                        <graphic>
+                            <HBox spacing="8" alignment="CENTER_LEFT">
+                                <FontIcon iconLiteral="fas-eye" styleClass="ov-hero-action-icon-alt"/>
+                                <Label text="Voir Comptes" styleClass="ov-hero-action-text-alt"/>
+                            </HBox>
+                        </graphic>
+                    </Button>
+                </VBox>
+            </HBox>
+        </VBox>
+
+        <!-- ══════════════════════════════════════════════════════════════════ -->
+        <!-- KPI METRICS SECTION -->
+        <!-- ══════════════════════════════════════════════════════════════════ -->
+        <VBox styleClass="ov-metrics-section" spacing="18">
+            <padding>
+                <Insets top="24" right="36" bottom="8" left="36"/>
+            </padding>
+
+            <HBox alignment="CENTER_LEFT" spacing="10">
+                <StackPane styleClass="ov-section-badge">
+                    <FontIcon iconLiteral="fas-chart-pie" styleClass="ov-section-badge-icon"/>
+                </StackPane>
+                <Label text="Apercu des Metriques" styleClass="ov-section-title"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="lblPeriodIndicator" text="Periode: Ce mois" styleClass="ov-period-badge"/>
+            </HBox>
+
+            <FlowPane styleClass="ov-kpi-flow" hgap="18" vgap="18" prefWrapLength="1200">
+
+                <!-- KPI: Transactions -->
+                <VBox styleClass="ov-kpi-card" spacing="10">
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <StackPane styleClass="ov-kpi-icon-box ov-kpi-icon-blue">
+                            <FontIcon iconLiteral="fas-exchange-alt" styleClass="ov-kpi-icon"/>
+                        </StackPane>
+                        <VBox spacing="1" HBox.hgrow="ALWAYS">
+                            <Label text="Transactions" styleClass="ov-kpi-label"/>
+                            <Label text="Ce mois" styleClass="ov-kpi-sublabel"/>
+                        </VBox>
+                    </HBox>
+                    <HBox spacing="6" alignment="BASELINE_LEFT">
+                        <Label fx:id="lblTransactionsValue" text="0" styleClass="ov-kpi-value"/>
+                        <Label text="operations" styleClass="ov-kpi-unit"/>
+                    </HBox>
+                    <ProgressBar fx:id="txProgressBar" progress="0.0" styleClass="ov-kpi-progress ov-progress-blue"/>
+                    <Label fx:id="lblTxComparison" text="vs. mois dernier: --" styleClass="ov-kpi-compare"/>
+                </VBox>
+
+                <!-- KPI: Credits -->
+                <VBox styleClass="ov-kpi-card" spacing="10">
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <StackPane styleClass="ov-kpi-icon-box ov-kpi-icon-purple">
+                            <FontIcon iconLiteral="fas-hand-holding-usd" styleClass="ov-kpi-icon"/>
+                        </StackPane>
+                        <VBox spacing="1" HBox.hgrow="ALWAYS">
+                            <Label text="Credits Actifs" styleClass="ov-kpi-label"/>
+                            <Label text="En cours" styleClass="ov-kpi-sublabel"/>
+                        </VBox>
+                    </HBox>
+                    <HBox spacing="6" alignment="BASELINE_LEFT">
+                        <Label fx:id="lblCreditsValue" text="0" styleClass="ov-kpi-value"/>
+                        <Label text="dossiers" styleClass="ov-kpi-unit"/>
+                    </HBox>
+                    <HBox spacing="5" alignment="CENTER_LEFT">
+                        <FontIcon iconLiteral="fas-coins" styleClass="ov-kpi-detail-icon"/>
+                        <Label fx:id="lblMonthlyDueValue" text="Mensualites: 0.00 DT" styleClass="ov-kpi-detail"/>
+                    </HBox>
+                </VBox>
+
+                <!-- KPI: Cashback -->
+                <VBox styleClass="ov-kpi-card" spacing="10">
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <StackPane styleClass="ov-kpi-icon-box ov-kpi-icon-green">
+                            <FontIcon iconLiteral="fas-gift" styleClass="ov-kpi-icon"/>
+                        </StackPane>
+                        <VBox spacing="1" HBox.hgrow="ALWAYS">
+                            <Label text="Cashback" styleClass="ov-kpi-label"/>
+                            <Label text="A recuperer" styleClass="ov-kpi-sublabel"/>
+                        </VBox>
+                    </HBox>
+                    <HBox spacing="4" alignment="BASELINE_LEFT">
+                        <Label fx:id="lblCashbackValue" text="0.00" styleClass="ov-kpi-value ov-value-green"/>
+                        <Label text="DT" styleClass="ov-kpi-unit"/>
+                    </HBox>
+                    <Label fx:id="lblCashbackCount" text="0 recompenses en attente" styleClass="ov-kpi-detail"/>
+                    <Button styleClass="ov-kpi-action-btn" onAction="#handleClaimCashback">
+                        <graphic>
+                            <HBox spacing="5" alignment="CENTER">
+                                <FontIcon iconLiteral="fas-download" styleClass="ov-kpi-action-icon"/>
+                                <Label text="Reclamer" styleClass="ov-kpi-action-text"/>
+                            </HBox>
+                        </graphic>
+                    </Button>
+                </VBox>
+
+                <!-- KPI: Reclamations -->
+                <VBox styleClass="ov-kpi-card" spacing="10">
+                    <HBox alignment="CENTER_LEFT" spacing="10">
+                        <StackPane styleClass="ov-kpi-icon-box ov-kpi-icon-amber">
+                            <FontIcon iconLiteral="fas-headset" styleClass="ov-kpi-icon"/>
+                        </StackPane>
+                        <VBox spacing="1" HBox.hgrow="ALWAYS">
+                            <Label text="Reclamations" styleClass="ov-kpi-label"/>
+                            <Label text="Support client" styleClass="ov-kpi-sublabel"/>
+                        </VBox>
+                    </HBox>
+                    <HBox spacing="6" alignment="BASELINE_LEFT">
+                        <Label fx:id="lblReclamationsValue" text="0" styleClass="ov-kpi-value"/>
+                        <Label text="tickets" styleClass="ov-kpi-unit"/>
+                    </HBox>
+                    <HBox spacing="12" alignment="CENTER_LEFT">
+                        <HBox spacing="4" alignment="CENTER_LEFT">
+                            <Circle styleClass="ov-dot-open" radius="4"/>
+                            <Label fx:id="lblRecOpen" text="0 ouvertes" styleClass="ov-kpi-mini"/>
+                        </HBox>
+                        <HBox spacing="4" alignment="CENTER_LEFT">
+                            <Circle styleClass="ov-dot-resolved" radius="4"/>
+                            <Label fx:id="lblRecResolved" text="0 resolues" styleClass="ov-kpi-mini"/>
+                        </HBox>
+                    </HBox>
+                </VBox>
+
+            </FlowPane>
+        </VBox>
+
+        <!-- ══════════════════════════════════════════════════════════════════ -->
+        <!-- PANELS SECTION -->
+        <!-- ══════════════════════════════════════════════════════════════════ -->
+        <HBox styleClass="ov-panels-row" spacing="20">
+            <padding>
+                <Insets top="20" right="36" bottom="24" left="36"/>
+            </padding>
+
+            <!-- Finance Panel -->
+            <VBox styleClass="ov-panel" spacing="0" HBox.hgrow="ALWAYS">
+                <HBox styleClass="ov-panel-header" alignment="CENTER_LEFT" spacing="10">
+                    <StackPane styleClass="ov-panel-icon-box ov-panel-icon-indigo">
+                        <FontIcon iconLiteral="fas-chart-bar" styleClass="ov-panel-icon"/>
+                    </StackPane>
+                    <VBox spacing="1">
+                        <Label text="Finances du Mois" styleClass="ov-panel-title"/>
+                        <Label fx:id="lblFinanceMonth" text="Janvier 2025" styleClass="ov-panel-subtitle"/>
+                    </VBox>
+                </HBox>
+
+                <VBox styleClass="ov-panel-body" spacing="14">
+                    <!-- Money In -->
+                    <VBox spacing="6">
+                        <HBox alignment="CENTER_LEFT">
+                            <HBox spacing="6" alignment="CENTER_LEFT">
+                                <Rectangle styleClass="ov-bar-income" width="4" height="16"/>
+                                <Label text="Entrees" styleClass="ov-finance-label"/>
+                            </HBox>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label fx:id="lblMoneyInValue" text="+0.00 DT" styleClass="ov-finance-value-in"/>
+                        </HBox>
+                        <ProgressBar fx:id="incomeProgress" progress="0.0" styleClass="ov-finance-progress ov-progress-income"/>
+                    </VBox>
+
+                    <!-- Money Out -->
+                    <VBox spacing="6">
+                        <HBox alignment="CENTER_LEFT">
+                            <HBox spacing="6" alignment="CENTER_LEFT">
+                                <Rectangle styleClass="ov-bar-expense" width="4" height="16"/>
+                                <Label text="Sorties" styleClass="ov-finance-label"/>
+                            </HBox>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label fx:id="lblMoneyOutValue" text="-0.00 DT" styleClass="ov-finance-value-out"/>
+                        </HBox>
+                        <ProgressBar fx:id="expenseProgress" progress="0.0" styleClass="ov-finance-progress ov-progress-expense"/>
+                    </VBox>
+
+                    <Separator styleClass="ov-panel-divider"/>
+
+                    <!-- Net Balance -->
+                    <HBox alignment="CENTER_LEFT">
+                        <VBox spacing="1">
+                            <Label text="Solde Net" styleClass="ov-net-label"/>
+                            <Label text="Entrees - Sorties" styleClass="ov-net-sublabel"/>
+                        </VBox>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <VBox alignment="CENTER_RIGHT" spacing="2">
+                            <Label fx:id="lblNetBalance" text="+0.00 DT" styleClass="ov-net-value"/>
+                            <HBox spacing="4" alignment="CENTER_RIGHT">
+                                <FontIcon fx:id="netTrendIcon" iconLiteral="fas-arrow-up" styleClass="ov-net-trend-icon"/>
+                                <Label fx:id="lblNetTrend" text="+0%" styleClass="ov-net-trend-text"/>
+                            </HBox>
+                        </VBox>
+                    </HBox>
+                </VBox>
+            </VBox>
+
+            <!-- Service Status Panel -->
+            <VBox styleClass="ov-panel" spacing="0" HBox.hgrow="ALWAYS">
+                <HBox styleClass="ov-panel-header" alignment="CENTER_LEFT" spacing="10">
+                    <StackPane styleClass="ov-panel-icon-box ov-panel-icon-cyan">
+                        <FontIcon iconLiteral="fas-server" styleClass="ov-panel-icon"/>
+                    </StackPane>
+                    <VBox spacing="1">
+                        <Label text="Etat des Services" styleClass="ov-panel-title"/>
+                        <Label text="Disponibilite systeme" styleClass="ov-panel-subtitle"/>
+                    </VBox>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <StackPane fx:id="overallStatusBadge" styleClass="ov-overall-badge ov-status-ok">
+                        <Label fx:id="lblOverallStatus" text="Operationnel" styleClass="ov-overall-text"/>
+                    </StackPane>
+                </HBox>
+
+                <VBox styleClass="ov-panel-body" spacing="10">
+                    <!-- Account Service -->
+                    <HBox styleClass="ov-service-row" alignment="CENTER_LEFT">
+                        <HBox spacing="8" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                            <StackPane styleClass="ov-service-icon-box">
+                                <FontIcon iconLiteral="fas-university" styleClass="ov-service-icon"/>
+                            </StackPane>
+                            <VBox spacing="0">
+                                <Label text="Comptes Bancaires" styleClass="ov-service-name"/>
+                                <Label fx:id="lblAccountHealth" text="--" styleClass="ov-service-detail"/>
+                            </VBox>
+                        </HBox>
+                        <Circle fx:id="accountStatusDot" styleClass="ov-service-dot ov-dot-active" radius="5"/>
+                    </HBox>
+
+                    <!-- Transaction Service -->
+                    <HBox styleClass="ov-service-row" alignment="CENTER_LEFT">
+                        <HBox spacing="8" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                            <StackPane styleClass="ov-service-icon-box">
+                                <FontIcon iconLiteral="fas-receipt" styleClass="ov-service-icon"/>
+                            </StackPane>
+                            <VBox spacing="0">
+                                <Label text="Transactions" styleClass="ov-service-name"/>
+                                <Label fx:id="lblTransactionHealth" text="--" styleClass="ov-service-detail"/>
+                            </VBox>
+                        </HBox>
+                        <Circle fx:id="transactionStatusDot" styleClass="ov-service-dot ov-dot-active" radius="5"/>
+                    </HBox>
+
+                    <!-- Credit Service -->
+                    <HBox styleClass="ov-service-row" alignment="CENTER_LEFT">
+                        <HBox spacing="8" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                            <StackPane styleClass="ov-service-icon-box">
+                                <FontIcon iconLiteral="fas-file-invoice-dollar" styleClass="ov-service-icon"/>
+                            </StackPane>
+                            <VBox spacing="0">
+                                <Label text="Credits" styleClass="ov-service-name"/>
+                                <Label fx:id="lblCreditHealth" text="--" styleClass="ov-service-detail"/>
+                            </VBox>
+                        </HBox>
+                        <Circle fx:id="creditStatusDot" styleClass="ov-service-dot ov-dot-active" radius="5"/>
+                    </HBox>
+
+                    <!-- Cashback Service -->
+                    <HBox styleClass="ov-service-row" alignment="CENTER_LEFT">
+                        <HBox spacing="8" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                            <StackPane styleClass="ov-service-icon-box">
+                                <FontIcon iconLiteral="fas-percent" styleClass="ov-service-icon"/>
+                            </StackPane>
+                            <VBox spacing="0">
+                                <Label text="Cashback" styleClass="ov-service-name"/>
+                                <Label fx:id="lblCashbackHealth" text="--" styleClass="ov-service-detail"/>
+                            </VBox>
+                        </HBox>
+                        <Circle fx:id="cashbackStatusDot" styleClass="ov-service-dot ov-dot-active" radius="5"/>
+                    </HBox>
+
+                    <!-- Support Service -->
+                    <HBox styleClass="ov-service-row" alignment="CENTER_LEFT">
+                        <HBox spacing="8" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                            <StackPane styleClass="ov-service-icon-box">
+                                <FontIcon iconLiteral="fas-comments" styleClass="ov-service-icon"/>
+                            </StackPane>
+                            <VBox spacing="0">
+                                <Label text="Support" styleClass="ov-service-name"/>
+                                <Label fx:id="lblReclamationHealth" text="--" styleClass="ov-service-detail"/>
+                            </VBox>
+                        </HBox>
+                        <Circle fx:id="reclamationStatusDot" styleClass="ov-service-dot ov-dot-active" radius="5"/>
+                    </HBox>
+                </VBox>
+            </VBox>
+
+            <!-- Recent Activities Panel -->
+            <VBox styleClass="ov-panel" spacing="0" HBox.hgrow="ALWAYS" maxWidth="400">
+                <HBox styleClass="ov-panel-header" alignment="CENTER_LEFT" spacing="10">
+                    <StackPane styleClass="ov-panel-icon-box ov-panel-icon-pink">
+                        <FontIcon iconLiteral="fas-history" styleClass="ov-panel-icon"/>
+                    </StackPane>
+                    <VBox spacing="1">
+                        <Label text="Activites Recentes" styleClass="ov-panel-title"/>
+                        <Label text="Dernieres operations" styleClass="ov-panel-subtitle"/>
+                    </VBox>
+                </HBox>
+
+                <VBox styleClass="ov-panel-body ov-activity-list" spacing="0">
+                    <!-- Recent Transaction -->
+                    <HBox styleClass="ov-activity-item" alignment="CENTER_LEFT" spacing="10">
+                        <StackPane styleClass="ov-activity-icon-box ov-activity-tx">
+                            <FontIcon iconLiteral="fas-exchange-alt" styleClass="ov-activity-icon"/>
+                        </StackPane>
+                        <VBox spacing="1" HBox.hgrow="ALWAYS">
+                            <Label text="Derniere Transaction" styleClass="ov-activity-type"/>
+                            <Label fx:id="lblRecentTransaction" text="Aucune transaction" styleClass="ov-activity-detail" wrapText="true"/>
+                        </VBox>
+                    </HBox>
+
+                    <!-- Recent Credit -->
+                    <HBox styleClass="ov-activity-item" alignment="CENTER_LEFT" spacing="10">
+                        <StackPane styleClass="ov-activity-icon-box ov-activity-credit">
+                            <FontIcon iconLiteral="fas-hand-holding-usd" styleClass="ov-activity-icon"/>
+                        </StackPane>
+                        <VBox spacing="1" HBox.hgrow="ALWAYS">
+                            <Label text="Dernier Credit" styleClass="ov-activity-type"/>
+                            <Label fx:id="lblRecentCredit" text="Aucun credit" styleClass="ov-activity-detail" wrapText="true"/>
+                        </VBox>
+                    </HBox>
+
+                    <!-- Recent Cashback -->
+                    <HBox styleClass="ov-activity-item" alignment="CENTER_LEFT" spacing="10">
+                        <StackPane styleClass="ov-activity-icon-box ov-activity-cashback">
+                            <FontIcon iconLiteral="fas-gift" styleClass="ov-activity-icon"/>
+                        </StackPane>
+                        <VBox spacing="1" HBox.hgrow="ALWAYS">
+                            <Label text="Dernier Cashback" styleClass="ov-activity-type"/>
+                            <Label fx:id="lblRecentCashback" text="Aucun cashback" styleClass="ov-activity-detail" wrapText="true"/>
+                        </VBox>
+                    </HBox>
+
+                    <!-- Recent Reclamation -->
+                    <HBox styleClass="ov-activity-item" alignment="CENTER_LEFT" spacing="10">
+                        <StackPane styleClass="ov-activity-icon-box ov-activity-rec">
+                            <FontIcon iconLiteral="fas-headset" styleClass="ov-activity-icon"/>
+                        </StackPane>
+                        <VBox spacing="1" HBox.hgrow="ALWAYS">
+                            <Label text="Derniere Reclamation" styleClass="ov-activity-type"/>
+                            <Label fx:id="lblRecentReclamation" text="Aucune reclamation" styleClass="ov-activity-detail" wrapText="true"/>
+                        </VBox>
+                    </HBox>
+                </VBox>
+            </VBox>
+        </HBox>
+
+        <!-- ══════════════════════════════════════════════════════════════════ -->
+        <!-- QUICK ACTIONS & ACCOUNT CARD -->
+        <!-- ══════════════════════════════════════════════════════════════════ -->
+        <HBox styleClass="ov-bottom-section" spacing="20">
+            <padding>
+                <Insets top="0" right="36" bottom="32" left="36"/>
+            </padding>
+
+            <!-- Quick Actions -->
+            <VBox styleClass="ov-quick-actions" spacing="14" HBox.hgrow="ALWAYS">
+                <Label text="Actions Rapides" styleClass="ov-quick-title"/>
+                <FlowPane hgap="14" vgap="14">
+                    <Button styleClass="ov-quick-btn" onAction="#handleNewTransfer">
+                        <graphic>
+                            <VBox spacing="6" alignment="CENTER">
+                                <StackPane styleClass="ov-qa-icon-box ov-qa-transfer">
+                                    <FontIcon iconLiteral="fas-paper-plane" styleClass="ov-qa-icon"/>
+                                </StackPane>
+                                <Label text="Virement" styleClass="ov-qa-label"/>
+                            </VBox>
+                        </graphic>
+                    </Button>
+                    <Button styleClass="ov-quick-btn" onAction="#handlePayBills">
+                        <graphic>
+                            <VBox spacing="6" alignment="CENTER">
+                                <StackPane styleClass="ov-qa-icon-box ov-qa-bills">
+                                    <FontIcon iconLiteral="fas-file-invoice" styleClass="ov-qa-icon"/>
+                                </StackPane>
+                                <Label text="Factures" styleClass="ov-qa-label"/>
+                            </VBox>
+                        </graphic>
+                    </Button>
+                    <Button styleClass="ov-quick-btn" onAction="#handleRequestCredit">
+                        <graphic>
+                            <VBox spacing="6" alignment="CENTER">
+                                <StackPane styleClass="ov-qa-icon-box ov-qa-credit">
+                                    <FontIcon iconLiteral="fas-hand-holding-usd" styleClass="ov-qa-icon"/>
+                                </StackPane>
+                                <Label text="Credit" styleClass="ov-qa-label"/>
+                            </VBox>
+                        </graphic>
+                    </Button>
+                    <Button styleClass="ov-quick-btn" onAction="#handleViewStatements">
+                        <graphic>
+                            <VBox spacing="6" alignment="CENTER">
+                                <StackPane styleClass="ov-qa-icon-box ov-qa-statements">
+                                    <FontIcon iconLiteral="fas-file-alt" styleClass="ov-qa-icon"/>
+                                </StackPane>
+                                <Label text="Releves" styleClass="ov-qa-label"/>
+                            </VBox>
+                        </graphic>
+                    </Button>
+                    <Button styleClass="ov-quick-btn" onAction="#handleContactSupport">
+                        <graphic>
+                            <VBox spacing="6" alignment="CENTER">
+                                <StackPane styleClass="ov-qa-icon-box ov-qa-support">
+                                    <FontIcon iconLiteral="fas-headset" styleClass="ov-qa-icon"/>
+                                </StackPane>
+                                <Label text="Support" styleClass="ov-qa-label"/>
+                            </VBox>
+                        </graphic>
+                    </Button>
+                </FlowPane>
+            </VBox>
+
+            <!-- Primary Account Card -->
+            <VBox styleClass="ov-account-card" spacing="14" minWidth="320" maxWidth="360">
+                <HBox alignment="CENTER_LEFT" spacing="8">
+                    <Rectangle styleClass="ov-chip" width="32" height="24" arcWidth="4" arcHeight="4"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <FontIcon iconLiteral="fab-cc-visa" styleClass="ov-card-brand"/>
+                </HBox>
+
+                <Label fx:id="lblTopAccountNumber" text="**** **** **** ----" styleClass="ov-card-number"/>
+
+                <HBox spacing="20">
+                    <VBox spacing="1">
+                        <Label text="TITULAIRE" styleClass="ov-card-label"/>
+                        <Label fx:id="lblCardHolder" text="NOM PRENOM" styleClass="ov-card-holder"/>
+                    </VBox>
+                    <VBox spacing="1">
+                        <Label text="SOLDE" styleClass="ov-card-label"/>
+                        <Label fx:id="lblTopAccountValue" text="0.00 DT" styleClass="ov-card-balance"/>
+                    </VBox>
+                </HBox>
+
+                <HBox alignment="CENTER_LEFT">
+                    <Label text="Compte Principal" styleClass="ov-card-type"/>
+                    <Region HBox.hgrow="ALWAYS"/>
+                    <StackPane styleClass="ov-card-status-badge">
+                        <Label text="ACTIF" styleClass="ov-card-status-text"/>
+                    </StackPane>
+                </HBox>
+            </VBox>
+        </HBox>
+
+    </VBox>
+</ScrollPane>
