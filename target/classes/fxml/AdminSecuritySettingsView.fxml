@@ -1,0 +1,459 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+
+<ScrollPane xmlns="http://javafx.com/javafx/17"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.nexora.bank.controllers.AdminSecuritySettingsController"
+            stylesheets="@../css/AdminSettings.css"
+            styleClass="nx-main-scroll" 
+            fitToWidth="true" fitToHeight="true">
+
+    <VBox styleClass="nx-settings-root" spacing="28">
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             HERO HEADER SECTION
+             ═══════════════════════════════════════════════════════════════════ -->
+        <VBox styleClass="nx-hero-header" spacing="0">
+            <HBox alignment="CENTER_LEFT" spacing="20">
+                <!-- Animated Shield Icon -->
+                <StackPane styleClass="nx-hero-icon-container">
+                    <Circle radius="36" styleClass="nx-hero-icon-outer-ring"/>
+                    <Circle radius="30" styleClass="nx-hero-icon-bg"/>
+                    <SVGPath content="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" 
+                            styleClass="nx-hero-icon-svg"/>
+                    <!-- Lock overlay -->
+                    <SVGPath content="M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zM7 11V7a5 5 0 0 1 10 0v4" 
+                            styleClass="nx-hero-icon-overlay"/>
+                </StackPane>
+                
+                <VBox spacing="8" HBox.hgrow="ALWAYS">
+                    <HBox alignment="CENTER_LEFT" spacing="14">
+                        <Label text="Paramètres de Sécurité" styleClass="nx-hero-title"/>
+                        <HBox styleClass="nx-admin-indicator" alignment="CENTER" spacing="6">
+                            <SVGPath content="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                            <Label text="ADMINISTRATEUR" styleClass="nx-admin-indicator-text"/>
+                        </HBox>
+                    </HBox>
+                    <Label text="Gérez votre profil administrateur, authentification biométrique et politiques de sécurité avancées" 
+                           styleClass="nx-hero-subtitle" wrapText="true"/>
+                </VBox>
+                
+                <!-- Status Indicator -->
+                <VBox styleClass="nx-connection-status" alignment="CENTER" spacing="4">
+                    <HBox alignment="CENTER" spacing="6">
+                        <Circle radius="5" styleClass="nx-status-dot, nx-status-online"/>
+                        <Label text="Connecté" styleClass="nx-status-text"/>
+                    </HBox>
+                    <Label fx:id="lblStatus" text="Chargement..." styleClass="nx-status-detail"/>
+                </VBox>
+            </HBox>
+            
+            <!-- Decorative Gradient Line -->
+            <HBox styleClass="nx-hero-decoration" alignment="CENTER_LEFT">
+                <Region styleClass="nx-hero-line, nx-hero-line-shield" HBox.hgrow="ALWAYS"/>
+                <Region styleClass="nx-hero-line, nx-hero-line-lock" prefWidth="100"/>
+                <Region styleClass="nx-hero-line, nx-hero-line-key" prefWidth="60"/>
+            </HBox>
+        </VBox>
+
+        <!-- ═══════════════════════════════════════════════════════════════════
+             MAIN CONTENT - TWO COLUMN LAYOUT
+             ═══════════════════════════════════════════════════════════════════ -->
+        <HBox spacing="24" VBox.vgrow="ALWAYS">
+            
+            <!-- LEFT COLUMN -->
+            <VBox spacing="24" HBox.hgrow="ALWAYS">
+                
+                <!-- ═══════════════════════════════════════════════════════════
+                     ADMIN PROFILE CARD
+                     ═══════════════════════════════════════════════════════════ -->
+                <VBox styleClass="nx-card, nx-card-profile" spacing="0">
+                    <!-- Card Header with Avatar -->
+                    <HBox styleClass="nx-card-header, nx-profile-header" alignment="CENTER_LEFT" spacing="16">
+                        <StackPane styleClass="nx-avatar-container">
+                            <Circle radius="32" styleClass="nx-avatar-bg"/>
+                            <SVGPath content="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" 
+                                    styleClass="nx-avatar-icon"/>
+                            <StackPane styleClass="nx-avatar-badge">
+                                <SVGPath content="M9 12l2 2 4-4"/>
+                            </StackPane>
+                        </StackPane>
+                        
+                        <VBox spacing="4" HBox.hgrow="ALWAYS">
+                            <Label text="Mon Profil Administrateur" styleClass="nx-card-title"/>
+                            <Label text="Informations personnelles et coordonnées" styleClass="nx-card-subtitle"/>
+                        </VBox>
+                        
+                        <!-- Role & Status Badges -->
+                        <VBox alignment="CENTER_RIGHT" spacing="6">
+                            <Label fx:id="lblRole" text="ROLE_ADMIN" styleClass="nx-role-badge"/>
+                            <Label fx:id="lblAccountStatus" text="ACTIVE" styleClass="nx-status-badge, nx-status-active"/>
+                        </VBox>
+                    </HBox>
+
+                    <!-- Profile Form -->
+                    <VBox styleClass="nx-card-body" spacing="20">
+                        <!-- Name Row -->
+                        <HBox spacing="16">
+                            <VBox styleClass="nx-field" spacing="8" HBox.hgrow="ALWAYS">
+                                <HBox alignment="CENTER_LEFT" spacing="4">
+                                    <SVGPath content="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" styleClass="nx-field-icon"/>
+                                    <Label text="Nom" styleClass="nx-field-label"/>
+                                    <Label text="*" styleClass="nx-required"/>
+                                </HBox>
+                                <HBox styleClass="nx-input-container">
+                                    <TextField fx:id="txtNom" promptText="Entrez votre nom" styleClass="nx-input"/>
+                                </HBox>
+                            </VBox>
+                            
+                            <VBox styleClass="nx-field" spacing="8" HBox.hgrow="ALWAYS">
+                                <HBox alignment="CENTER_LEFT" spacing="4">
+                                    <SVGPath content="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" styleClass="nx-field-icon"/>
+                                    <Label text="Prénom" styleClass="nx-field-label"/>
+                                    <Label text="*" styleClass="nx-required"/>
+                                </HBox>
+                                <HBox styleClass="nx-input-container">
+                                    <TextField fx:id="txtPrenom" promptText="Entrez votre prénom" styleClass="nx-input"/>
+                                </HBox>
+                            </VBox>
+                        </HBox>
+
+                        <!-- Contact Row -->
+                        <HBox spacing="16">
+                            <VBox styleClass="nx-field" spacing="8" HBox.hgrow="ALWAYS">
+                                <HBox alignment="CENTER_LEFT" spacing="4">
+                                    <SVGPath content="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z M22 6l-10 7L2 6" 
+                                            styleClass="nx-field-icon"/>
+                                    <Label text="Adresse Email" styleClass="nx-field-label"/>
+                                    <Label text="*" styleClass="nx-required"/>
+                                </HBox>
+                                <HBox styleClass="nx-input-container, nx-input-email">
+                                    <StackPane styleClass="nx-input-prefix">
+                                        <SVGPath content="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                    </StackPane>
+                                    <TextField fx:id="txtEmail" promptText="admin@nexora.bank" styleClass="nx-input"/>
+                                </HBox>
+                            </VBox>
+                            
+                            <VBox styleClass="nx-field" spacing="8" HBox.hgrow="ALWAYS">
+                                <HBox alignment="CENTER_LEFT" spacing="4">
+                                    <SVGPath content="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72" 
+                                            styleClass="nx-field-icon"/>
+                                    <Label text="Téléphone" styleClass="nx-field-label"/>
+                                    <Label text="*" styleClass="nx-required"/>
+                                </HBox>
+                                <HBox styleClass="nx-input-container, nx-input-phone">
+                                    <StackPane styleClass="nx-input-prefix">
+                                        <SVGPath content="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.63A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L9.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                                    </StackPane>
+                                    <TextField fx:id="txtTelephone" promptText="+216 XX XXX XXX" styleClass="nx-input"/>
+                                </HBox>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+
+                    <!-- Card Footer -->
+                    <HBox styleClass="nx-card-footer" alignment="CENTER_RIGHT" spacing="12">
+                        <Button text="Réinitialiser" styleClass="nx-btn, nx-btn-ghost" onAction="#handleReloadSettings">
+                            <graphic>
+                                <SVGPath content="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                            </graphic>
+                        </Button>
+                        <Button text="Enregistrer le Profil" styleClass="nx-btn, nx-btn-primary" onAction="#handleSaveProfile">
+                            <graphic>
+                                <SVGPath content="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z M17 21v-8H7v8 M7 3v5h8"/>
+                            </graphic>
+                        </Button>
+                    </HBox>
+                </VBox>
+
+                <!-- ═══════════════════════════════════════════════════════════
+                     PASSWORD CHANGE CARD
+                     ═══════════════════════════════════════════════════════════ -->
+                <VBox styleClass="nx-card, nx-card-security" spacing="0">
+                    <!-- Card Header -->
+                    <HBox styleClass="nx-card-header, nx-security-header" alignment="CENTER_LEFT" spacing="14">
+                        <StackPane styleClass="nx-security-icon-wrap">
+                            <Circle radius="24" styleClass="nx-security-icon-bg"/>
+                            <SVGPath content="M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zM7 11V7a5 5 0 0 1 10 0v4" 
+                                    styleClass="nx-security-icon"/>
+                        </StackPane>
+                        
+                        <VBox spacing="4" HBox.hgrow="ALWAYS">
+                            <Label text="Changement de Mot de Passe" styleClass="nx-card-title"/>
+                            <Label text="Vérification biométrique requise pour modifier" styleClass="nx-card-subtitle"/>
+                        </VBox>
+                        
+                        <!-- Security Level Indicator -->
+                        <HBox styleClass="nx-security-level" alignment="CENTER" spacing="8">
+                            <VBox spacing="2">
+                                <Label text="Niveau de sécurité" styleClass="nx-security-level-label"/>
+                                <HBox spacing="3">
+                                    <Region styleClass="nx-security-bar, nx-security-bar-active"/>
+                                    <Region styleClass="nx-security-bar, nx-security-bar-active"/>
+                                    <Region styleClass="nx-security-bar, nx-security-bar-active"/>
+                                    <Region styleClass="nx-security-bar"/>
+                                </HBox>
+                            </VBox>
+                            <Label text="ÉLEVÉ" styleClass="nx-security-badge"/>
+                        </HBox>
+                    </HBox>
+
+                    <!-- Password Form -->
+                    <VBox styleClass="nx-card-body" spacing="18">
+                        <!-- Current Password -->
+                        <VBox styleClass="nx-field" spacing="8">
+                            <HBox alignment="CENTER_LEFT" spacing="4">
+                                <SVGPath content="M12 17a2 2 0 1 0 0-4 2 2 0 0 0 0 4z" styleClass="nx-field-icon"/>
+                                <Label text="Mot de passe actuel" styleClass="nx-field-label"/>
+                                <Label text="*" styleClass="nx-required"/>
+                            </HBox>
+                            <HBox styleClass="nx-input-container, nx-input-password">
+                                <StackPane styleClass="nx-input-prefix">
+                                    <SVGPath content="M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2z"/>
+                                </StackPane>
+                                <PasswordField fx:id="txtCurrentPassword" promptText="Entrez votre mot de passe actuel" 
+                                              styleClass="nx-input"/>
+                            </HBox>
+                        </VBox>
+
+                        <!-- New Password Row -->
+                        <HBox spacing="16">
+                            <VBox styleClass="nx-field" spacing="8" HBox.hgrow="ALWAYS">
+                                <HBox alignment="CENTER_LEFT" spacing="4">
+                                    <SVGPath content="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4" 
+                                            styleClass="nx-field-icon"/>
+                                    <Label text="Nouveau mot de passe" styleClass="nx-field-label"/>
+                                    <Label text="*" styleClass="nx-required"/>
+                                </HBox>
+                                <HBox styleClass="nx-input-container, nx-input-password">
+                                    <StackPane styleClass="nx-input-prefix">
+                                        <SVGPath content="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+                                    </StackPane>
+                                    <PasswordField fx:id="txtNewPassword" promptText="Min. 8 caractères" 
+                                                  styleClass="nx-input"/>
+                                </HBox>
+                            </VBox>
+                            
+                            <VBox styleClass="nx-field" spacing="8" HBox.hgrow="ALWAYS">
+                                <HBox alignment="CENTER_LEFT" spacing="4">
+                                    <SVGPath content="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" 
+                                            styleClass="nx-field-icon"/>
+                                    <Label text="Confirmer le mot de passe" styleClass="nx-field-label"/>
+                                    <Label text="*" styleClass="nx-required"/>
+                                </HBox>
+                                <HBox styleClass="nx-input-container, nx-input-password">
+                                    <StackPane styleClass="nx-input-prefix">
+                                        <SVGPath content="M9 12l2 2 4-4"/>
+                                    </StackPane>
+                                    <PasswordField fx:id="txtConfirmNewPassword" promptText="Confirmez le mot de passe" 
+                                                  styleClass="nx-input"/>
+                                </HBox>
+                            </VBox>
+                        </HBox>
+
+                        <!-- Password Requirements -->
+                        <VBox styleClass="nx-password-requirements" spacing="8">
+                            <Label text="Exigences du mot de passe :" styleClass="nx-requirements-title"/>
+                            <HBox spacing="20">
+                                <HBox alignment="CENTER_LEFT" spacing="6">
+                                    <SVGPath content="M9 12l2 2 4-4" styleClass="nx-check-icon"/>
+                                    <Label text="8+ caractères" styleClass="nx-requirement-text"/>
+                                </HBox>
+                                <HBox alignment="CENTER_LEFT" spacing="6">
+                                    <SVGPath content="M9 12l2 2 4-4" styleClass="nx-check-icon"/>
+                                    <Label text="Majuscule" styleClass="nx-requirement-text"/>
+                                </HBox>
+                                <HBox alignment="CENTER_LEFT" spacing="6">
+                                    <SVGPath content="M9 12l2 2 4-4" styleClass="nx-check-icon"/>
+                                    <Label text="Minuscule" styleClass="nx-requirement-text"/>
+                                </HBox>
+                                <HBox alignment="CENTER_LEFT" spacing="6">
+                                    <SVGPath content="M9 12l2 2 4-4" styleClass="nx-check-icon"/>
+                                    <Label text="Chiffre" styleClass="nx-requirement-text"/>
+                                </HBox>
+                                <HBox alignment="CENTER_LEFT" spacing="6">
+                                    <SVGPath content="M9 12l2 2 4-4" styleClass="nx-check-icon"/>
+                                    <Label text="Symbole" styleClass="nx-requirement-text"/>
+                                </HBox>
+                            </HBox>
+                        </VBox>
+                    </VBox>
+
+                    <!-- Card Footer -->
+                    <HBox styleClass="nx-card-footer, nx-security-footer" alignment="CENTER" spacing="16">
+                        <HBox alignment="CENTER_LEFT" spacing="8" HBox.hgrow="ALWAYS">
+                            <SVGPath content="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" styleClass="nx-footer-icon"/>
+                            <Label text="La vérification biométrique sera demandée" styleClass="nx-footer-hint"/>
+                        </HBox>
+                        <Button text="Changer le Mot de Passe" styleClass="nx-btn, nx-btn-security" onAction="#handleChangePassword">
+                            <graphic>
+                                <SVGPath content="M12 1a3 3 0 0 0-3 3v4a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z M19 10v2a7 7 0 0 1-14 0v-2"/>
+                            </graphic>
+                        </Button>
+                    </HBox>
+                </VBox>
+            </VBox>
+
+            <!-- RIGHT COLUMN -->
+            <VBox spacing="24" prefWidth="420" minWidth="380">
+                
+                <!-- ═══════════════════════════════════════════════════════════
+                     BIOMETRIC SECURITY CARD
+                     ═══════════════════════════════════════════════════════════ -->
+                <VBox styleClass="nx-card, nx-card-biometric" spacing="0" VBox.vgrow="ALWAYS">
+                    <!-- Card Header -->
+                    <HBox styleClass="nx-card-header, nx-biometric-header" alignment="CENTER_LEFT" spacing="14">
+                        <StackPane styleClass="nx-biometric-icon-wrap">
+                            <Circle radius="26" styleClass="nx-biometric-icon-bg"/>
+                            <SVGPath content="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 0 0 8 11a4 4 0 1 1 8 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0 0 15.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 0 0 8 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" 
+                                    styleClass="nx-biometric-icon"/>
+                        </StackPane>
+                        
+                        <VBox spacing="4" HBox.hgrow="ALWAYS">
+                            <Label text="Authentification Biométrique" styleClass="nx-card-title"/>
+                            <Label text="Face ID / Empreinte digitale" styleClass="nx-card-subtitle"/>
+                        </VBox>
+                    </HBox>
+
+                    <!-- Biometric Options -->
+                    <VBox styleClass="nx-card-body, nx-biometric-body" spacing="16" VBox.vgrow="ALWAYS">
+                        
+                        <!-- Option 1: Admin Login -->
+                        <VBox styleClass="nx-toggle-option" spacing="12">
+                            <HBox alignment="CENTER_LEFT" spacing="12">
+                                <StackPane styleClass="nx-option-icon, nx-option-icon-login">
+                                    <SVGPath content="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4M10 17l5-5-5-5M15 12H3"/>
+                                </StackPane>
+                                <VBox spacing="2" HBox.hgrow="ALWAYS">
+                                    <Label text="Connexion Administrateur" styleClass="nx-option-title"/>
+                                    <Label text="Exiger la biométrie à chaque connexion admin" 
+                                          styleClass="nx-option-description" wrapText="true"/>
+                                </VBox>
+                                <CheckBox fx:id="chkRequireBiometricOnAdminLogin" styleClass="nx-toggle-switch"/>
+                            </HBox>
+                        </VBox>
+
+                        <!-- Option 2: Sensitive Actions -->
+                        <VBox styleClass="nx-toggle-option" spacing="12">
+                            <HBox alignment="CENTER_LEFT" spacing="12">
+                                <StackPane styleClass="nx-option-icon, nx-option-icon-sensitive">
+                                    <SVGPath content="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                </StackPane>
+                                <VBox spacing="2" HBox.hgrow="ALWAYS">
+                                    <Label text="Actions Sensibles" styleClass="nx-option-title"/>
+                                    <Label text="Vérification pour suppression, ban, modifications critiques" 
+                                          styleClass="nx-option-description" wrapText="true"/>
+                                </VBox>
+                                <CheckBox fx:id="chkRequireBiometricOnSensitiveActions" styleClass="nx-toggle-switch"/>
+                            </HBox>
+                        </VBox>
+
+                        <!-- Option 3: Email OTP -->
+                        <VBox styleClass="nx-toggle-option" spacing="12">
+                            <HBox alignment="CENTER_LEFT" spacing="12">
+                                <StackPane styleClass="nx-option-icon, nx-option-icon-otp">
+                                    <SVGPath content="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z M22 6l-10 7L2 6"/>
+                                </StackPane>
+                                <VBox spacing="2" HBox.hgrow="ALWAYS">
+                                    <Label text="Vérification OTP Email" styleClass="nx-option-title"/>
+                                    <Label text="Code à usage unique envoyé par email" 
+                                          styleClass="nx-option-description" wrapText="true"/>
+                                </VBox>
+                                <CheckBox fx:id="chkEnableEmailOtp" styleClass="nx-toggle-switch"/>
+                            </HBox>
+                        </VBox>
+
+                        <!-- Info Box -->
+                        <VBox styleClass="nx-info-box" spacing="10">
+                            <HBox alignment="CENTER_LEFT" spacing="10">
+                                <SVGPath content="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 15h-2v-2h2zm0-4h-2V7h2z" 
+                                        styleClass="nx-info-icon"/>
+                                <Label text="Comment ça fonctionne" styleClass="nx-info-title"/>
+                            </HBox>
+                            <Label text="Une fenêtre de vérification s'affiche d'abord, puis le système lance l'authentification biométrique (Face ID ou empreinte digitale) selon la configuration de votre appareil." 
+                                  styleClass="nx-info-text" wrapText="true"/>
+                        </VBox>
+                    </VBox>
+
+                    <!-- Action Buttons -->
+                    <VBox styleClass="nx-card-footer, nx-biometric-footer" spacing="12">
+                        <HBox spacing="10">
+                            <Button text="Paramètres Appareil" styleClass="nx-btn, nx-btn-outline" 
+                                   onAction="#handleOpenBiometricSettings" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                                <graphic>
+                                    <SVGPath content="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/>
+                                </graphic>
+                            </Button>
+                            <Button text="Tester" styleClass="nx-btn, nx-btn-secondary" 
+                                   onAction="#handleTestBiometricVerification" HBox.hgrow="ALWAYS" maxWidth="Infinity">
+                                <graphic>
+                                    <SVGPath content="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 0 0 8 11a4 4 0 1 1 8 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0 0 15.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 0 0 8 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"/>
+                                </graphic>
+                            </Button>
+                        </HBox>
+                        <Button text="Enregistrer les Paramètres" styleClass="nx-btn, nx-btn-primary, nx-btn-full" 
+                               onAction="#handleSaveSettings">
+                            <graphic>
+                                <SVGPath content="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z M17 21v-8H7v8 M7 3v5h8"/>
+                            </graphic>
+                        </Button>
+                    </VBox>
+                </VBox>
+
+                <!-- ═══════════════════════════════════════════════════════════
+                     QUICK ACTIONS CARD
+                     ═══════════════════════════════════════════════════════════ -->
+                <VBox styleClass="nx-card, nx-card-actions" spacing="0">
+                    <HBox styleClass="nx-card-header" alignment="CENTER_LEFT" spacing="12">
+                        <StackPane styleClass="nx-actions-icon-wrap">
+                            <SVGPath content="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                        </StackPane>
+                        <VBox spacing="2">
+                            <Label text="Actions Rapides" styleClass="nx-card-title"/>
+                            <Label text="Raccourcis de gestion" styleClass="nx-card-subtitle"/>
+                        </VBox>
+                    </HBox>
+                    
+                    <HBox styleClass="nx-card-body, nx-quick-actions-grid" spacing="12">
+                        <Button styleClass="nx-quick-action-btn" onAction="#handleReloadSettings">
+                            <graphic>
+                                <VBox alignment="CENTER" spacing="8">
+                                    <StackPane styleClass="nx-quick-action-icon">
+                                        <SVGPath content="M23 4v6h-6M1 20v-6h6M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                                    </StackPane>
+                                    <Label text="Actualiser" styleClass="nx-quick-action-label"/>
+                                </VBox>
+                            </graphic>
+                        </Button>
+                        <Button styleClass="nx-quick-action-btn" onAction="#handleTestBiometricVerification">
+                            <graphic>
+                                <VBox alignment="CENTER" spacing="8">
+                                    <StackPane styleClass="nx-quick-action-icon, nx-quick-action-icon-purple">
+                                        <SVGPath content="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 0 0 8 11a4 4 0 1 1 8 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0 0 15.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 0 0 8 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"/>
+                                    </StackPane>
+                                    <Label text="Test Bio" styleClass="nx-quick-action-label"/>
+                                </VBox>
+                            </graphic>
+                        </Button>
+                        <Button styleClass="nx-quick-action-btn" onAction="#handleOpenBiometricSettings">
+                            <graphic>
+                                <VBox alignment="CENTER" spacing="8">
+                                    <StackPane styleClass="nx-quick-action-icon, nx-quick-action-icon-orange">
+                                        <SVGPath content="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z"/>
+                                    </StackPane>
+                                    <Label text="Paramètres" styleClass="nx-quick-action-label"/>
+                                </VBox>
+                            </graphic>
+                        </Button>
+                    </HBox>
+                </VBox>
+            </VBox>
+        </HBox>
+
+    </VBox>
+</ScrollPane>

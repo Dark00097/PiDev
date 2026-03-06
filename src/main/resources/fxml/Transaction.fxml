@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.nexora.bank.controllers.TransactionController"
+      stylesheets="@../css/Transaction.css"
+      styleClass="nx-entity-container"
+      spacing="20">
+
+    <padding>
+        <Insets top="24" right="28" bottom="24" left="28"/>
+    </padding>
+
+    <HBox alignment="CENTER_LEFT" spacing="12" styleClass="nx-section-header">
+        <Label text="Gestion des Transactions" styleClass="nx-section-title"/>
+        <Region HBox.hgrow="ALWAYS"/>
+        <Label text="Banque Digitale Nexora" styleClass="nx-section-subtitle"/>
+    </HBox>
+
+    <HBox spacing="14" styleClass="nx-kpi-row">
+        <VBox HBox.hgrow="ALWAYS" styleClass="nx-kpi-card, nx-kpi-card-total">
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <StackPane styleClass="nx-kpi-icon">
+                    <Label text="T" styleClass="nx-kpi-icon-text"/>
+                </StackPane>
+                <VBox spacing="2" HBox.hgrow="ALWAYS">
+                    <Label fx:id="lblTotalTransactions" text="0" styleClass="nx-kpi-value"/>
+                    <Label text="Total Transactions" styleClass="nx-kpi-label"/>
+                </VBox>
+            </HBox>
+        </VBox>
+
+        <VBox HBox.hgrow="ALWAYS" styleClass="nx-kpi-card, nx-kpi-card-amount">
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <StackPane styleClass="nx-kpi-icon">
+                    <Label text="DT" styleClass="nx-kpi-icon-text"/>
+                </StackPane>
+                <VBox spacing="2" HBox.hgrow="ALWAYS">
+                    <Label fx:id="lblMontantTotal" text="0.00 DT" styleClass="nx-kpi-value"/>
+                    <Label text="Montant Total" styleClass="nx-kpi-label"/>
+                </VBox>
+            </HBox>
+        </VBox>
+
+        <VBox HBox.hgrow="ALWAYS" styleClass="nx-kpi-card, nx-kpi-card-today">
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <StackPane styleClass="nx-kpi-icon">
+                    <Label text="J" styleClass="nx-kpi-icon-text"/>
+                </StackPane>
+                <VBox spacing="2" HBox.hgrow="ALWAYS">
+                    <Label fx:id="lblTransactionsJour" text="0" styleClass="nx-kpi-value"/>
+                    <Label text="Transactions du Jour" styleClass="nx-kpi-label"/>
+                </VBox>
+            </HBox>
+        </VBox>
+    </HBox>
+
+    <HBox spacing="20" VBox.vgrow="ALWAYS">
+        <VBox styleClass="nx-card, nx-form-card" prefWidth="440" minWidth="420" spacing="0">
+            <HBox styleClass="nx-card-header" alignment="CENTER_LEFT" spacing="12">
+                <StackPane styleClass="nx-card-header-icon">
+                    <SVGPath content="M17 1l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4m14 4v2a4 4 0 0 1-4 4H3"/>
+                </StackPane>
+                <VBox spacing="2">
+                    <Label text="Transaction" styleClass="nx-card-title"/>
+                    <Label text="Ajouter ou modifier une transaction" styleClass="nx-card-subtitle"/>
+                </VBox>
+            </HBox>
+
+            <ScrollPane styleClass="nx-form-scroll"
+                        fitToWidth="true"
+                        hbarPolicy="NEVER"
+                        vbarPolicy="AS_NEEDED"
+                        VBox.vgrow="ALWAYS">
+                <VBox styleClass="nx-card-body, nx-form-body" spacing="14">
+                    <VBox styleClass="nx-form-group" spacing="6">
+                        <Label text="Categorie *" styleClass="nx-label"/>
+                        <ComboBox fx:id="cmbCategorie" promptText="Selectionner une categorie"
+                                  styleClass="nx-select" maxWidth="Infinity">
+                            <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                    <String fx:value="Virement"/>
+                                    <String fx:value="Paiement"/>
+                                    <String fx:value="Retrait"/>
+                                    <String fx:value="Salaire"/>
+                                    <String fx:value="Factures"/>
+                                    <String fx:value="Education"/>
+                                    <String fx:value="Loisirs"/>
+                                    <String fx:value="Autre"/>
+                                </FXCollections>
+                            </items>
+                        </ComboBox>
+                        <Label fx:id="lblCategorieError" text="" styleClass="nx-error-label"/>
+                    </VBox>
+
+                    <VBox styleClass="nx-form-group" spacing="6">
+                        <Label text="Date de transaction *" styleClass="nx-label"/>
+                        <DatePicker fx:id="dpDateTransaction"
+                                    styleClass="nx-datepicker"
+                                    maxWidth="Infinity"
+                                    promptText="Selectionner une date"/>
+                        <Label fx:id="lblDateError" text="" styleClass="nx-error-label"/>
+                    </VBox>
+
+                    <VBox styleClass="nx-form-group" spacing="6">
+                        <Label text="Montant (DT) *" styleClass="nx-label"/>
+                        <TextField fx:id="txtMontant"
+                                   promptText="Ex: 1500.00"
+                                   styleClass="nx-input"
+                                   maxWidth="Infinity"/>
+                        <Label fx:id="lblMontantError" text="" styleClass="nx-error-label"/>
+                    </VBox>
+
+                    <VBox styleClass="nx-form-group" spacing="6">
+                        <Label text="Type de transaction *" styleClass="nx-label"/>
+                        <ComboBox fx:id="cmbTypeTransaction" promptText="Selectionner un type"
+                                  styleClass="nx-select" maxWidth="Infinity">
+                            <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                    <String fx:value="Debit"/>
+                                    <String fx:value="Credit"/>
+                                </FXCollections>
+                            </items>
+                        </ComboBox>
+                        <Label fx:id="lblTypeError" text="" styleClass="nx-error-label"/>
+                    </VBox>
+
+                    <VBox styleClass="nx-form-group" spacing="6">
+                        <Label text="Statut *" styleClass="nx-label"/>
+                        <ComboBox fx:id="cmbStatutTransaction" promptText="Selectionner un statut"
+                                  styleClass="nx-select" maxWidth="Infinity">
+                            <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                    <String fx:value="En attente"/>
+                                    <String fx:value="Valide"/>
+                                    <String fx:value="Echouee"/>
+                                    <String fx:value="Terminee"/>
+                                    <String fx:value="Annulee"/>
+                                </FXCollections>
+                            </items>
+                        </ComboBox>
+                        <Label fx:id="lblStatutError" text="" styleClass="nx-error-label"/>
+                    </VBox>
+
+                    <VBox styleClass="nx-form-group" spacing="6">
+                        <Label text="Description" styleClass="nx-label"/>
+                        <TextArea fx:id="txtDescription"
+                                  promptText="Description optionnelle..."
+                                  styleClass="nx-textarea"
+                                  prefRowCount="3"/>
+                        <Label fx:id="lblDescriptionError" text="" styleClass="nx-error-label"/>
+                    </VBox>
+                </VBox>
+            </ScrollPane>
+
+            <HBox styleClass="nx-card-footer" spacing="10" alignment="CENTER_RIGHT">
+                <Button fx:id="btnAnnuler"
+                        text="Annuler"
+                        styleClass="nx-btn, nx-btn-outline"
+                        onAction="#handleAnnuler"/>
+                <Button fx:id="btnSupprimer"
+                        text="Supprimer"
+                        styleClass="nx-btn, nx-btn-danger"
+                        onAction="#handleSupprimer"/>
+                <Button fx:id="btnAjouter"
+                        text="Ajouter"
+                        styleClass="nx-btn, nx-btn-primary"
+                        onAction="#handleAjouter"/>
+            </HBox>
+        </VBox>
+
+        <VBox styleClass="nx-card" HBox.hgrow="ALWAYS" spacing="0">
+            <HBox styleClass="nx-card-header" alignment="CENTER_LEFT" spacing="12">
+                <VBox spacing="2" HBox.hgrow="ALWAYS">
+                    <Label text="Liste des Transactions" styleClass="nx-card-title"/>
+                    <Label text="Historique de toutes les transactions" styleClass="nx-card-subtitle"/>
+                </VBox>
+
+                <HBox styleClass="nx-table-search" alignment="CENTER_LEFT" spacing="6">
+                    <TextField fx:id="txtRecherche" promptText="Rechercher..."
+                               styleClass="nx-search-input-sm" prefWidth="180"/>
+                </HBox>
+
+                <MenuButton text="Trier" styleClass="nx-btn, nx-btn-outline-sm">
+                    <items>
+                        <MenuItem text="Date recente" onAction="#trierParDateDesc"/>
+                        <MenuItem text="Date ancienne" onAction="#trierParDateAsc"/>
+                        <MenuItem text="Montant asc" onAction="#trierParMontantAsc"/>
+                        <MenuItem text="Montant desc" onAction="#trierParMontantDesc"/>
+                        <MenuItem text="Statut A-Z" onAction="#trierParStatut"/>
+                    </items>
+                </MenuButton>
+
+                <Button text="PDF" styleClass="nx-btn, nx-btn-secondary-sm"
+                        onAction="#exporterPDF"/>
+            </HBox>
+
+            <VBox styleClass="nx-table-container" VBox.vgrow="ALWAYS">
+                <TableView fx:id="tableTransactions" styleClass="nx-table" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="colCategorie" text="Categorie" prefWidth="120"/>
+                        <TableColumn fx:id="colDate" text="Date" prefWidth="100"/>
+                        <TableColumn fx:id="colMontant" text="Montant" prefWidth="110"/>
+                        <TableColumn fx:id="colType" text="Type" prefWidth="90"/>
+                        <TableColumn fx:id="colStatut" text="Statut" prefWidth="110"/>
+                        <TableColumn fx:id="colDescription" text="Description" prefWidth="160"/>
+                        <TableColumn fx:id="colActions" text="Actions" prefWidth="95"/>
+                    </columns>
+                    <placeholder>
+                        <Label text="Aucune transaction trouvee"
+                               style="-fx-text-fill:#94A3B8;-fx-font-size:13px;"/>
+                    </placeholder>
+                </TableView>
+            </VBox>
+
+            <HBox styleClass="nx-card-footer, nx-table-footer"
+                  alignment="CENTER_LEFT"
+                  spacing="12">
+                <Label fx:id="lblTableInfo" text="Total : 0" styleClass="nx-table-info"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <HBox fx:id="paginationBar" spacing="6" alignment="CENTER"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="SMS" styleClass="nx-btn, nx-btn-gold" onAction="#envoyerSMS"/>
+            </HBox>
+        </VBox>
+    </HBox>
+</VBox>

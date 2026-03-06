@@ -1,0 +1,1006 @@
+/* Auto-extracted from nexora-style.css for Partenaire.fxml */
+
+/* =============================================
+   NEXORA BANK - ULTIMATE PROFESSIONAL DESIGN
+   JavaFX Premium Stylesheet v2.0
+   Featuring: Glassmorphism, Neumorphism, 
+   Advanced Animations & Sophisticated UI
+   ============================================= */
+/* =============================================
+   ROOT VARIABLES & ENHANCED COLOR SYSTEM
+   ============================================= */
+.root{
+    /* ===== PRIMARY BRAND COLORS ===== */
+    -nx-blue: #0A2540;
+    -nx-blue-rgb: 10, 37, 64;
+    -nx-blue-light: #0D2E4D;
+    -nx-blue-lighter: #134074;
+    -nx-blue-dark: #071A2C;
+    -nx-blue-darker: #040F1A;
+    -nx-blue-hover: #0E3358;
+    -nx-blue-glow: rgba(10, 37, 64, 0.4);
+    
+    /* ===== ACCENT TEAL ===== */
+    -nx-teal: #00B4A0;
+    -nx-teal-rgb: 0, 180, 160;
+    -nx-teal-light: #00D4BC;
+    -nx-teal-lighter: #5EEAD4;
+    -nx-teal-dark: #009485;
+    -nx-teal-darker: #0D7377;
+    -nx-teal-subtle: rgba(0, 180, 160, 0.08);
+    -nx-teal-medium: rgba(0, 180, 160, 0.15);
+    -nx-teal-glow: rgba(0, 180, 160, 0.5);
+    -nx-teal-shadow: rgba(0, 180, 160, 0.25);
+    
+    /* ===== ACCENT GOLD ===== */
+    -nx-gold: #F4C430;
+    -nx-gold-rgb: 244, 196, 48;
+    -nx-gold-light: #F7D35C;
+    -nx-gold-lighter: #FDE68A;
+    -nx-gold-dark: #D4A82A;
+    -nx-gold-darker: #B8860B;
+    -nx-gold-subtle: rgba(244, 196, 48, 0.12);
+    -nx-gold-medium: rgba(244, 196, 48, 0.2);
+    -nx-gold-glow: rgba(244, 196, 48, 0.5);
+    -nx-gold-shadow: rgba(244, 196, 48, 0.3);
+    
+    /* ===== NEUTRALS & SURFACES ===== */
+    -nx-white: #FFFFFF;
+    -nx-gray-25: #FCFCFD;
+    -nx-gray-50: #F9FAFB;
+    -nx-gray-100: #F3F4F6;
+    -nx-gray-150: #EBEDF0;
+    -nx-gray-200: #E5E7EB;
+    -nx-gray-300: #D1D5DB;
+    -nx-gray-400: #9CA3AF;
+    -nx-gray-500: #6B7280;
+    -nx-gray-600: #4B5563;
+    -nx-gray-700: #374151;
+    -nx-gray-800: #1F2937;
+    -nx-gray-900: #111827;
+    -nx-dark: #0F172A;
+    
+    /* ===== GLASS & SURFACE EFFECTS ===== */
+    -nx-glass-white: rgba(255, 255, 255, 0.7);
+    -nx-glass-white-strong: rgba(255, 255, 255, 0.85);
+    -nx-glass-dark: rgba(10, 37, 64, 0.8);
+    -nx-glass-teal: rgba(0, 180, 160, 0.1);
+    -nx-surface: #FFFFFF;
+    -nx-surface-elevated: #FFFFFF;
+    -nx-surface-overlay: rgba(255, 255, 255, 0.95);
+    
+    /* ===== BORDERS ===== */
+    -nx-border: rgba(10, 37, 64, 0.06);
+    -nx-border-light: rgba(10, 37, 64, 0.04);
+    -nx-border-medium: rgba(10, 37, 64, 0.1);
+    -nx-border-strong: rgba(10, 37, 64, 0.15);
+    -nx-border-teal: rgba(0, 180, 160, 0.3);
+    -nx-border-gold: rgba(244, 196, 48, 0.4);
+    
+    /* ===== SEMANTIC COLORS ===== */
+    -nx-success: #10B981;
+    -nx-success-light: #D1FAE5;
+    -nx-success-medium: rgba(16, 185, 129, 0.15);
+    -nx-success-dark: #059669;
+    -nx-success-glow: rgba(16, 185, 129, 0.4);
+    
+    -nx-error: #EF4444;
+    -nx-error-light: #FEE2E2;
+    -nx-error-medium: rgba(239, 68, 68, 0.15);
+    -nx-error-dark: #DC2626;
+    -nx-error-glow: rgba(239, 68, 68, 0.4);
+    
+    -nx-warning: #F59E0B;
+    -nx-warning-light: #FEF3C7;
+    -nx-warning-medium: rgba(245, 158, 11, 0.15);
+    -nx-warning-dark: #D97706;
+    -nx-warning-glow: rgba(245, 158, 11, 0.4);
+    
+    -nx-info: #3B82F6;
+    -nx-info-light: #DBEAFE;
+    -nx-info-medium: rgba(59, 130, 246, 0.15);
+    -nx-info-dark: #2563EB;
+    -nx-info-glow: rgba(59, 130, 246, 0.4);
+    
+    -nx-purple: #8B5CF6;
+    -nx-purple-light: #EDE9FE;
+    -nx-purple-medium: rgba(139, 92, 246, 0.15);
+    -nx-purple-dark: #7C3AED;
+    -nx-purple-glow: rgba(139, 92, 246, 0.4);
+
+    /* ===== PREMIUM GRADIENTS ===== */
+    -nx-gradient-hero: linear-gradient(to bottom right, #0A2540 0%, #0D3555 40%, #134074 70%, #071A2C 100%);
+    -nx-gradient-sidebar: linear-gradient(to bottom, #0A2540 0%, #071A2C 100%);
+    -nx-gradient-sidebar-glow: linear-gradient(to right, rgba(0, 180, 160, 0.15) 0%, transparent 100%);
+    -nx-gradient-card: linear-gradient(from 0% 0% to 100% 100%, #FFFFFF 0%, #F8FAFC 100%);
+    -nx-gradient-card-hover: linear-gradient(from 0% 0% to 100% 100%, #FFFFFF 0%, #F0F9FF 100%);
+    -nx-gradient-teal: linear-gradient(from 0% 0% to 100% 100%, #00D4BC 0%, #00B4A0 50%, #009485 100%);
+    -nx-gradient-teal-soft: linear-gradient(from 0% 0% to 100% 100%, rgba(0, 212, 188, 0.15) 0%, rgba(0, 180, 160, 0.05) 100%);
+    -nx-gradient-gold: linear-gradient(from 0% 0% to 100% 100%, #F7D35C 0%, #F4C430 50%, #D4A82A 100%);
+    -nx-gradient-gold-soft: linear-gradient(from 0% 0% to 100% 100%, rgba(247, 211, 92, 0.2) 0%, rgba(244, 196, 48, 0.08) 100%);
+    -nx-gradient-blue: linear-gradient(from 0% 0% to 100% 100%, #134074 0%, #0A2540 100%);
+    -nx-gradient-mesh: linear-gradient(to bottom right, rgba(0, 180, 160, 0.08) 0%, rgba(244, 196, 48, 0.06) 50%, rgba(10, 37, 64, 0.04) 100%);
+    -nx-gradient-shine: linear-gradient(from 0% 0% to 100% 0%, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%);
+    
+    /* ===== SHADOWS ===== */
+    -nx-shadow-xs: dropshadow(gaussian, rgba(10, 37, 64, 0.04), 4, 0, 0, 1);
+    -nx-shadow-sm: dropshadow(gaussian, rgba(10, 37, 64, 0.06), 8, 0, 0, 2);
+    -nx-shadow-md: dropshadow(gaussian, rgba(10, 37, 64, 0.08), 16, 0, 0, 4);
+    -nx-shadow-lg: dropshadow(gaussian, rgba(10, 37, 64, 0.1), 24, 0, 0, 8);
+    -nx-shadow-xl: dropshadow(gaussian, rgba(10, 37, 64, 0.12), 32, 0, 0, 12);
+    -nx-shadow-2xl: dropshadow(gaussian, rgba(10, 37, 64, 0.16), 48, 0, 0, 16);
+    -nx-shadow-teal: dropshadow(gaussian, rgba(0, 180, 160, 0.25), 20, 0, 0, 6);
+    -nx-shadow-teal-lg: dropshadow(gaussian, rgba(0, 180, 160, 0.35), 28, 0, 0, 10);
+    -nx-shadow-gold: dropshadow(gaussian, rgba(244, 196, 48, 0.3), 20, 0, 0, 6);
+    -nx-shadow-inner: innershadow(gaussian, rgba(10, 37, 64, 0.06), 8, 0, 0, 2);
+    
+    /* ===== TYPOGRAPHY ===== */
+    -fx-font-family: 'Segoe UI Variable', 'Segoe UI', 'SF Pro Display', 'Helvetica Neue', -apple-system, sans-serif;
+    -fx-font-size: 14px;
+    -fx-background-color: -nx-gray-100;
+    -fx-accent: -nx-teal;
+    
+    /* ===== SPACING SYSTEM ===== */
+    -nx-space-xs: 4px;
+    -nx-space-sm: 8px;
+    -nx-space-md: 12px;
+    -nx-space-lg: 16px;
+    -nx-space-xl: 24px;
+    -nx-space-2xl: 32px;
+    -nx-space-3xl: 48px;
+    
+    /* ===== BORDER RADIUS ===== */
+    -nx-radius-sm: 6px;
+    -nx-radius-md: 10px;
+    -nx-radius-lg: 14px;
+    -nx-radius-xl: 18px;
+    -nx-radius-2xl: 24px;
+    -nx-radius-full: 9999px;
+    
+    /* ===== TRANSITIONS (for reference in Java) ===== */
+    -nx-transition-fast: 150ms;
+    -nx-transition-normal: 250ms;
+    -nx-transition-slow: 400ms;
+}
+
+/* =============================================
+   STAT CARDS - PREMIUM NEUMORPHIC DESIGN
+   ============================================= */
+.nx-stats-row{
+    -fx-alignment: CENTER_LEFT;
+    -fx-spacing: 24px;
+}
+
+.nx-stat-card{
+    -fx-background-color: -nx-gradient-card;
+    -fx-background-radius: 20px;
+    -fx-border-color: rgba(255, 255, 255, 0.8);
+    -fx-border-radius: 20px;
+    -fx-border-width: 1px;
+    -fx-padding: 24px;
+    -fx-effect: dropshadow(gaussian, rgba(10, 37, 64, 0.08), 20, 0, 0, 6),
+                dropshadow(gaussian, rgba(255, 255, 255, 0.8), 0, 0, -1, -1);
+}
+
+.nx-stat-card:hover{
+    -fx-background-color: -nx-gradient-card-hover;
+    -fx-effect: dropshadow(gaussian, rgba(10, 37, 64, 0.12), 28, 0, 0, 10),
+                dropshadow(gaussian, rgba(255, 255, 255, 0.9), 0, 0, -2, -2);
+    -fx-translate-y: -3;
+}
+
+/* Stat Card Icons */
+.nx-stat-card-icon{
+    -fx-min-width: 56px;
+    -fx-min-height: 56px;
+    -fx-max-width: 56px;
+    -fx-max-height: 56px;
+    -fx-background-radius: 16px;
+    -fx-alignment: CENTER;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.06), 6, 0, 0, 2);
+}
+
+.nx-stat-card-icon .nx-stat-icon{
+    -fx-icon-size: 18px;
+}
+
+.nx-stat-card-icon-teal{
+    -fx-background-color: -nx-gradient-teal-soft;
+    -fx-border-color: rgba(0, 180, 160, 0.2);
+    -fx-border-radius: 16px;
+    -fx-border-width: 1px;
+}
+
+.nx-stat-card-icon-teal SVGPath{
+    -fx-fill: -nx-teal;
+    -fx-scale-x: 0.95;
+    -fx-scale-y: 0.95;
+}
+
+.nx-stat-card-icon-teal .nx-stat-icon{
+    -fx-icon-color: -nx-teal;
+}
+
+.nx-stat-card:hover .nx-stat-card-icon-teal{
+    -fx-background-color: -nx-teal-medium;
+    -fx-effect: dropshadow(gaussian, rgba(0, 180, 160, 0.3), 10, 0, 0, 3);
+}
+
+.nx-stat-card-icon-gold{
+    -fx-background-color: -nx-gradient-gold-soft;
+    -fx-border-color: rgba(244, 196, 48, 0.25);
+    -fx-border-radius: 16px;
+    -fx-border-width: 1px;
+}
+
+.nx-stat-card-icon-gold SVGPath{
+    -fx-fill: -nx-gold-dark;
+    -fx-scale-x: 0.95;
+    -fx-scale-y: 0.95;
+}
+
+.nx-stat-card-icon-gold .nx-stat-icon{
+    -fx-icon-color: -nx-gold-dark;
+}
+
+.nx-stat-card:hover .nx-stat-card-icon-gold{
+    -fx-background-color: -nx-gold-medium;
+    -fx-effect: dropshadow(gaussian, rgba(244, 196, 48, 0.3), 10, 0, 0, 3);
+}
+
+.nx-stat-card-icon-purple{
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, rgba(139, 92, 246, 0.1) 0%, rgba(124, 58, 237, 0.15) 100%);
+    -fx-border-color: rgba(139, 92, 246, 0.2);
+    -fx-border-radius: 16px;
+    -fx-border-width: 1px;
+}
+
+.nx-stat-card-icon-purple SVGPath{
+    -fx-fill: -nx-purple;
+    -fx-scale-x: 0.95;
+    -fx-scale-y: 0.95;
+}
+
+.nx-stat-card-icon-purple .nx-stat-icon{
+    -fx-icon-color: -nx-purple;
+}
+
+/* Stat Values & Labels */
+.nx-stat-card-value{
+    -fx-text-fill: -nx-blue;
+    -fx-font-size: 28px;
+    -fx-font-weight: 800;
+}
+
+.nx-stat-card-label{
+    -fx-text-fill: -nx-gray-500;
+    -fx-font-size: 13px;
+    -fx-font-weight: 500;
+}
+
+/* Stat Badges */
+.nx-stat-badge{
+    -fx-padding: 5px 12px;
+    -fx-background-radius: 20px;
+    -fx-font-size: 11px;
+    -fx-font-weight: 700;
+}
+
+.nx-stat-badge-success{
+    -fx-background-color: -nx-success-light;
+    -fx-text-fill: -nx-success-dark;
+}
+
+/* =============================================
+   BUTTONS - PREMIUM GRADIENT DESIGN
+   ============================================= */
+.nx-btn{
+    -fx-background-radius: 12px;
+    -fx-padding: 14px 28px;
+    -fx-font-size: 14px;
+    -fx-font-weight: 600;
+    -fx-cursor: hand;
+    -fx-graphic-text-gap: 10px;
+    -fx-alignment: CENTER;
+    -fx-border-width: 0;
+}
+
+/* Primary Button - Teal Gradient */
+.nx-btn-primary{
+    -fx-background-color: -nx-gradient-teal;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(0, 180, 160, 0.35), 12, 0, 0, 4);
+}
+
+.nx-btn-primary:hover{
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #00E5CC 0%, #00C4AC 50%, #00A896 100%);
+    -fx-effect: dropshadow(gaussian, rgba(0, 180, 160, 0.5), 20, 0, 0, 8);
+    -fx-translate-y: -2;
+}
+
+.nx-btn-primary:pressed{
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #009485 0%, #00B4A0 100%);
+    -fx-effect: dropshadow(gaussian, rgba(0, 180, 160, 0.3), 8, 0, 0, 2);
+    -fx-translate-y: 0;
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+}
+
+.nx-btn-primary .nx-btn-icon{
+    -fx-fill: white;
+}
+
+.nx-btn-secondary-sm{
+    -fx-background-color: -nx-gradient-blue;
+    -fx-text-fill: white;
+    -fx-padding: 10px 18px;
+    -fx-font-size: 12px;
+    -fx-background-radius: 10px;
+    -fx-effect: dropshadow(gaussian, rgba(10, 37, 64, 0.25), 8, 0, 0, 3);
+}
+
+.nx-btn-secondary-sm:hover{
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #1A5490 0%, #0E3358 100%);
+    -fx-effect: dropshadow(gaussian, rgba(10, 37, 64, 0.4), 14, 0, 0, 5);
+    -fx-translate-y: -1;
+}
+
+/* Outline Button */
+.nx-btn-outline{
+    -fx-background-color: transparent;
+    -fx-text-fill: -nx-gray-600;
+    -fx-border-color: -nx-gray-300;
+    -fx-border-radius: 12px;
+    -fx-border-width: 2px;
+}
+
+.nx-btn-outline:hover{
+    -fx-background-color: rgba(10, 37, 64, 0.04);
+    -fx-border-color: -nx-blue;
+    -fx-text-fill: -nx-blue;
+    -fx-effect: dropshadow(gaussian, rgba(10, 37, 64, 0.1), 10, 0, 0, 3);
+}
+
+.nx-btn-outline:pressed{
+    -fx-background-color: rgba(10, 37, 64, 0.08);
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+}
+
+.nx-btn-outline-sm{
+    -fx-background-color: transparent;
+    -fx-text-fill: -nx-gray-600;
+    -fx-border-color: -nx-gray-300;
+    -fx-border-radius: 10px;
+    -fx-border-width: 1.5px;
+    -fx-padding: 8px 16px;
+    -fx-font-size: 12px;
+}
+
+.nx-btn-outline-sm:hover{
+    -fx-background-color: -nx-gray-100;
+    -fx-border-color: -nx-gray-400;
+    -fx-text-fill: -nx-blue;
+}
+
+/* Danger Button */
+.nx-btn-danger{
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #F87171 0%, #EF4444 50%, #DC2626 100%);
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(239, 68, 68, 0.35), 12, 0, 0, 4);
+}
+
+.nx-btn-danger:hover{
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #FCA5A5 0%, #F87171 50%, #EF4444 100%);
+    -fx-effect: dropshadow(gaussian, rgba(239, 68, 68, 0.5), 18, 0, 0, 6);
+    -fx-translate-y: -2;
+}
+
+.nx-btn-danger:pressed{
+    -fx-background-color: -nx-error-dark;
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+}
+
+/* Gold Button */
+.nx-btn-gold{
+    -fx-background-color: -nx-gradient-gold;
+    -fx-text-fill: -nx-blue-dark;
+    -fx-font-weight: 700;
+    -fx-effect: dropshadow(gaussian, rgba(244, 196, 48, 0.4), 12, 0, 0, 4);
+}
+
+.nx-btn-gold:hover{
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #FDE68A 0%, #F7D35C 50%, #F4C430 100%);
+    -fx-effect: dropshadow(gaussian, rgba(244, 196, 48, 0.6), 20, 0, 0, 8);
+    -fx-translate-y: -2;
+}
+
+.nx-btn-gold:pressed{
+    -fx-background-color: -nx-gold-dark;
+    -fx-scale-x: 0.98;
+    -fx-scale-y: 0.98;
+}
+
+/* Button Icons */
+.nx-btn-icon{
+    -fx-icon-size: 12px;
+    -fx-scale-x: 0.75;
+    -fx-scale-y: 0.75;
+}
+
+.nx-btn-primary .nx-btn-icon,
+.nx-btn-secondary .nx-btn-icon,
+.nx-btn-danger .nx-btn-icon{
+    -fx-fill: white;
+    -fx-icon-color: white;
+}
+
+.nx-btn-outline .nx-btn-icon{
+    -fx-fill: -nx-gray-500;
+    -fx-icon-color: -nx-gray-500;
+}
+
+.nx-btn-outline:hover .nx-btn-icon{
+    -fx-fill: -nx-blue;
+    -fx-icon-color: -nx-blue;
+}
+
+.nx-btn-gold .nx-btn-icon{
+    -fx-fill: -nx-blue-dark;
+    -fx-icon-color: -nx-blue-dark;
+}
+
+/* =============================================
+   CARDS - GLASSMORPHIC & NEUMORPHIC
+   ============================================= */
+.nx-card{
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, rgba(255,255,255,0.95) 0%, rgba(248,250,252,0.9) 100%);
+    -fx-background-radius: 20px;
+    -fx-border-color: rgba(255, 255, 255, 0.8);
+    -fx-border-radius: 20px;
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(gaussian, rgba(10, 37, 64, 0.08), 20, 0, 0, 6),
+                dropshadow(gaussian, rgba(255, 255, 255, 0.8), 0, 0, -1, -1);
+}
+
+.nx-card:hover{
+    -fx-effect: dropshadow(gaussian, rgba(10, 37, 64, 0.1), 28, 0, 0, 10),
+                dropshadow(gaussian, rgba(255, 255, 255, 0.9), 0, 0, -2, -2);
+}
+
+/* Card Header */
+.nx-card-header{
+    -fx-padding: 24px 28px;
+    -fx-border-color: transparent transparent rgba(10, 37, 64, 0.06) transparent;
+    -fx-border-width: 0 0 1px 0;
+    -fx-background-color: linear-gradient(to bottom, rgba(255,255,255,0.9), rgba(248,250,252,0.7));
+    -fx-background-radius: 20px 20px 0 0;
+}
+
+.nx-card-header-icon{
+    -fx-min-width: 48px;
+    -fx-min-height: 48px;
+    -fx-max-width: 48px;
+    -fx-max-height: 48px;
+    -fx-background-color: -nx-teal-subtle;
+    -fx-background-radius: 14px;
+    -fx-alignment: CENTER;
+    -fx-border-color: rgba(0, 180, 160, 0.15);
+    -fx-border-radius: 14px;
+    -fx-border-width: 1px;
+}
+
+.nx-card-header-icon SVGPath{
+    -fx-fill: -nx-teal;
+    -fx-scale-x: 0.85;
+    -fx-scale-y: 0.85;
+}
+
+.nx-card-header-icon-purple{
+    -fx-background-color: -nx-purple-medium;
+    -fx-border-color: rgba(139, 92, 246, 0.2);
+}
+
+.nx-card-header-icon-purple SVGPath{
+    -fx-fill: -nx-purple;
+}
+
+.nx-card-title{
+    -fx-text-fill: -nx-blue;
+    -fx-font-size: 18px;
+    -fx-font-weight: 700;
+}
+
+.nx-card-subtitle{
+    -fx-text-fill: -nx-gray-500;
+    -fx-font-size: 13px;
+    -fx-font-weight: 400;
+}
+
+/* Card Body */
+.nx-card-body{
+    -fx-padding: 28px;
+    -fx-background-color: transparent;
+}
+
+/* Card Footer */
+.nx-card-footer{
+    -fx-padding: 20px 28px;
+    -fx-border-color: rgba(10, 37, 64, 0.06) transparent transparent transparent;
+    -fx-border-width: 1px 0 0 0;
+    -fx-background-color: linear-gradient(to bottom, rgba(248,250,252,0.8), rgba(243,244,246,0.9));
+    -fx-background-radius: 0 0 20px 20px;
+}
+
+/* =============================================
+   FORM ELEMENTS - MODERN FLOATING DESIGN
+   ============================================= */
+.nx-form-group{
+    -fx-spacing: 10px;
+}
+
+.nx-label{
+    -fx-text-fill: -nx-gray-700;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+}
+
+.nx-label-required{
+    -fx-text-fill: -nx-gray-700;
+}
+
+/* Input Wrapper */
+.nx-input-wrapper{
+    -fx-background-color: white;
+    -fx-border-color: -nx-gray-300;
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
+    -fx-border-width: 1.5px;
+    -fx-padding: 0 14px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-effect: innershadow(gaussian, rgba(10, 37, 64, 0.03), 4, 0, 0, 1);
+}
+
+.nx-input-wrapper:hover{
+    -fx-border-color: -nx-gray-400;
+    -fx-effect: dropshadow(gaussian, rgba(10, 37, 64, 0.06), 8, 0, 0, 2);
+}
+
+.nx-input-wrapper:focused,
+.nx-input-wrapper:focus-within{
+    -fx-border-color: -nx-teal;
+    -fx-border-width: 2px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 180, 160, 0.15), 12, 0, 0, 4);
+}
+
+.nx-input-icon{
+    -fx-fill: -nx-gray-400;
+    -fx-scale-x: 0.7;
+    -fx-scale-y: 0.7;
+}
+
+.nx-input-wrapper:hover .nx-input-icon{
+    -fx-fill: -nx-gray-500;
+}
+
+.nx-input-wrapper:focused .nx-input-icon,
+.nx-input-wrapper:focus-within .nx-input-icon{
+    -fx-fill: -nx-teal;
+}
+
+/* Text Input */
+.nx-input{
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 14px 10px;
+    -fx-font-size: 14px;
+    -fx-prompt-text-fill: -nx-gray-400;
+}
+
+.nx-input:focused{
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.nx-input-calculated .nx-input{
+    -fx-text-fill: -nx-teal-dark;
+    -fx-font-weight: 600;
+}
+
+/* Select / ComboBox */
+.nx-select{
+    -fx-background-color: white;
+    -fx-border-color: -nx-gray-300;
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
+    -fx-border-width: 1.5px;
+    -fx-padding: 12px 14px;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+}
+
+.nx-select:hover{
+    -fx-border-color: -nx-gray-400;
+    -fx-effect: dropshadow(gaussian, rgba(10, 37, 64, 0.06), 8, 0, 0, 2);
+}
+
+.nx-select:focused,
+.nx-select:showing{
+    -fx-border-color: -nx-teal;
+    -fx-border-width: 2px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 180, 160, 0.15), 12, 0, 0, 4);
+}
+
+.nx-select .arrow{
+    -fx-background-color: -nx-gray-400;
+    -fx-shape: "M7 10l5 5 5-5z";
+    -fx-scale-x: 0.8;
+    -fx-scale-y: 0.8;
+}
+
+.nx-select:hover .arrow{
+    -fx-background-color: -nx-gray-600;
+}
+
+.nx-select:focused .arrow{
+    -fx-background-color: -nx-teal;
+}
+
+/* Textarea */
+.nx-textarea{
+    -fx-background-color: white;
+    -fx-border-color: -nx-gray-300;
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
+    -fx-border-width: 1.5px;
+    -fx-padding: 14px;
+    -fx-font-size: 14px;
+}
+
+.nx-textarea:hover{
+    -fx-border-color: -nx-gray-400;
+}
+
+.nx-textarea:focused{
+    -fx-border-color: -nx-teal;
+    -fx-border-width: 2px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 180, 160, 0.15), 12, 0, 0, 4);
+}
+
+.nx-textarea .content{
+    -fx-background-color: transparent;
+}
+
+/* Helper Text */
+.nx-helper-text{
+    -fx-text-fill: -nx-gray-500;
+    -fx-font-size: 12px;
+    -fx-font-style: italic;
+}
+
+/* Form Scroll */
+.nx-form-scroll{
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-border-color: transparent;
+}
+
+.nx-form-scroll > .viewport{
+    -fx-background-color: transparent;
+}
+
+/* =============================================
+   TABLES - PREMIUM DATA DISPLAY
+   ============================================= */
+.nx-table-container{
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+}
+
+.nx-table{
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-table-cell-border-color: transparent;
+}
+
+/* Table Header */
+.nx-table .column-header-background{
+    -fx-background-color: linear-gradient(to bottom, rgba(248, 250, 252, 0.95), rgba(241, 245, 249, 0.9));
+    -fx-background-radius: 0;
+}
+
+.nx-table .column-header{
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent -nx-gray-200 transparent;
+    -fx-border-width: 0 0 1px 0;
+    -fx-padding: 16px 20px;
+}
+
+.nx-table .column-header .label{
+    -fx-text-fill: -nx-gray-500;
+    -fx-font-size: 11px;
+    -fx-font-weight: 700;
+    -fx-text-transform: uppercase;
+}
+
+.nx-table .column-header:hover{
+    -fx-background-color: rgba(0, 180, 160, 0.05);
+}
+
+.nx-table .column-header:hover .label{
+    -fx-text-fill: -nx-teal;
+}
+
+/* Table Rows */
+.nx-table .table-row-cell{
+    -fx-background-color: white;
+    -fx-border-color: transparent transparent -nx-gray-100 transparent;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.nx-table .table-row-cell:odd{
+    -fx-background-color: #FAFBFC;
+}
+
+.nx-table .table-row-cell:hover{
+    -fx-background-color: linear-gradient(to right, rgba(0, 180, 160, 0.04), rgba(0, 180, 160, 0.08));
+    -fx-border-color: transparent transparent rgba(0, 180, 160, 0.15) transparent;
+}
+
+.nx-table .table-row-cell:selected{
+    -fx-background-color: linear-gradient(to right, rgba(0, 180, 160, 0.1), rgba(0, 180, 160, 0.15));
+    -fx-border-color: transparent transparent rgba(0, 180, 160, 0.25) transparent;
+}
+
+.nx-table .table-row-cell:selected:hover{
+    -fx-background-color: linear-gradient(to right, rgba(0, 180, 160, 0.12), rgba(0, 180, 160, 0.18));
+}
+
+/* Table Cells */
+.nx-table .table-cell{
+    -fx-padding: 16px 20px;
+    -fx-text-fill: -nx-gray-700;
+    -fx-font-size: 13px;
+    -fx-font-weight: 500;
+}
+
+.nx-table .table-row-cell:selected .table-cell{
+    -fx-text-fill: -nx-blue;
+}
+
+/* Table Search */
+.nx-table-search{
+    -fx-background-color: -nx-gray-100;
+    -fx-background-radius: 10px;
+    -fx-padding: 6px 14px;
+    -fx-border-color: -nx-gray-200;
+    -fx-border-radius: 10px;
+    -fx-border-width: 1px;
+}
+
+.nx-table-search:hover{
+    -fx-background-color: white;
+    -fx-border-color: -nx-gray-300;
+}
+
+.nx-search-icon-sm{
+    -fx-fill: -nx-gray-400;
+    -fx-icon-color: -nx-gray-400;
+    -fx-icon-size: 12px;
+    -fx-scale-x: 0.6;
+    -fx-scale-y: 0.6;
+}
+
+.nx-search-input-sm{
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-font-size: 13px;
+    -fx-prompt-text-fill: -nx-gray-400;
+}
+
+/* Table Info */
+.nx-table-info{
+    -fx-text-fill: -nx-gray-500;
+    -fx-font-size: 13px;
+    -fx-font-weight: 500;
+}
+
+.nx-table-footer{
+    -fx-background-radius: 0 0 20px 20px;
+}
+
+/* Table Action Buttons */
+.nx-table-action{
+    -fx-background-color: transparent;
+    -fx-background-radius: 8px;
+    -fx-padding: 8px;
+    -fx-cursor: hand;
+    -fx-border-radius: 8px;
+    -fx-border-width: 1px;
+    -fx-border-color: transparent;
+}
+
+.nx-table-action-edit{
+    -fx-border-color: transparent;
+}
+
+.nx-table-action-edit:hover{
+    -fx-background-color: -nx-info-light;
+    -fx-border-color: rgba(59, 130, 246, 0.3);
+    -fx-effect: dropshadow(gaussian, rgba(59, 130, 246, 0.2), 8, 0, 0, 2);
+}
+
+.nx-table-action-delete:hover{
+    -fx-background-color: -nx-error-light;
+    -fx-border-color: rgba(239, 68, 68, 0.3);
+    -fx-effect: dropshadow(gaussian, rgba(239, 68, 68, 0.2), 8, 0, 0, 2);
+}
+
+.nx-action-icon{
+    -fx-fill: -nx-gray-400;
+    -fx-scale-x: 0.7;
+    -fx-scale-y: 0.7;
+}
+
+.nx-table-action-edit:hover .nx-action-icon{
+    -fx-fill: -nx-info;
+}
+
+.nx-table-action-delete:hover .nx-action-icon{
+    -fx-fill: -nx-error;
+}
+
+/* Empty State */
+.nx-table-empty{
+    -fx-padding: 80px 32px;
+    -fx-background-color: linear-gradient(to bottom, rgba(248,250,252,0.5), rgba(241,245,249,0.3));
+}
+
+.nx-empty-icon{
+    -fx-fill: -nx-gray-300;
+    -fx-scale-x: 2.5;
+    -fx-scale-y: 2.5;
+}
+
+.nx-empty-title{
+    -fx-text-fill: -nx-blue;
+    -fx-font-size: 18px;
+    -fx-font-weight: 700;
+}
+
+.nx-empty-subtitle{
+    -fx-text-fill: -nx-gray-500;
+    -fx-font-size: 14px;
+}
+
+/* =============================================
+   BADGES - STATUS INDICATORS
+   ============================================= */
+.nx-badge{
+    -fx-padding: 6px 14px;
+    -fx-background-radius: 20px;
+    -fx-font-size: 11px;
+    -fx-font-weight: 700;
+    -fx-alignment: CENTER;
+}
+
+.nx-badge-success{
+    -fx-background-color: -nx-success-light;
+    -fx-text-fill: -nx-success-dark;
+    -fx-border-color: rgba(16, 185, 129, 0.2);
+    -fx-border-radius: 20px;
+    -fx-border-width: 1px;
+}
+
+.nx-badge-warning{
+    -fx-background-color: -nx-warning-light;
+    -fx-text-fill: -nx-warning-dark;
+    -fx-border-color: rgba(245, 158, 11, 0.2);
+    -fx-border-radius: 20px;
+    -fx-border-width: 1px;
+}
+
+.nx-badge-error{
+    -fx-background-color: -nx-error-light;
+    -fx-text-fill: -nx-error-dark;
+    -fx-border-color: rgba(239, 68, 68, 0.2);
+    -fx-border-radius: 20px;
+    -fx-border-width: 1px;
+}
+
+.nx-badge-purple{
+    -fx-background-color: -nx-purple-light;
+    -fx-text-fill: -nx-purple-dark;
+    -fx-border-color: rgba(139, 92, 246, 0.2);
+    -fx-border-radius: 20px;
+    -fx-border-width: 1px;
+}
+
+.nx-badge-category{
+    -fx-background-color: -nx-gray-100;
+    -fx-text-fill: -nx-gray-700;
+    -fx-border-color: -nx-gray-200;
+    -fx-border-radius: 20px;
+    -fx-border-width: 1px;
+}
+
+/* Mini Progress */
+.nx-mini-progress{
+    -fx-pref-height: 6px;
+    -fx-background-color: -nx-gray-200;
+    -fx-background-radius: 3px;
+}
+
+.nx-mini-progress .track{
+    -fx-background-color: -nx-gray-200;
+    -fx-background-radius: 3px;
+}
+
+.nx-mini-progress .bar{
+    -fx-background-color: -nx-teal;
+    -fx-background-radius: 3px;
+}
+
+.nx-taux-label{
+    -fx-text-fill: -nx-teal;
+    -fx-font-weight: 700;
+    -fx-font-size: 12px;
+}
+
+/* =============================================
+   PAGINATION - MODERN BUTTONS
+   ============================================= */
+.nx-pagination{
+    -fx-spacing: 6px;
+    -fx-alignment: CENTER;
+}
+
+.nx-page-btn{
+    -fx-background-color: white;
+    -fx-border-color: -nx-gray-200;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-border-width: 1.5px;
+    -fx-min-width: 40px;
+    -fx-min-height: 40px;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-text-fill: -nx-gray-600;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(10, 37, 64, 0.04), 4, 0, 0, 1);
+}
+
+.nx-page-btn:hover{
+    -fx-background-color: -nx-gray-100;
+    -fx-border-color: -nx-gray-300;
+    -fx-text-fill: -nx-blue;
+    -fx-effect: dropshadow(gaussian, rgba(10, 37, 64, 0.08), 8, 0, 0, 2);
+    -fx-translate-y: -1;
+}
+
+.nx-page-btn:pressed{
+    -fx-background-color: -nx-gray-200;
+    -fx-translate-y: 0;
+}
+
+.nx-page-btn-active{
+    -fx-background-color: -nx-gradient-teal;
+    -fx-border-color: transparent;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(0, 180, 160, 0.35), 10, 0, 0, 3);
+}
+
+.nx-page-btn-active:hover{
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #00E5CC 0%, #00C4AC 100%);
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(0, 180, 160, 0.5), 14, 0, 0, 5);
+}
+
+/* =============================================
+   ENTITY CONTAINER & MODULE
+   ============================================= */
+.nx-entity-container{
+    -fx-padding: 0;
+    -fx-spacing: 24px;
+}

@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.nexora.bank.controllers.UserController"
+      stylesheets="@../css/User.css"
+      styleClass="nx-root-container" spacing="0">
+
+    <!-- MAIN SCROLLABLE CONTENT -->
+    <ScrollPane styleClass="nx-main-scroll" fitToWidth="true" fitToHeight="true" VBox.vgrow="ALWAYS">
+        <VBox styleClass="nx-content-wrapper" spacing="28">
+
+            <!-- ═══════════════════════════════════════════════════════════════
+                 HERO HEADER SECTION
+                 ═══════════════════════════════════════════════════════════════ -->
+            <VBox styleClass="nx-hero-header" spacing="0">
+                <HBox alignment="CENTER_LEFT" spacing="20">
+                    <!-- Animated Icon Container -->
+                    <StackPane styleClass="nx-hero-icon-container">
+                        <Circle radius="32" styleClass="nx-hero-icon-bg"/>
+                        <Circle radius="28" styleClass="nx-hero-icon-inner"/>
+                        <SVGPath content="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" 
+                                styleClass="nx-hero-icon-svg"/>
+                    </StackPane>
+                    
+                    <VBox spacing="6" HBox.hgrow="ALWAYS">
+                        <HBox alignment="CENTER_LEFT" spacing="12">
+                            <Label text="Gestion Utilisateurs" styleClass="nx-hero-title"/>
+                            <Label text="ADMIN" styleClass="nx-hero-badge"/>
+                        </HBox>
+                        <Label text="Créez, modifiez et gérez les comptes utilisateurs de votre système bancaire" 
+                               styleClass="nx-hero-subtitle"/>
+                    </VBox>
+                    
+                    <!-- Quick Actions -->
+                    <HBox spacing="12" styleClass="nx-quick-actions">
+                        <Button styleClass="nx-icon-btn, nx-icon-btn-ghost" onAction="#exporterPDF">
+                            <graphic>
+                                <SVGPath content="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M16 13H8 M16 17H8 M10 9H8"/>
+                            </graphic>
+                            <tooltip><Tooltip text="Exporter PDF"/></tooltip>
+                        </Button>
+                        <Button styleClass="nx-icon-btn, nx-icon-btn-ghost" onAction="#envoyerSMS">
+                            <graphic>
+                                <SVGPath content="M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0"/>
+                            </graphic>
+                            <tooltip><Tooltip text="Relancer Pending"/></tooltip>
+                        </Button>
+                    </HBox>
+                </HBox>
+                
+                <!-- Decorative Line -->
+                <HBox styleClass="nx-hero-decoration" alignment="CENTER_LEFT">
+                    <Region styleClass="nx-hero-line, nx-hero-line-primary" HBox.hgrow="ALWAYS"/>
+                    <Region styleClass="nx-hero-line, nx-hero-line-accent" prefWidth="120"/>
+                    <Region styleClass="nx-hero-line, nx-hero-line-secondary" prefWidth="80"/>
+                </HBox>
+            </VBox>
+
+            <!-- ═══════════════════════════════════════════════════════════════
+                 STATISTICS DASHBOARD
+                 ═══════════════════════════════════════════════════════════════ -->
+            <HBox spacing="20" styleClass="nx-stats-dashboard">
+                <!-- Stat Card 1: Total Users -->
+                <VBox styleClass="nx-stat-card, nx-stat-card-gradient-teal" HBox.hgrow="ALWAYS">
+                    <HBox alignment="CENTER_LEFT" spacing="16">
+                        <StackPane styleClass="nx-stat-icon-wrap">
+                            <Circle radius="24" styleClass="nx-stat-icon-bg"/>
+                            <SVGPath content="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" 
+                                    styleClass="nx-stat-icon-svg"/>
+                        </StackPane>
+                        <VBox spacing="2" HBox.hgrow="ALWAYS">
+                            <Label text="Total Utilisateurs" styleClass="nx-stat-label"/>
+                            <HBox alignment="CENTER_LEFT" spacing="8">
+                                <Label fx:id="lblTotalUsers" text="0" styleClass="nx-stat-value"/>
+                                <Label text="users" styleClass="nx-stat-unit"/>
+                            </HBox>
+                        </VBox>
+                        <VBox alignment="CENTER_RIGHT" styleClass="nx-stat-trend, nx-stat-trend-up">
+                            <SVGPath content="M7 17l5-5 5 5" styleClass="nx-trend-icon"/>
+                        </VBox>
+                    </HBox>
+                    <HBox styleClass="nx-stat-footer">
+                        <Label text="Base de données synchronisée" styleClass="nx-stat-footer-text"/>
+                    </HBox>
+                </VBox>
+
+                <!-- Stat Card 2: Active Users -->
+                <VBox styleClass="nx-stat-card, nx-stat-card-gradient-success" HBox.hgrow="ALWAYS">
+                    <HBox alignment="CENTER_LEFT" spacing="16">
+                        <StackPane styleClass="nx-stat-icon-wrap">
+                            <Circle radius="24" styleClass="nx-stat-icon-bg"/>
+                            <SVGPath content="M22 11.08V12a10 10 0 1 1-5.93-9.14 M22 4L12 14.01l-3-3" 
+                                    styleClass="nx-stat-icon-svg"/>
+                        </StackPane>
+                        <VBox spacing="2" HBox.hgrow="ALWAYS">
+                            <Label text="Utilisateurs Actifs" styleClass="nx-stat-label"/>
+                            <HBox alignment="CENTER_LEFT" spacing="8">
+                                <Label fx:id="lblUsersActifs" text="0" styleClass="nx-stat-value"/>
+                                <Label text="actifs" styleClass="nx-stat-unit"/>
+                            </HBox>
+                        </VBox>
+                        <VBox alignment="CENTER_RIGHT" styleClass="nx-stat-trend, nx-stat-trend-up">
+                            <SVGPath content="M7 17l5-5 5 5" styleClass="nx-trend-icon"/>
+                        </VBox>
+                    </HBox>
+                    <HBox styleClass="nx-stat-footer">
+                        <Label text="Comptes vérifiés et approuvés" styleClass="nx-stat-footer-text"/>
+                    </HBox>
+                </VBox>
+
+                <!-- Stat Card 3: Administrators -->
+                <VBox styleClass="nx-stat-card, nx-stat-card-gradient-purple" HBox.hgrow="ALWAYS">
+                    <HBox alignment="CENTER_LEFT" spacing="16">
+                        <StackPane styleClass="nx-stat-icon-wrap">
+                            <Circle radius="24" styleClass="nx-stat-icon-bg"/>
+                            <SVGPath content="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" 
+                                    styleClass="nx-stat-icon-svg"/>
+                        </StackPane>
+                        <VBox spacing="2" HBox.hgrow="ALWAYS">
+                            <Label text="Administrateurs" styleClass="nx-stat-label"/>
+                            <HBox alignment="CENTER_LEFT" spacing="8">
+                                <Label fx:id="lblAdmins" text="0" styleClass="nx-stat-value"/>
+                                <Label text="admins" styleClass="nx-stat-unit"/>
+                            </HBox>
+                        </VBox>
+                        <StackPane styleClass="nx-stat-badge">
+                            <Label text="SECURE" styleClass="nx-stat-badge-text"/>
+                        </StackPane>
+                    </HBox>
+                    <HBox styleClass="nx-stat-footer">
+                        <Label text="Privilèges système complets" styleClass="nx-stat-footer-text"/>
+                    </HBox>
+                </VBox>
+            </HBox>
+
+            <!-- ═══════════════════════════════════════════════════════════════
+                 MAIN CONTENT GRID
+                 ═══════════════════════════════════════════════════════════════ -->
+            <HBox spacing="24" VBox.vgrow="ALWAYS" styleClass="nx-main-grid">
+                
+                <!-- LEFT PANEL: DATA TABLE -->
+                <VBox styleClass="nx-panel, nx-table-panel" HBox.hgrow="ALWAYS" spacing="0">
+                    
+                    <!-- Panel Header -->
+                    <HBox styleClass="nx-panel-header" alignment="CENTER_LEFT" spacing="16">
+                        <StackPane styleClass="nx-panel-icon">
+                            <SVGPath content="M3 3h18v18H3zM3 9h18M9 21V9"/>
+                        </StackPane>
+                        <VBox spacing="2" HBox.hgrow="ALWAYS">
+                            <Label text="Liste des Utilisateurs" styleClass="nx-panel-title"/>
+                            <Label text="Recherche et gestion en temps réel" styleClass="nx-panel-subtitle"/>
+                        </VBox>
+                        
+                        <!-- Search Bar -->
+                        <HBox styleClass="nx-search-container" alignment="CENTER_LEFT" spacing="0">
+                            <StackPane styleClass="nx-search-icon-wrap">
+                                <SVGPath content="M21 21l-6-6m2-5a7 7 0 1 1-14 0 7 7 0 0 1 14 0z" 
+                                        styleClass="nx-search-icon"/>
+                            </StackPane>
+                            <TextField fx:id="txtRecherche" promptText="Rechercher un utilisateur..." 
+                                      styleClass="nx-search-input" prefWidth="240"/>
+                        </HBox>
+                        
+                        <!-- Filter & Export Buttons -->
+                        <HBox spacing="8">
+                            <Button text="Filtres" styleClass="nx-btn, nx-btn-subtle, nx-btn-sm">
+                                <graphic>
+                                    <SVGPath content="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/>
+                                </graphic>
+                            </Button>
+                            <Button text="Export" styleClass="nx-btn, nx-btn-outline-primary, nx-btn-sm" onAction="#exporterPDF">
+                                <graphic>
+                                    <SVGPath content="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+                                </graphic>
+                            </Button>
+                        </HBox>
+                    </HBox>
+
+                    <!-- Table Container -->
+                    <VBox styleClass="nx-table-container" VBox.vgrow="ALWAYS">
+                        <TableView fx:id="tableUsers" styleClass="nx-data-table" VBox.vgrow="ALWAYS">
+                            <columns>
+                                <TableColumn fx:id="colNom" text="Nom" prefWidth="140" minWidth="120"/>
+                                <TableColumn fx:id="colPrenom" text="Prénom" prefWidth="130" minWidth="100"/>
+                                <TableColumn fx:id="colEmail" text="Email" prefWidth="220" minWidth="180"/>
+                                <TableColumn fx:id="colTelephone" text="Téléphone" prefWidth="140" minWidth="120"/>
+                                <TableColumn fx:id="colRole" text="Rôle" prefWidth="110" minWidth="90"/>
+                                <TableColumn fx:id="colStatut" text="Statut" prefWidth="110" minWidth="90"/>
+                                <TableColumn fx:id="colActions" text="Actions" prefWidth="160" minWidth="140"/>
+                            </columns>
+                            <placeholder>
+                                <VBox alignment="CENTER" spacing="16" styleClass="nx-table-empty">
+                                    <SVGPath content="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" 
+                                            styleClass="nx-empty-icon"/>
+                                    <Label text="Aucun utilisateur trouvé" styleClass="nx-empty-title"/>
+                                    <Label text="Commencez par créer un nouveau compte" styleClass="nx-empty-subtitle"/>
+                                </VBox>
+                            </placeholder>
+                        </TableView>
+                    </VBox>
+
+                    <!-- Table Footer -->
+                    <HBox styleClass="nx-panel-footer" alignment="CENTER_LEFT" spacing="16">
+                        <HBox alignment="CENTER_LEFT" spacing="8">
+                            <StackPane styleClass="nx-footer-indicator"/>
+                            <Label fx:id="lblTableInfo" text="Affichage de 0 entrées" styleClass="nx-footer-info"/>
+                        </HBox>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Button text="Relancer Emails Pending" styleClass="nx-btn, nx-btn-gold, nx-btn-sm" onAction="#envoyerSMS">
+                            <graphic>
+                                <SVGPath content="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z M22 6l-10 7L2 6"/>
+                            </graphic>
+                        </Button>
+                    </HBox>
+                </VBox>
+
+                <!-- RIGHT PANEL: FORM -->
+                <VBox styleClass="nx-panel, nx-form-panel" prefWidth="480" minWidth="420" spacing="0">
+                    
+                    <!-- Form Header -->
+                    <HBox styleClass="nx-panel-header, nx-form-header" alignment="CENTER_LEFT" spacing="12">
+                        <StackPane styleClass="nx-panel-icon, nx-panel-icon-purple">
+                            <SVGPath content="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8z"/>
+                        </StackPane>
+                        <VBox spacing="2" HBox.hgrow="ALWAYS">
+                            <Label text="Détails Utilisateur" styleClass="nx-panel-title"/>
+                            <Label text="Créer ou modifier un compte" styleClass="nx-panel-subtitle"/>
+                        </VBox>
+                        <Button styleClass="nx-icon-btn, nx-icon-btn-subtle" onAction="#handleAnnuler">
+                            <graphic>
+                                <SVGPath content="M18 6L6 18M6 6l12 12"/>
+                            </graphic>
+                            <tooltip><Tooltip text="Réinitialiser le formulaire"/></tooltip>
+                        </Button>
+                    </HBox>
+
+                    <!-- Form Body -->
+                    <ScrollPane styleClass="nx-form-scroll" fitToWidth="true" VBox.vgrow="ALWAYS">
+                        <VBox styleClass="nx-form-body" spacing="20">
+                            
+                            <!-- Section: Personal Info -->
+                            <VBox styleClass="nx-form-section" spacing="16">
+                                <HBox styleClass="nx-form-section-header" alignment="CENTER_LEFT" spacing="10">
+                                    <SVGPath content="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" 
+                                            styleClass="nx-section-icon"/>
+                                    <Label text="Informations Personnelles" styleClass="nx-section-title"/>
+                                </HBox>
+                                
+                                <HBox spacing="16">
+                                    <VBox styleClass="nx-field" spacing="8" HBox.hgrow="ALWAYS">
+                                        <Label text="Nom" styleClass="nx-field-label">
+                                            <graphic><Label text="*" styleClass="nx-required-star"/></graphic>
+                                        </Label>
+                                        <HBox styleClass="nx-input-wrapper">
+                                            <SVGPath content="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" 
+                                                    styleClass="nx-input-icon"/>
+                                            <TextField fx:id="txtNom" promptText="Nom de famille" 
+                                                      styleClass="nx-text-input"/>
+                                        </HBox>
+                                    </VBox>
+                                    
+                                    <VBox styleClass="nx-field" spacing="8" HBox.hgrow="ALWAYS">
+                                        <Label text="Prénom" styleClass="nx-field-label">
+                                            <graphic><Label text="*" styleClass="nx-required-star"/></graphic>
+                                        </Label>
+                                        <HBox styleClass="nx-input-wrapper">
+                                            <SVGPath content="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" 
+                                                    styleClass="nx-input-icon"/>
+                                            <TextField fx:id="txtPrenom" promptText="Prénom" 
+                                                      styleClass="nx-text-input"/>
+                                        </HBox>
+                                    </VBox>
+                                </HBox>
+                            </VBox>
+
+                            <!-- Section: Contact Info -->
+                            <VBox styleClass="nx-form-section" spacing="16">
+                                <HBox styleClass="nx-form-section-header" alignment="CENTER_LEFT" spacing="10">
+                                    <SVGPath content="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" 
+                                            styleClass="nx-section-icon"/>
+                                    <Label text="Coordonnées" styleClass="nx-section-title"/>
+                                </HBox>
+                                
+                                <VBox styleClass="nx-field" spacing="8">
+                                    <Label text="Adresse Email" styleClass="nx-field-label">
+                                        <graphic><Label text="*" styleClass="nx-required-star"/></graphic>
+                                    </Label>
+                                    <HBox styleClass="nx-input-wrapper">
+                                        <SVGPath content="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z M22 6l-10 7L2 6" 
+                                                styleClass="nx-input-icon"/>
+                                        <TextField fx:id="txtEmail" promptText="email@exemple.com" 
+                                                  styleClass="nx-text-input"/>
+                                    </HBox>
+                                </VBox>
+                                
+                                <VBox styleClass="nx-field" spacing="8">
+                                    <Label text="Téléphone" styleClass="nx-field-label"/>
+                                    <HBox styleClass="nx-input-wrapper">
+                                        <SVGPath content="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72" 
+                                                styleClass="nx-input-icon"/>
+                                        <TextField fx:id="txtTelephone" promptText="+216 XX XXX XXX" 
+                                                  styleClass="nx-text-input"/>
+                                    </HBox>
+                                </VBox>
+                            </VBox>
+
+                            <!-- Section: Security -->
+                            <VBox styleClass="nx-form-section" spacing="16">
+                                <HBox styleClass="nx-form-section-header" alignment="CENTER_LEFT" spacing="10">
+                                    <SVGPath content="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" 
+                                            styleClass="nx-section-icon"/>
+                                    <Label text="Sécurité &amp; Accès" styleClass="nx-section-title"/>
+                                </HBox>
+                                
+                                <VBox styleClass="nx-field" spacing="8">
+                                    <Label text="Mot de passe" styleClass="nx-field-label"/>
+                                    <HBox styleClass="nx-input-wrapper">
+                                        <SVGPath content="M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2zM7 11V7a5 5 0 0 1 10 0v4" 
+                                                styleClass="nx-input-icon"/>
+                                        <PasswordField fx:id="txtNewPassword" 
+                                                      promptText="Laisser vide pour ne pas changer" 
+                                                      styleClass="nx-text-input"/>
+                                    </HBox>
+                                    <Label text="Min. 8 caractères, majuscule, minuscule, chiffre et symbole" 
+                                          styleClass="nx-field-hint"/>
+                                </VBox>
+                                
+                                <HBox spacing="16">
+                                    <VBox styleClass="nx-field" spacing="8" HBox.hgrow="ALWAYS">
+                                        <Label text="Rôle" styleClass="nx-field-label">
+                                            <graphic><Label text="*" styleClass="nx-required-star"/></graphic>
+                                        </Label>
+                                        <ComboBox fx:id="cmbRole" promptText="Sélectionner..." 
+                                                 styleClass="nx-select" maxWidth="Infinity">
+                                            <items>
+                                                <FXCollections fx:factory="observableArrayList">
+                                                    <String fx:value="ROLE_USER"/>
+                                                    <String fx:value="ROLE_ADMIN"/>
+                                                </FXCollections>
+                                            </items>
+                                        </ComboBox>
+                                    </VBox>
+                                    
+                                    <VBox styleClass="nx-field" spacing="8" HBox.hgrow="ALWAYS">
+                                        <Label text="Statut" styleClass="nx-field-label">
+                                            <graphic><Label text="*" styleClass="nx-required-star"/></graphic>
+                                        </Label>
+                                        <ComboBox fx:id="cmbStatut" promptText="Sélectionner..." 
+                                                 styleClass="nx-select" maxWidth="Infinity">
+                                            <items>
+                                                <FXCollections fx:factory="observableArrayList">
+                                                    <String fx:value="PENDING"/>
+                                                    <String fx:value="ACTIVE"/>
+                                                    <String fx:value="DECLINED"/>
+                                                    <String fx:value="INACTIVE"/>
+                                                    <String fx:value="BANNED"/>
+                                                </FXCollections>
+                                            </items>
+                                        </ComboBox>
+                                    </VBox>
+                                </HBox>
+                            </VBox>
+                        </VBox>
+                    </ScrollPane>
+
+                    <!-- Form Footer with Actions -->
+                    <VBox styleClass="nx-panel-footer, nx-form-footer" spacing="12">
+                        <!-- Primary Actions Row -->
+                        <HBox spacing="10" alignment="CENTER_RIGHT">
+                            <Button text="Annuler" styleClass="nx-btn, nx-btn-ghost" onAction="#handleAnnuler">
+                                <graphic>
+                                    <SVGPath content="M18 6L6 18M6 6l12 12"/>
+                                </graphic>
+                            </Button>
+                            <Button text="Changer MDP" styleClass="nx-btn, nx-btn-secondary" 
+                                   onAction="#handleUpdatePasswordSelected">
+                                <graphic>
+                                    <SVGPath content="M19 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2z"/>
+                                </graphic>
+                            </Button>
+                            <Button fx:id="btnAjouter" text="Enregistrer" styleClass="nx-btn, nx-btn-primary" 
+                                   onAction="#handleAjouter">
+                                <graphic>
+                                    <SVGPath content="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z M17 21v-8H7v8 M7 3v5h8"/>
+                                </graphic>
+                            </Button>
+                        </HBox>
+                        
+                        <!-- Secondary Actions Row -->
+                        <HBox spacing="10" alignment="CENTER" styleClass="nx-secondary-actions">
+                            <Button text="Approuver" styleClass="nx-btn, nx-btn-success-soft, nx-btn-sm" 
+                                   onAction="#handleApproveSelected">
+                                <graphic>
+                                    <SVGPath content="M20 6L9 17l-5-5"/>
+                                </graphic>
+                            </Button>
+                            <Button text="Refuser" styleClass="nx-btn, nx-btn-warning-soft, nx-btn-sm" 
+                                   onAction="#handleDeclineSelected">
+                                <graphic>
+                                    <SVGPath content="M18 6L6 18M6 6l12 12"/>
+                                </graphic>
+                            </Button>
+                            <Button text="Supprimer" styleClass="nx-btn, nx-btn-danger-soft, nx-btn-sm" 
+                                   onAction="#handleSupprimer">
+                                <graphic>
+                                    <SVGPath content="M19 7l-.867 12.142A2 2 0 0 1 16.138 21H7.862a2 2 0 0 1-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v3M4 7h16"/>
+                                </graphic>
+                            </Button>
+                        </HBox>
+                    </VBox>
+                </VBox>
+            </HBox>
+
+            <!-- ═══════════════════════════════════════════════════════════════
+                 BAN / UNBAN MANAGEMENT SECTION
+                 ═══════════════════════════════════════════════════════════════ -->
+            <VBox styleClass="nx-ban-panel" spacing="16">
+                <HBox alignment="CENTER_LEFT" spacing="16">
+                    <StackPane styleClass="nx-ban-icon-wrap">
+                        <Circle radius="22" styleClass="nx-ban-icon-bg"/>
+                        <SVGPath content="M18.36 6.64a9 9 0 1 1-12.73 0M12 2v10" 
+                                styleClass="nx-ban-icon-svg"/>
+                    </StackPane>
+                    
+                    <VBox spacing="4" HBox.hgrow="ALWAYS">
+                        <Label text="Gestion des Restrictions" styleClass="nx-ban-title"/>
+                        <Label text="Bannir ou débannir les utilisateurs du système" styleClass="nx-ban-subtitle"/>
+                    </VBox>
+                    
+                    <!-- Selected User Indicator -->
+                    <HBox styleClass="nx-ban-selected-user" alignment="CENTER" spacing="10">
+                        <StackPane styleClass="nx-ban-user-avatar">
+                            <SVGPath content="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                        </StackPane>
+                        <VBox spacing="2">
+                            <Label text="Utilisateur sélectionné" styleClass="nx-ban-user-label"/>
+                            <Label fx:id="lblBanTarget" text="Aucun utilisateur" styleClass="nx-ban-user-value"/>
+                        </VBox>
+                    </HBox>
+                </HBox>
+
+                <HBox spacing="16" alignment="CENTER_LEFT">
+                    <VBox styleClass="nx-field, nx-ban-reason-field" spacing="8" HBox.hgrow="ALWAYS">
+                        <Label text="Motif de la restriction" styleClass="nx-field-label"/>
+                        <TextArea fx:id="txtBanReason" promptText="Saisissez le motif du bannissement (obligatoire)..." 
+                                 prefRowCount="2" wrapText="true" styleClass="nx-textarea"/>
+                    </VBox>
+                    
+                    <VBox spacing="10" alignment="CENTER">
+                        <Button text="Bannir l'utilisateur" styleClass="nx-btn, nx-btn-danger" 
+                               onAction="#handleBanSelectedUser" prefWidth="180">
+                            <graphic>
+                                <SVGPath content="M18.36 6.64a9 9 0 1 1-12.73 0M12 2v10"/>
+                            </graphic>
+                        </Button>
+                        <Button text="Lever la restriction" styleClass="nx-btn, nx-btn-success" 
+                               onAction="#handleUnbanSelectedUser" prefWidth="180">
+                            <graphic>
+                                <SVGPath content="M22 11.08V12a10 10 0 1 1-5.93-9.14M22 4L12 14.01l-3-3"/>
+                            </graphic>
+                        </Button>
+                    </VBox>
+                </HBox>
+            </VBox>
+
+        </VBox>
+    </ScrollPane>
+</VBox>

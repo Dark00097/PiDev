@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+
+<VBox xmlns="http://javafx.com/javafx/17" 
+      xmlns:fx="http://javafx.com/fxml/1" 
+      fx:controller="com.nexora.bank.controllers.GarantieCreditController"
+      stylesheets="@../css/GarantieCredit.css"
+      styleClass="nx-entity-container" spacing="24">
+
+    <!-- STAT CARDS -->
+    <HBox spacing="24" styleClass="nx-stats-row">
+        <VBox styleClass="nx-stat-card" HBox.hgrow="ALWAYS">
+            <HBox alignment="CENTER_LEFT" spacing="16">
+                <StackPane styleClass="nx-stat-card-icon, nx-stat-card-icon-teal">
+                    <SVGPath content="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0 1 12 2.944a11.955 11.955 0 0 1-8.618 3.04A12.02 12.02 0 0 0 3 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                </StackPane>
+                <VBox spacing="4">
+                    <Label fx:id="lblNombreGaranties" text="0" styleClass="nx-stat-card-value"/>
+                    <Label text="Nombre de Garanties" styleClass="nx-stat-card-label"/>
+                </VBox>
+            </HBox>
+        </VBox>
+
+        <VBox styleClass="nx-stat-card" HBox.hgrow="ALWAYS">
+            <HBox alignment="CENTER_LEFT" spacing="16">
+                <StackPane styleClass="nx-stat-card-icon, nx-stat-card-icon-gold">
+                    <SVGPath content="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                </StackPane>
+                <VBox spacing="4">
+                    <Label fx:id="lblValeurTotale" text="0.00 DT" styleClass="nx-stat-card-value"/>
+                    <Label text="Valeur Totale" styleClass="nx-stat-card-label"/>
+                </VBox>
+            </HBox>
+        </VBox>
+
+        <VBox styleClass="nx-stat-card" HBox.hgrow="ALWAYS">
+            <HBox alignment="CENTER_LEFT" spacing="16">
+                <StackPane styleClass="nx-stat-card-icon, nx-stat-card-icon-success">
+                    <SVGPath content="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/>
+                </StackPane>
+                <VBox spacing="4">
+                    <Label fx:id="lblGarantiesActives" text="0" styleClass="nx-stat-card-value"/>
+                    <Label text="Garanties Actives" styleClass="nx-stat-card-label"/>
+                </VBox>
+            </HBox>
+        </VBox>
+    </HBox>
+
+    <!-- MAIN CONTENT -->
+    <HBox spacing="24" VBox.vgrow="ALWAYS">
+        
+        <!-- FORM -->
+        <VBox styleClass="nx-card" prefWidth="560" minWidth="560" spacing="0">
+            <HBox styleClass="nx-card-header" alignment="CENTER_LEFT" spacing="12">
+                <StackPane styleClass="nx-card-header-icon">
+                    <SVGPath content="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0 1 12 2.944"/>
+                </StackPane>
+                <VBox spacing="2">
+                    <Label text="Garantie Crédit" styleClass="nx-card-title"/>
+                    <Label text="Gérer les garanties de crédit" styleClass="nx-card-subtitle"/>
+                </VBox>
+            </HBox>
+
+            <ScrollPane styleClass="nx-form-scroll" fitToWidth="true" VBox.vgrow="ALWAYS">
+                <VBox styleClass="nx-card-body" spacing="16">
+                    
+                    <!-- Type Garantie -->
+                    <VBox styleClass="nx-form-group" spacing="8">
+                        <Label text="Type de Garantie" styleClass="nx-label, nx-label-required"/>
+                        <ComboBox fx:id="cmbTypeGarantie" promptText="Sélectionner un type" styleClass="nx-select" maxWidth="Infinity">
+                            <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                    <String fx:value="Hypothèque Immobilière"/>
+                                    <String fx:value="Caution Personnelle"/>
+                                    <String fx:value="Nantissement"/>
+                                    <String fx:value="Garantie Bancaire"/>
+                                    <String fx:value="Dépôt de Garantie"/>
+                                    <String fx:value="Assurance Crédit"/>
+                                </FXCollections>
+                            </items>
+                        </ComboBox>
+                    </VBox>
+
+                    <!-- Description -->
+                    <VBox styleClass="nx-form-group" spacing="8">
+                        <Label text="Description" styleClass="nx-label"/>
+                        <TextArea fx:id="txtDescription" promptText="Description de la garantie..." styleClass="nx-textarea" prefRowCount="2"/>
+                    </VBox>
+
+                    <!-- Adresse Bien -->
+                    <VBox styleClass="nx-form-group" spacing="8">
+                        <Label text="Adresse du Bien" styleClass="nx-label"/>
+                        <HBox styleClass="nx-input-wrapper">
+                            <SVGPath content="M17.657 16.657L13.414 20.9a1.998 1.998 0 0 1-2.827 0l-4.244-4.243a8 8 0 1 1 11.314 0z M15 11a3 3 0 1 1-6 0 3 3 0 0 1 6 0z" styleClass="nx-input-icon"/>
+                            <TextField fx:id="txtAdresseBien" promptText="Adresse complète" styleClass="nx-input" HBox.hgrow="ALWAYS"/>
+                        </HBox>
+                    </VBox>
+
+                    <!-- Valeur Estimée -->
+                    <VBox styleClass="nx-form-group" spacing="8">
+                        <Label text="Valeur Estimée (DT)" styleClass="nx-label, nx-label-required"/>
+                        <HBox styleClass="nx-input-wrapper">
+                            <SVGPath content="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" styleClass="nx-input-icon"/>
+                            <TextField fx:id="txtValeurEstimee" promptText="Ex: 500000.00" styleClass="nx-input" HBox.hgrow="ALWAYS"/>
+                        </HBox>
+                    </VBox>
+
+                    <!-- Valeur Retenue -->
+                    <VBox styleClass="nx-form-group" spacing="8">
+                        <Label text="Valeur Retenue (DT)" styleClass="nx-label"/>
+                        <HBox styleClass="nx-input-wrapper">
+                            <SVGPath content="M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" styleClass="nx-input-icon"/>
+                            <TextField fx:id="txtValeurRetenue" promptText="Valeur acceptée" styleClass="nx-input" HBox.hgrow="ALWAYS"/>
+                        </HBox>
+                    </VBox>
+
+                    <!-- Document Justificatif -->
+                    <VBox styleClass="nx-form-group" spacing="8">
+                        <Label text="Document Justificatif" styleClass="nx-label"/>
+                        <HBox styleClass="nx-input-wrapper">
+                            <SVGPath content="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6" styleClass="nx-input-icon"/>
+                            <TextField fx:id="txtDocumentJustificatif" promptText="Nom du document" styleClass="nx-input" HBox.hgrow="ALWAYS"/>
+                        </HBox>
+                    </VBox>
+
+                    <!-- Date Évaluation -->
+                    <VBox styleClass="nx-form-group" spacing="8">
+                        <Label text="Date d'Évaluation" styleClass="nx-label, nx-label-required"/>
+                        <HBox styleClass="nx-input-wrapper">
+                            <SVGPath content="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2z" styleClass="nx-input-icon"/>
+                            <DatePicker fx:id="dpDateEvaluation" styleClass="nx-datepicker" HBox.hgrow="ALWAYS"/>
+                        </HBox>
+                    </VBox>
+
+                    <!-- Nom Garant -->
+                    <VBox styleClass="nx-form-group" spacing="8">
+                        <Label text="Nom du Garant" styleClass="nx-label"/>
+                        <HBox styleClass="nx-input-wrapper">
+                            <SVGPath content="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" styleClass="nx-input-icon"/>
+                            <TextField fx:id="txtNomGarant" promptText="Nom complet" styleClass="nx-input" HBox.hgrow="ALWAYS"/>
+                        </HBox>
+                    </VBox>
+
+                    <!-- Statut -->
+                    <VBox styleClass="nx-form-group" spacing="8">
+                        <Label text="Statut" styleClass="nx-label, nx-label-required"/>
+                        <ComboBox fx:id="cmbStatut" promptText="Sélectionner un statut" styleClass="nx-select" maxWidth="Infinity">
+                            <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                    <String fx:value="En attente"/>
+                                    <String fx:value="Accepté"/>
+                                    <String fx:value="Refusé"/>
+                                    <String fx:value="Annulé"/>
+                                </FXCollections>
+                            </items>
+                        </ComboBox>
+                    </VBox>
+                </VBox>
+            </ScrollPane>
+
+            <HBox styleClass="nx-card-footer" spacing="12" alignment="CENTER_RIGHT">
+                <Button text="Annuler" styleClass="nx-btn, nx-btn-outline" onAction="#handleAnnuler"/>
+                <Button text="Supprimer" styleClass="nx-btn, nx-btn-danger" onAction="#handleSupprimer"/>
+                <Button fx:id="btnAjouter" text="Ajouter" styleClass="nx-btn, nx-btn-primary" onAction="#handleAjouter"/>
+            </HBox>
+        </VBox>
+
+        <!-- TABLE -->
+        <VBox styleClass="nx-card" HBox.hgrow="ALWAYS" spacing="0">
+            <HBox styleClass="nx-card-header" alignment="CENTER_LEFT" spacing="16">
+                <VBox spacing="2" HBox.hgrow="ALWAYS">
+                    <Label text="Liste des Garanties" styleClass="nx-card-title"/>
+                    <Label text="Gérer les garanties de crédit" styleClass="nx-card-subtitle"/>
+                </VBox>
+                <HBox styleClass="nx-table-search" alignment="CENTER_LEFT" spacing="8">
+                    <TextField fx:id="txtRecherche" promptText="Rechercher..." styleClass="nx-search-input-sm" prefWidth="200"/>
+                </HBox>
+                <MenuButton text="Trier" styleClass="nx-btn, nx-btn-outline-sm">
+                    <items>
+                        <MenuItem text="Par Type" onAction="#trierParType"/>
+                        <MenuItem text="Par Valeur" onAction="#trierParValeur"/>
+                        <MenuItem text="Par Date" onAction="#trierParDate"/>
+                        <MenuItem text="Par Statut" onAction="#trierParStatut"/>
+                    </items>
+                </MenuButton>
+                <Button text="Export PDF" styleClass="nx-btn, nx-btn-secondary-sm" onAction="#exporterPDF"/>
+            </HBox>
+
+            <VBox styleClass="nx-table-container" VBox.vgrow="ALWAYS">
+                <TableView fx:id="tableGaranties" styleClass="nx-table" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="colType" text="Type" prefWidth="150"/>
+                        <TableColumn fx:id="colValeurEstimee" text="Valeur Estimée" prefWidth="120"/>
+                        <TableColumn fx:id="colValeurRetenue" text="Valeur Retenue" prefWidth="120"/>
+                        <TableColumn fx:id="colAdresse" text="Adresse" prefWidth="180"/>
+                        <TableColumn fx:id="colGarant" text="Garant" prefWidth="130"/>
+                        <TableColumn fx:id="colDate" text="Date" prefWidth="100"/>
+                        <TableColumn fx:id="colStatut" text="Statut" prefWidth="100"/>
+                        <TableColumn fx:id="colActions" text="Actions" prefWidth="100"/>
+                    </columns>
+                </TableView>
+            </VBox>
+
+            <HBox styleClass="nx-card-footer, nx-table-footer" alignment="CENTER" spacing="16">
+                <Label fx:id="lblTableInfo" text="Affichage de 0 entrées" styleClass="nx-table-info"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button text="Envoyer SMS" styleClass="nx-btn, nx-btn-gold" onAction="#envoyerSMS"/>
+            </HBox>
+        </VBox>
+    </HBox>
+</VBox>

@@ -1,0 +1,491 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.web.WebView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<VBox xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="com.nexora.bank.controllers.UserDashboardProfileSectionController"
+      spacing="0"
+      styleClass="nx-profile-container"
+      stylesheets="@../../css/sections/UserDashboardProfileSection.css"
+      visible="false"
+      managed="false">
+
+    <!-- HERO HEADER -->
+    <VBox styleClass="nx-hero-header" spacing="0">
+        <HBox alignment="CENTER_LEFT" spacing="20">
+            <padding>
+                <Insets top="32" right="40" bottom="32" left="40"/>
+            </padding>
+
+            <StackPane styleClass="nx-avatar-container">
+                <Circle radius="42" styleClass="nx-avatar-circle"/>
+                <ImageView fx:id="imgProfileAvatar" fitWidth="84" fitHeight="84" preserveRatio="false"
+                           managed="false" visible="false" styleClass="nx-avatar-image"/>
+                <FontIcon fx:id="iconProfileAvatarFallback" iconLiteral="fas-user" styleClass="nx-avatar-icon"/>
+                <StackPane styleClass="nx-avatar-badge" StackPane.alignment="BOTTOM_RIGHT">
+                    <FontIcon iconLiteral="fas-check" styleClass="nx-avatar-badge-icon"/>
+                </StackPane>
+            </StackPane>
+
+            <VBox spacing="6" HBox.hgrow="ALWAYS">
+                <Label fx:id="lblProfileName" text="Chargement..." styleClass="nx-hero-name"/>
+                <HBox spacing="12" alignment="CENTER_LEFT">
+                    <HBox spacing="6" alignment="CENTER_LEFT" styleClass="nx-hero-meta-item">
+                        <FontIcon iconLiteral="fas-envelope" styleClass="nx-hero-meta-icon"/>
+                        <Label fx:id="lblProfileEmail" text="-" styleClass="nx-hero-meta-text"/>
+                    </HBox>
+                    <Separator orientation="VERTICAL" styleClass="nx-hero-separator"/>
+                    <HBox spacing="6" alignment="CENTER_LEFT" styleClass="nx-hero-meta-item">
+                        <FontIcon iconLiteral="fas-shield-alt" styleClass="nx-hero-meta-icon"/>
+                        <Label fx:id="lblAccountStatus" text="-" styleClass="nx-hero-status-badge"/>
+                    </HBox>
+                </HBox>
+            </VBox>
+
+            <HBox spacing="12" alignment="CENTER_RIGHT">
+                <Button styleClass="nx-btn-ghost" onAction="#handleChooseProfileImage">
+                    <graphic>
+                        <HBox spacing="8" alignment="CENTER">
+                            <FontIcon iconLiteral="fas-camera" styleClass="nx-btn-ghost-icon"/>
+                            <Label text="Photo" styleClass="nx-btn-ghost-label"/>
+                        </HBox>
+                    </graphic>
+                </Button>
+                <Button styleClass="nx-btn-ghost" onAction="#handleReloadProfile">
+                    <graphic>
+                        <HBox spacing="8" alignment="CENTER">
+                            <FontIcon iconLiteral="fas-sync-alt" styleClass="nx-btn-ghost-icon"/>
+                            <Label text="Actualiser" styleClass="nx-btn-ghost-label"/>
+                        </HBox>
+                    </graphic>
+                </Button>
+            </HBox>
+        </HBox>
+
+        <HBox styleClass="nx-stats-bar" spacing="0" alignment="CENTER">
+            <VBox styleClass="nx-stat-item" alignment="CENTER" HBox.hgrow="ALWAYS">
+                <FontIcon iconLiteral="fas-calendar-plus" styleClass="nx-stat-icon"/>
+                <Label text="Membre depuis" styleClass="nx-stat-label"/>
+                <Label fx:id="lblAccountOpenedAt" text="-" styleClass="nx-stat-value"/>
+            </VBox>
+            <Separator orientation="VERTICAL" styleClass="nx-stat-separator"/>
+            <VBox styleClass="nx-stat-item" alignment="CENTER" HBox.hgrow="ALWAYS">
+                <FontIcon iconLiteral="fas-clock" styleClass="nx-stat-icon"/>
+                <Label text="Derniere connexion" styleClass="nx-stat-label"/>
+                <Label fx:id="lblLastOnlineAt" text="-" styleClass="nx-stat-value"/>
+            </VBox>
+            <Separator orientation="VERTICAL" styleClass="nx-stat-separator"/>
+            <VBox styleClass="nx-stat-item" alignment="CENTER" HBox.hgrow="ALWAYS">
+                <FontIcon iconLiteral="fas-desktop" styleClass="nx-stat-icon"/>
+                <Label text="Appareil" styleClass="nx-stat-label"/>
+                <Label fx:id="lblLastOnlineFrom" text="-" styleClass="nx-stat-value"/>
+            </VBox>
+            <Separator orientation="VERTICAL" styleClass="nx-stat-separator"/>
+            <VBox styleClass="nx-stat-item" alignment="CENTER" HBox.hgrow="ALWAYS">
+                <FontIcon iconLiteral="fas-map-marker-alt" styleClass="nx-stat-icon"/>
+                <Label text="Source d inscription" styleClass="nx-stat-label"/>
+                <Label fx:id="lblAccountOpenedFrom" text="-" styleClass="nx-stat-value"/>
+            </VBox>
+        </HBox>
+    </VBox>
+
+    <VBox styleClass="nx-main-content" spacing="24" VBox.vgrow="ALWAYS">
+        <padding>
+            <Insets top="32" right="40" bottom="40" left="40"/>
+        </padding>
+
+        <HBox spacing="24">
+            <VBox styleClass="nx-card nx-card-elevated" HBox.hgrow="ALWAYS" spacing="0">
+                <HBox styleClass="nx-card-header" spacing="14" alignment="CENTER_LEFT">
+                    <StackPane styleClass="nx-card-icon nx-card-icon-primary">
+                        <FontIcon iconLiteral="fas-user-edit" styleClass="nx-card-icon-glyph"/>
+                    </StackPane>
+                    <VBox spacing="2" HBox.hgrow="ALWAYS">
+                        <Label text="Informations personnelles" styleClass="nx-card-title"/>
+                        <Label text="Gerez vos informations de profil" styleClass="nx-card-subtitle"/>
+                    </VBox>
+                </HBox>
+
+                <VBox styleClass="nx-card-body" spacing="20">
+                    <HBox spacing="16">
+                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                            <Label text="Prenom" styleClass="nx-form-label"/>
+                            <HBox styleClass="nx-input-wrapper">
+                                <FontIcon iconLiteral="fas-user" styleClass="nx-input-icon"/>
+                                <TextField fx:id="txtPrenom" promptText="Votre prenom" styleClass="nx-input" HBox.hgrow="ALWAYS"/>
+                            </HBox>
+                        </VBox>
+                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                            <Label text="Nom" styleClass="nx-form-label"/>
+                            <HBox styleClass="nx-input-wrapper">
+                                <FontIcon iconLiteral="fas-user" styleClass="nx-input-icon"/>
+                                <TextField fx:id="txtNom" promptText="Votre nom" styleClass="nx-input" HBox.hgrow="ALWAYS"/>
+                            </HBox>
+                        </VBox>
+                    </HBox>
+
+                    <VBox spacing="8">
+                        <Label text="Email" styleClass="nx-form-label"/>
+                        <HBox styleClass="nx-input-wrapper">
+                            <FontIcon iconLiteral="fas-envelope" styleClass="nx-input-icon"/>
+                            <TextField fx:id="txtEmail" promptText="email@exemple.com" styleClass="nx-input" HBox.hgrow="ALWAYS"/>
+                        </HBox>
+                    </VBox>
+
+                    <VBox spacing="8">
+                        <Label text="Telephone" styleClass="nx-form-label"/>
+                        <HBox styleClass="nx-input-wrapper">
+                            <FontIcon iconLiteral="fas-phone" styleClass="nx-input-icon"/>
+                            <TextField fx:id="txtTelephone" promptText="+216 XX XXX XXX" styleClass="nx-input" HBox.hgrow="ALWAYS"/>
+                        </HBox>
+                    </VBox>
+
+                    <HBox spacing="12" alignment="CENTER_RIGHT">
+                        <Label fx:id="lblProfileStatus" text="" styleClass="nx-status-label" HBox.hgrow="ALWAYS"/>
+                        <Button styleClass="nx-btn-primary" onAction="#handleSaveProfile">
+                            <graphic>
+                                <HBox spacing="8" alignment="CENTER">
+                                    <FontIcon iconLiteral="fas-save" styleClass="nx-btn-primary-icon"/>
+                                    <Label text="Enregistrer" styleClass="nx-btn-primary-label"/>
+                                </HBox>
+                            </graphic>
+                        </Button>
+                    </HBox>
+                </VBox>
+            </VBox>
+
+            <VBox styleClass="nx-card nx-card-elevated" prefWidth="380" minWidth="380" spacing="0">
+                <HBox styleClass="nx-card-header" spacing="14" alignment="CENTER_LEFT">
+                    <StackPane styleClass="nx-card-icon nx-card-icon-purple">
+                        <FontIcon iconLiteral="fas-fingerprint" styleClass="nx-card-icon-glyph"/>
+                    </StackPane>
+                    <VBox spacing="2" HBox.hgrow="ALWAYS">
+                        <Label text="Securite biometrique" styleClass="nx-card-title"/>
+                        <Label text="Connexion rapide et securisee" styleClass="nx-card-subtitle"/>
+                    </VBox>
+                </HBox>
+
+                <VBox styleClass="nx-card-body" spacing="16">
+                    <VBox styleClass="nx-biometric-card" spacing="14">
+                        <HBox spacing="14" alignment="CENTER_LEFT">
+                            <StackPane styleClass="nx-biometric-icon-wrap">
+                                <FontIcon iconLiteral="fas-fingerprint" styleClass="nx-biometric-icon"/>
+                            </StackPane>
+                            <VBox spacing="4" HBox.hgrow="ALWAYS">
+                                <Label text="Authentification biometrique" styleClass="nx-biometric-title"/>
+                                <Label text="Utilisez votre empreinte" styleClass="nx-biometric-desc"/>
+                            </VBox>
+                            <CheckBox fx:id="chkEnableBiometric" styleClass="nx-toggle" onAction="#handleToggleBiometric"/>
+                        </HBox>
+                    </VBox>
+
+                    <VBox styleClass="nx-info-banner nx-info-banner-blue" spacing="8">
+                        <HBox spacing="10" alignment="TOP_LEFT">
+                            <FontIcon iconLiteral="fas-info-circle" styleClass="nx-info-banner-icon"/>
+                            <VBox spacing="4" HBox.hgrow="ALWAYS">
+                                <Label text="Securite renforcee" styleClass="nx-info-banner-title"/>
+                                <Label text="La biometrie offre une protection supplementaire pour votre compte bancaire."
+                                       styleClass="nx-info-banner-text" wrapText="true"/>
+                            </VBox>
+                        </HBox>
+                    </VBox>
+
+                    <Label fx:id="lblSecurityStatus" text="" styleClass="nx-status-label"/>
+                </VBox>
+            </VBox>
+        </HBox>
+
+        <VBox styleClass="nx-card nx-card-elevated" spacing="0">
+            <HBox styleClass="nx-card-header" spacing="14" alignment="CENTER_LEFT">
+                <StackPane styleClass="nx-card-icon nx-card-icon-navy">
+                    <FontIcon iconLiteral="fas-map-marked-alt" styleClass="nx-card-icon-glyph"/>
+                </StackPane>
+                <VBox spacing="2" HBox.hgrow="ALWAYS">
+                    <Label text="Localisation d ouverture du compte" styleClass="nx-card-title"/>
+                    <Label text="Position geographique enregistree lors de la creation" styleClass="nx-card-subtitle"/>
+                </VBox>
+                <Button fx:id="btnOpenMap" styleClass="nx-btn-outline" onAction="#handleOpenAccountOpenedMap">
+                    <graphic>
+                        <HBox spacing="6" alignment="CENTER">
+                            <FontIcon iconLiteral="fas-map" styleClass="nx-btn-outline-icon"/>
+                            <Label text="Voir sur la carte" styleClass="nx-btn-outline-label"/>
+                        </HBox>
+                    </graphic>
+                </Button>
+            </HBox>
+
+            <VBox styleClass="nx-card-body" spacing="12">
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Lieu:" styleClass="nx-form-label"/>
+                    <Label fx:id="lblOpenedLocation" text="Unknown location" styleClass="nx-location-value" wrapText="true"/>
+                </HBox>
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Coordonnees:" styleClass="nx-form-label"/>
+                    <Label fx:id="lblOpenedCoordinates" text="-" styleClass="nx-location-coords"/>
+                </HBox>
+                <VBox fx:id="boxInAppMap" styleClass="nx-map-box" spacing="10" managed="false" visible="false">
+                    <HBox alignment="CENTER_RIGHT">
+                        <Button text="Fermer la carte" styleClass="nx-btn-outline" onAction="#handleHideAccountOpenedMap"/>
+                    </HBox>
+                    <WebView fx:id="webMapView" minHeight="620" prefHeight="620" styleClass="nx-map-webview"/>
+                </VBox>
+            </VBox>
+        </VBox>
+
+        <HBox spacing="24">
+            <VBox styleClass="nx-card nx-card-elevated" HBox.hgrow="ALWAYS" spacing="0">
+                <HBox styleClass="nx-card-header" spacing="14" alignment="CENTER_LEFT">
+                    <StackPane styleClass="nx-card-icon nx-card-icon-teal">
+                        <FontIcon iconLiteral="fas-key" styleClass="nx-card-icon-glyph"/>
+                    </StackPane>
+                    <VBox spacing="2" HBox.hgrow="ALWAYS">
+                        <Label text="Modifier le mot de passe" styleClass="nx-card-title"/>
+                        <Label text="Changez votre mot de passe actuel" styleClass="nx-card-subtitle"/>
+                    </VBox>
+                </HBox>
+
+                <VBox styleClass="nx-card-body" spacing="16">
+                    <VBox spacing="8">
+                        <Label text="Mot de passe actuel" styleClass="nx-form-label"/>
+                        <HBox styleClass="nx-input-wrapper">
+                            <FontIcon iconLiteral="fas-lock" styleClass="nx-input-icon"/>
+                            <PasswordField fx:id="txtCurrentPassword" promptText="********" styleClass="nx-input" HBox.hgrow="ALWAYS"/>
+                        </HBox>
+                    </VBox>
+
+                    <HBox spacing="16">
+                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                            <Label text="Nouveau mot de passe" styleClass="nx-form-label"/>
+                            <HBox styleClass="nx-input-wrapper">
+                                <FontIcon iconLiteral="fas-lock" styleClass="nx-input-icon"/>
+                                <PasswordField fx:id="txtNewPassword" promptText="********" styleClass="nx-input" HBox.hgrow="ALWAYS"/>
+                            </HBox>
+                        </VBox>
+                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                            <Label text="Confirmer" styleClass="nx-form-label"/>
+                            <HBox styleClass="nx-input-wrapper">
+                                <FontIcon iconLiteral="fas-lock" styleClass="nx-input-icon"/>
+                                <PasswordField fx:id="txtConfirmPassword" promptText="********" styleClass="nx-input" HBox.hgrow="ALWAYS"/>
+                            </HBox>
+                        </VBox>
+                    </HBox>
+
+                    <HBox spacing="12" alignment="CENTER_RIGHT">
+                        <Label fx:id="lblPasswordStatus" text="" styleClass="nx-status-label" HBox.hgrow="ALWAYS"/>
+                        <Button styleClass="nx-btn-primary" onAction="#handleChangePassword">
+                            <graphic>
+                                <HBox spacing="8" alignment="CENTER">
+                                    <FontIcon iconLiteral="fas-check" styleClass="nx-btn-primary-icon"/>
+                                    <Label text="Mettre a jour" styleClass="nx-btn-primary-label"/>
+                                </HBox>
+                            </graphic>
+                        </Button>
+                    </HBox>
+                </VBox>
+            </VBox>
+
+            <VBox styleClass="nx-card nx-card-elevated" HBox.hgrow="ALWAYS" spacing="0">
+                <HBox styleClass="nx-card-header nx-card-header-warning" spacing="14" alignment="CENTER_LEFT">
+                    <StackPane styleClass="nx-card-icon nx-card-icon-amber">
+                        <FontIcon iconLiteral="fas-shield-alt" styleClass="nx-card-icon-glyph"/>
+                    </StackPane>
+                    <VBox spacing="2" HBox.hgrow="ALWAYS">
+                        <Label text="Recuperation par OTP" styleClass="nx-card-title"/>
+                        <Label text="Reinitialisation via code email" styleClass="nx-card-subtitle"/>
+                    </VBox>
+                    <Button styleClass="nx-btn-outline" onAction="#handleSendResetOtp">
+                        <graphic>
+                            <HBox spacing="6" alignment="CENTER">
+                                <FontIcon iconLiteral="fas-paper-plane" styleClass="nx-btn-outline-icon"/>
+                                <Label text="Envoyer OTP" styleClass="nx-btn-outline-label"/>
+                            </HBox>
+                        </graphic>
+                    </Button>
+                </HBox>
+
+                <VBox styleClass="nx-card-body" spacing="16">
+                    <VBox spacing="8">
+                        <HBox spacing="8" alignment="CENTER_LEFT">
+                            <Label text="Code OTP" styleClass="nx-form-label"/>
+                            <Label text="(Valide 5 minutes)" styleClass="nx-form-hint"/>
+                        </HBox>
+                        <HBox styleClass="nx-input-wrapper nx-input-wrapper-otp">
+                            <FontIcon iconLiteral="fas-key" styleClass="nx-input-icon"/>
+                            <TextField fx:id="txtResetOtp" promptText="Entrez le code recu" styleClass="nx-input" HBox.hgrow="ALWAYS"/>
+                        </HBox>
+                    </VBox>
+
+                    <HBox spacing="16">
+                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                            <Label text="Nouveau mot de passe" styleClass="nx-form-label"/>
+                            <HBox styleClass="nx-input-wrapper">
+                                <FontIcon iconLiteral="fas-lock" styleClass="nx-input-icon"/>
+                                <PasswordField fx:id="txtResetNewPassword" promptText="********" styleClass="nx-input" HBox.hgrow="ALWAYS"/>
+                            </HBox>
+                        </VBox>
+                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                            <Label text="Confirmer" styleClass="nx-form-label"/>
+                            <HBox styleClass="nx-input-wrapper">
+                                <FontIcon iconLiteral="fas-lock" styleClass="nx-input-icon"/>
+                                <PasswordField fx:id="txtResetConfirmPassword" promptText="********" styleClass="nx-input" HBox.hgrow="ALWAYS"/>
+                            </HBox>
+                        </VBox>
+                    </HBox>
+
+                    <HBox spacing="12" alignment="CENTER_RIGHT">
+                        <Label fx:id="lblResetStatus" text="" styleClass="nx-status-label" HBox.hgrow="ALWAYS"/>
+                        <Button styleClass="nx-btn-warning" onAction="#handleResetPasswordWithOtp">
+                            <graphic>
+                                <HBox spacing="8" alignment="CENTER">
+                                    <FontIcon iconLiteral="fas-redo" styleClass="nx-btn-warning-icon"/>
+                                    <Label text="Reinitialiser" styleClass="nx-btn-warning-label"/>
+                                </HBox>
+                            </graphic>
+                        </Button>
+                    </HBox>
+                </VBox>
+            </VBox>
+        </HBox>
+
+        <VBox styleClass="nx-card nx-card-elevated nx-card-large" spacing="0">
+            <HBox styleClass="nx-card-header" spacing="14" alignment="CENTER_LEFT">
+                <StackPane styleClass="nx-card-icon nx-card-icon-navy">
+                    <FontIcon iconLiteral="fas-chart-line" styleClass="nx-card-icon-glyph"/>
+                </StackPane>
+                <VBox spacing="2" HBox.hgrow="ALWAYS">
+                    <Label text="Activite du compte et analyse IA" styleClass="nx-card-title"/>
+                    <Label text="Historique des actions et diagnostic intelligent" styleClass="nx-card-subtitle"/>
+                </VBox>
+                <HBox spacing="10" alignment="CENTER_RIGHT">
+                    <Button styleClass="nx-btn-accent" onAction="#handleAnalyzeAccountSecurity">
+                        <graphic>
+                            <HBox spacing="8" alignment="CENTER">
+                                <FontIcon iconLiteral="fas-robot" styleClass="nx-btn-accent-icon"/>
+                                <Label text="Analyser avec IA" styleClass="nx-btn-accent-label"/>
+                            </HBox>
+                        </graphic>
+                    </Button>
+                    <Button fx:id="btnSecureAccount" styleClass="nx-btn-secure" onAction="#handleSecureMyAccount" managed="false" visible="false">
+                        <graphic>
+                            <HBox spacing="8" alignment="CENTER">
+                                <FontIcon iconLiteral="fas-shield-alt" styleClass="nx-btn-secure-icon"/>
+                                <Label text="Secure my account" styleClass="nx-btn-secure-label"/>
+                            </HBox>
+                        </graphic>
+                    </Button>
+                </HBox>
+            </HBox>
+
+            <HBox styleClass="nx-card-body" spacing="24" VBox.vgrow="ALWAYS">
+                <VBox spacing="14" HBox.hgrow="ALWAYS" minWidth="320" VBox.vgrow="ALWAYS">
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <FontIcon iconLiteral="fas-history" styleClass="nx-section-icon"/>
+                        <Label text="Actions recentes" styleClass="nx-section-title"/>
+                    </HBox>
+                    <ScrollPane fitToWidth="true" prefViewportHeight="680" styleClass="nx-activity-scroll" VBox.vgrow="ALWAYS">
+                        <VBox fx:id="boxRecentActions" spacing="10" styleClass="nx-activity-list"/>
+                    </ScrollPane>
+                </VBox>
+
+                <Separator orientation="VERTICAL" styleClass="nx-card-divider"/>
+
+                <VBox spacing="14" HBox.hgrow="ALWAYS" minWidth="400" VBox.vgrow="ALWAYS">
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <FontIcon iconLiteral="fas-brain" styleClass="nx-section-icon nx-section-icon-purple"/>
+                        <Label text="Analyse de securite IA" styleClass="nx-section-title"/>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <Label fx:id="lblAiStatus" text="" styleClass="nx-status-label"/>
+                    </HBox>
+
+                    <VBox fx:id="aiInlineAnalysisCard" styleClass="nx-ai-card" spacing="0" managed="false" visible="false" VBox.vgrow="ALWAYS">
+                        <HBox styleClass="nx-ai-header" alignment="CENTER_LEFT" spacing="12">
+                            <StackPane styleClass="nx-ai-header-icon">
+                                <FontIcon iconLiteral="fas-shield-alt" styleClass="nx-ai-header-icon-glyph"/>
+                            </StackPane>
+                            <VBox spacing="2" HBox.hgrow="ALWAYS">
+                                <Label text="Rapport de securite" styleClass="nx-ai-title"/>
+                                <Label text="Analyse complete de votre compte" styleClass="nx-ai-subtitle"/>
+                            </VBox>
+                            <Label fx:id="lblAiInlineTimestamp" text="" styleClass="nx-ai-timestamp"/>
+                        </HBox>
+
+                        <ScrollPane fitToWidth="true" prefViewportHeight="760" styleClass="nx-ai-scroll" VBox.vgrow="ALWAYS">
+                            <VBox styleClass="nx-ai-body" spacing="14">
+                                <VBox fx:id="sectionAiAccount" styleClass="nx-ai-section" spacing="8" managed="false" visible="false">
+                                    <HBox spacing="8" alignment="CENTER_LEFT">
+                                        <FontIcon iconLiteral="fas-user-circle" styleClass="nx-ai-section-icon"/>
+                                        <Label text="Titulaire du compte" styleClass="nx-ai-section-title"/>
+                                    </HBox>
+                                    <Label fx:id="lblAiAccountHolder" text="" styleClass="nx-ai-section-content" wrapText="true"/>
+                                </VBox>
+
+                                <VBox fx:id="sectionAiSummary" styleClass="nx-ai-section nx-ai-section-info" spacing="8" managed="false" visible="false">
+                                    <HBox spacing="8" alignment="CENTER_LEFT">
+                                        <FontIcon iconLiteral="fas-clipboard-list" styleClass="nx-ai-section-icon"/>
+                                        <Label text="Situation actuelle" styleClass="nx-ai-section-title"/>
+                                    </HBox>
+                                    <Label fx:id="lblAiSummary" text="" styleClass="nx-ai-section-content" wrapText="true"/>
+                                </VBox>
+
+                                <VBox fx:id="sectionAiRisk" styleClass="nx-ai-risk-box" spacing="12" managed="false" visible="false">
+                                    <HBox alignment="CENTER_LEFT" spacing="8">
+                                        <FontIcon iconLiteral="fas-exclamation-triangle" styleClass="nx-ai-risk-icon"/>
+                                        <Label text="Niveau de risque" styleClass="nx-ai-section-title"/>
+                                        <Region HBox.hgrow="ALWAYS"/>
+                                        <Label fx:id="lblAiRiskLevel" text="MEDIUM" styleClass="nx-ai-risk-badge"/>
+                                    </HBox>
+                                    <VBox fx:id="boxAiRiskReasons" spacing="8"/>
+                                </VBox>
+
+                                <VBox fx:id="sectionAiAdvice" styleClass="nx-ai-section nx-ai-section-success" spacing="8" managed="false" visible="false">
+                                    <HBox spacing="8" alignment="CENTER_LEFT">
+                                        <FontIcon iconLiteral="fas-lightbulb" styleClass="nx-ai-section-icon nx-ai-section-icon-success"/>
+                                        <Label text="Recommandations" styleClass="nx-ai-section-title"/>
+                                    </HBox>
+                                    <VBox fx:id="boxAiAdviceItems" spacing="8"/>
+                                </VBox>
+
+                                <VBox fx:id="sectionAiSuspicious" styleClass="nx-ai-section nx-ai-section-danger" spacing="8" managed="false" visible="false">
+                                    <HBox spacing="8" alignment="CENTER_LEFT">
+                                        <FontIcon iconLiteral="fas-exclamation-circle" styleClass="nx-ai-section-icon nx-ai-section-icon-danger"/>
+                                        <Label text="Points d attention" styleClass="nx-ai-section-title"/>
+                                    </HBox>
+                                    <VBox fx:id="boxAiSuspiciousItems" spacing="8"/>
+                                </VBox>
+                            </VBox>
+                        </ScrollPane>
+                    </VBox>
+
+                    <VBox fx:id="aiEmptyState" styleClass="nx-ai-empty" spacing="12" alignment="CENTER" VBox.vgrow="ALWAYS">
+                        <StackPane styleClass="nx-ai-empty-icon-wrap">
+                            <FontIcon iconLiteral="fas-robot" styleClass="nx-ai-empty-icon"/>
+                        </StackPane>
+                        <Label fx:id="lblAiEmptyTitle" text="Aucune analyse disponible" styleClass="nx-ai-empty-title"/>
+                        <Label fx:id="lblAiEmptyText" text="Cliquez sur 'Analyser avec IA' pour obtenir un rapport personnalise"
+                               styleClass="nx-ai-empty-text" wrapText="true" textAlignment="CENTER"/>
+                    </VBox>
+                </VBox>
+            </HBox>
+        </VBox>
+    </VBox>
+</VBox>

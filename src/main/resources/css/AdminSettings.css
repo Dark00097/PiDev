@@ -1,0 +1,882 @@
+/* ═══════════════════════════════════════════════════════════════════════════════
+   NEXORA BANK - ADMIN SECURITY SETTINGS
+   Professional Modern Design System
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────────────────────────────────────────────
+   ROOT & FOUNDATION
+   ───────────────────────────────────────────────────────────────────────────────── */
+
+.nx-main-scroll {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #F8FAFC 0%, #F1F5F9 50%, #E2E8F0 100%);
+    -fx-background: linear-gradient(from 0% 0% to 100% 100%, #F8FAFC 0%, #F1F5F9 50%, #E2E8F0 100%);
+    -fx-border-color: transparent;
+}
+
+.nx-main-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.nx-main-scroll > .scroll-bar {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+}
+
+.nx-main-scroll > .scroll-bar > .track {
+    -fx-background-color: transparent;
+}
+
+.nx-main-scroll > .scroll-bar > .thumb {
+    -fx-background-color: rgba(0, 180, 160, 0.25);
+    -fx-background-radius: 6px;
+}
+
+.nx-main-scroll > .scroll-bar > .thumb:hover {
+    -fx-background-color: rgba(0, 180, 160, 0.45);
+}
+
+.nx-settings-root {
+    -fx-padding: 36px 44px 44px 44px;
+    -fx-spacing: 28px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────────
+   HERO HEADER
+   ───────────────────────────────────────────────────────────────────────────────── */
+
+.nx-hero-header {
+    -fx-padding: 28px 32px;
+    -fx-background-color: white;
+    -fx-background-radius: 24px;
+    -fx-border-color: rgba(0, 180, 160, 0.1);
+    -fx-border-radius: 24px;
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.06), 24, 0, 0, 6);
+}
+
+.nx-hero-icon-container {
+    -fx-min-width: 80px;
+    -fx-min-height: 80px;
+    -fx-max-width: 80px;
+    -fx-max-height: 80px;
+}
+
+.nx-hero-icon-outer-ring {
+    -fx-fill: rgba(0, 180, 160, 0.08);
+}
+
+.nx-hero-icon-bg {
+    -fx-fill: linear-gradient(from 0% 0% to 100% 100%, #00D4BC 0%, #009485 100%);
+    -fx-effect: dropshadow(gaussian, rgba(0, 180, 160, 0.4), 14, 0, 0, 4);
+}
+
+.nx-hero-icon-svg {
+    -fx-fill: white;
+    -fx-scale-x: 1.0;
+    -fx-scale-y: 1.0;
+}
+
+.nx-hero-icon-overlay {
+    -fx-fill: rgba(255, 255, 255, 0.3);
+    -fx-scale-x: 0.55;
+    -fx-scale-y: 0.55;
+    -fx-translate-y: 4;
+}
+
+.nx-hero-title {
+    -fx-text-fill: #0F172A;
+    -fx-font-size: 30px;
+    -fx-font-weight: 800;
+    -fx-font-family: "Segoe UI", "SF Pro Display", system;
+}
+
+.nx-admin-indicator {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #8B5CF6 0%, #7C3AED 100%);
+    -fx-background-radius: 20px;
+    -fx-padding: 6px 14px;
+    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.35), 8, 0, 0, 2);
+}
+
+.nx-admin-indicator .svg-path,
+.nx-admin-indicator SVGPath {
+    -fx-fill: white;
+    -fx-stroke: white;
+    -fx-stroke-width: 1.6;
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
+    -fx-scale-x: 0.5;
+    -fx-scale-y: 0.5;
+}
+
+.nx-admin-indicator-text {
+    -fx-text-fill: white;
+    -fx-font-size: 10px;
+    -fx-font-weight: 700;
+}
+
+.nx-hero-subtitle {
+    -fx-text-fill: #64748B;
+    -fx-font-size: 14px;
+    -fx-font-weight: 400;
+    -fx-wrap-text: true;
+}
+
+.nx-connection-status {
+    -fx-background-color: #F8FAFC;
+    -fx-background-radius: 14px;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 14px;
+    -fx-border-width: 1px;
+    -fx-padding: 12px 18px;
+}
+
+.nx-status-dot {
+    -fx-effect: dropshadow(gaussian, rgba(16, 185, 129, 0.5), 6, 0, 0, 0);
+}
+
+.nx-status-online {
+    -fx-fill: #10B981;
+}
+
+.nx-status-text {
+    -fx-text-fill: #10B981;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+}
+
+.nx-status-detail {
+    -fx-text-fill: #94A3B8;
+    -fx-font-size: 10px;
+    -fx-font-weight: 500;
+}
+
+.nx-hero-decoration {
+    -fx-padding: 24px 0 0 0;
+}
+
+.nx-hero-line {
+    -fx-min-height: 4px;
+    -fx-max-height: 4px;
+    -fx-background-radius: 2px;
+}
+
+.nx-hero-line-shield {
+    -fx-background-color: linear-gradient(to right, #00D4BC, #00B4A0);
+}
+
+.nx-hero-line-lock {
+    -fx-background-color: linear-gradient(to right, #8B5CF6, #A78BFA);
+    -fx-opacity: 0.7;
+}
+
+.nx-hero-line-key {
+    -fx-background-color: #E2E8F0;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────────
+   CARDS - BASE STYLES
+   ───────────────────────────────────────────────────────────────────────────────── */
+
+.nx-card {
+    -fx-background-color: white;
+    -fx-background-radius: 20px;
+    -fx-border-color: rgba(0, 0, 0, 0.04);
+    -fx-border-radius: 20px;
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.06), 24, 0, 0, 6);
+}
+
+.nx-card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 30, 0, 0, 8);
+}
+
+.nx-card-header {
+    -fx-padding: 22px 26px;
+    -fx-border-color: transparent transparent #F1F5F9 transparent;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.nx-card-body {
+    -fx-padding: 26px;
+}
+
+.nx-card-footer {
+    -fx-padding: 18px 26px;
+    -fx-background-color: #FAFBFC;
+    -fx-background-radius: 0 0 20px 20px;
+    -fx-border-color: #F1F5F9 transparent transparent transparent;
+    -fx-border-width: 1px 0 0 0;
+}
+
+.nx-card-title {
+    -fx-text-fill: #0F172A;
+    -fx-font-size: 17px;
+    -fx-font-weight: 700;
+}
+
+.nx-card-subtitle {
+    -fx-text-fill: #64748B;
+    -fx-font-size: 12px;
+    -fx-font-weight: 400;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────────
+   PROFILE CARD
+   ───────────────────────────────────────────────────────────────────────────────── */
+
+.nx-card-profile {
+    -fx-border-color: rgba(139, 92, 246, 0.1);
+}
+
+.nx-profile-header {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #FAFBFC 0%, #F8F9FB 100%);
+    -fx-background-radius: 20px 20px 0 0;
+}
+
+.nx-avatar-container {
+    -fx-min-width: 72px;
+    -fx-min-height: 72px;
+    -fx-max-width: 72px;
+    -fx-max-height: 72px;
+}
+
+.nx-avatar-bg {
+    -fx-fill: linear-gradient(from 0% 0% to 100% 100%, #A78BFA 0%, #8B5CF6 100%);
+    -fx-effect: dropshadow(gaussian, rgba(139, 92, 246, 0.35), 12, 0, 0, 4);
+}
+
+.nx-avatar-icon {
+    -fx-fill: white;
+    -fx-scale-x: 1.1;
+    -fx-scale-y: 1.1;
+}
+
+.nx-avatar-badge {
+    -fx-min-width: 22px;
+    -fx-min-height: 22px;
+    -fx-max-width: 22px;
+    -fx-max-height: 22px;
+    -fx-background-color: #10B981;
+    -fx-background-radius: 11px;
+    -fx-translate-x: 22;
+    -fx-translate-y: 22;
+    -fx-effect: dropshadow(gaussian, rgba(16, 185, 129, 0.4), 4, 0, 0, 0);
+}
+
+.nx-avatar-badge .svg-path,
+.nx-avatar-badge SVGPath {
+    -fx-fill: white;
+    -fx-stroke: white;
+    -fx-stroke-width: 2;
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
+    -fx-scale-x: 0.55;
+    -fx-scale-y: 0.55;
+}
+
+.nx-role-badge {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #EDE9FE 0%, #DDD6FE 100%);
+    -fx-text-fill: #7C3AED;
+    -fx-font-size: 10px;
+    -fx-font-weight: 700;
+    -fx-padding: 5px 12px;
+    -fx-background-radius: 20px;
+}
+
+.nx-status-badge {
+    -fx-font-size: 10px;
+    -fx-font-weight: 700;
+    -fx-padding: 5px 12px;
+    -fx-background-radius: 20px;
+}
+
+.nx-status-active {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #D1FAE5 0%, #A7F3D0 100%);
+    -fx-text-fill: #059669;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────────
+   FORM FIELDS
+   ───────────────────────────────────────────────────────────────────────────────── */
+
+.nx-field {
+    -fx-spacing: 8px;
+}
+
+.nx-field-icon {
+    -fx-fill: transparent;
+    -fx-stroke: #94A3B8;
+    -fx-stroke-width: 1.8;
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
+    -fx-scale-x: 0.55;
+    -fx-scale-y: 0.55;
+}
+
+.nx-field-label {
+    -fx-text-fill: #475569;
+    -fx-font-size: 12px;
+    -fx-font-weight: 600;
+}
+
+.nx-required {
+    -fx-text-fill: #EF4444;
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+}
+
+.nx-input-container {
+    -fx-background-color: white;
+    -fx-background-radius: 12px;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 12px;
+    -fx-border-width: 1.5px;
+    -fx-padding: 0;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.nx-input-container:hover {
+    -fx-border-color: #CBD5E1;
+}
+
+.nx-input-container:focused-within {
+    -fx-border-color: #00B4A0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 180, 160, 0.15), 8, 0, 0, 0);
+}
+
+.nx-input-prefix {
+    -fx-min-width: 44px;
+    -fx-min-height: 44px;
+    -fx-background-color: #F8FAFC;
+    -fx-background-radius: 10px 0 0 10px;
+    -fx-border-color: transparent #E2E8F0 transparent transparent;
+    -fx-border-width: 0 1px 0 0;
+    -fx-alignment: CENTER;
+}
+
+.nx-input-prefix .svg-path,
+.nx-input-prefix SVGPath {
+    -fx-fill: transparent;
+    -fx-stroke: #94A3B8;
+    -fx-stroke-width: 1.8;
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
+    -fx-scale-x: 0.6;
+    -fx-scale-y: 0.6;
+}
+
+.nx-input {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 14px 16px;
+    -fx-font-size: 13px;
+    -fx-text-fill: #1E293B;
+    -fx-prompt-text-fill: #94A3B8;
+}
+
+.nx-input:focused {
+    -fx-background-color: transparent;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────────
+   SECURITY CARD
+   ───────────────────────────────────────────────────────────────────────────────── */
+
+.nx-card-security {
+    -fx-border-color: rgba(0, 180, 160, 0.1);
+}
+
+.nx-security-header {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #F0FDFA 0%, #ECFDF5 100%);
+    -fx-background-radius: 20px 20px 0 0;
+}
+
+.nx-security-icon-wrap {
+    -fx-min-width: 56px;
+    -fx-min-height: 56px;
+    -fx-max-width: 56px;
+    -fx-max-height: 56px;
+}
+
+.nx-security-icon-bg {
+    -fx-fill: linear-gradient(from 0% 0% to 100% 100%, #00D4BC 0%, #009485 100%);
+    -fx-effect: dropshadow(gaussian, rgba(0, 180, 160, 0.35), 10, 0, 0, 3);
+}
+
+.nx-security-icon {
+    -fx-fill: white;
+    -fx-scale-x: 0.8;
+    -fx-scale-y: 0.8;
+}
+
+.nx-security-level {
+    -fx-background-color: #F0FDFA;
+    -fx-background-radius: 12px;
+    -fx-border-color: rgba(0, 180, 160, 0.2);
+    -fx-border-radius: 12px;
+    -fx-border-width: 1px;
+    -fx-padding: 10px 14px;
+}
+
+.nx-security-level-label {
+    -fx-text-fill: #64748B;
+    -fx-font-size: 9px;
+    -fx-font-weight: 500;
+}
+
+.nx-security-bar {
+    -fx-min-width: 20px;
+    -fx-min-height: 4px;
+    -fx-max-height: 4px;
+    -fx-background-color: #E2E8F0;
+    -fx-background-radius: 2px;
+}
+
+.nx-security-bar-active {
+    -fx-background-color: #10B981;
+}
+
+.nx-security-badge {
+    -fx-text-fill: #059669;
+    -fx-font-size: 10px;
+    -fx-font-weight: 700;
+}
+
+.nx-password-requirements {
+    -fx-background-color: #F8FAFC;
+    -fx-background-radius: 12px;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 12px;
+    -fx-border-width: 1px;
+    -fx-padding: 14px 18px;
+}
+
+.nx-requirements-title {
+    -fx-text-fill: #475569;
+    -fx-font-size: 11px;
+    -fx-font-weight: 600;
+}
+
+.nx-check-icon {
+    -fx-fill: transparent;
+    -fx-stroke: #10B981;
+    -fx-stroke-width: 2;
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
+    -fx-scale-x: 0.6;
+    -fx-scale-y: 0.6;
+}
+
+.nx-requirement-text {
+    -fx-text-fill: #64748B;
+    -fx-font-size: 11px;
+    -fx-font-weight: 500;
+}
+
+.nx-security-footer {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #F0FDFA 0%, #ECFDF5 100%);
+}
+
+.nx-footer-icon {
+    -fx-fill: transparent;
+    -fx-stroke: #00B4A0;
+    -fx-stroke-width: 1.9;
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
+    -fx-scale-x: 0.65;
+    -fx-scale-y: 0.65;
+}
+
+.nx-footer-hint {
+    -fx-text-fill: #64748B;
+    -fx-font-size: 11px;
+    -fx-font-style: italic;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────────
+   BIOMETRIC CARD
+   ───────────────────────────────────────────────────────────────────────────────── */
+
+.nx-card-biometric {
+    -fx-border-color: rgba(99, 102, 241, 0.1);
+}
+
+.nx-biometric-header {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #EEF2FF 0%, #E0E7FF 100%);
+    -fx-background-radius: 20px 20px 0 0;
+}
+
+.nx-biometric-icon-wrap {
+    -fx-min-width: 60px;
+    -fx-min-height: 60px;
+    -fx-max-width: 60px;
+    -fx-max-height: 60px;
+}
+
+.nx-biometric-icon-bg {
+    -fx-fill: linear-gradient(from 0% 0% to 100% 100%, #818CF8 0%, #6366F1 100%);
+    -fx-effect: dropshadow(gaussian, rgba(99, 102, 241, 0.35), 10, 0, 0, 3);
+}
+
+.nx-biometric-icon {
+    -fx-fill: white;
+    -fx-scale-x: 0.75;
+    -fx-scale-y: 0.75;
+}
+
+.nx-biometric-body {
+    -fx-spacing: 16px;
+}
+
+.nx-toggle-option {
+    -fx-background-color: #FAFBFC;
+    -fx-background-radius: 14px;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 14px;
+    -fx-border-width: 1px;
+    -fx-padding: 16px 18px;
+}
+
+.nx-toggle-option:hover {
+    -fx-background-color: #F1F5F9;
+    -fx-border-color: #CBD5E1;
+}
+
+.nx-option-icon {
+    -fx-min-width: 42px;
+    -fx-min-height: 42px;
+    -fx-max-width: 42px;
+    -fx-max-height: 42px;
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #00D4BC 0%, #00A896 100%);
+    -fx-background-radius: 12px;
+    -fx-alignment: CENTER;
+}
+
+.nx-option-icon .svg-path,
+.nx-option-icon SVGPath {
+    -fx-fill: white;
+    -fx-stroke: white;
+    -fx-stroke-width: 1.8;
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
+    -fx-scale-x: 0.65;
+    -fx-scale-y: 0.65;
+}
+
+.nx-option-icon-login {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #00D4BC 0%, #00A896 100%);
+}
+
+.nx-option-icon-sensitive {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #F87171 0%, #EF4444 100%);
+}
+
+.nx-option-icon-otp {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #FBBF24 0%, #F59E0B 100%);
+}
+
+.nx-option-title {
+    -fx-text-fill: #0F172A;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+}
+
+.nx-option-description {
+    -fx-text-fill: #64748B;
+    -fx-font-size: 11px;
+    -fx-wrap-text: true;
+}
+
+/* Toggle Switch Styling */
+.nx-toggle-switch {
+    -fx-padding: 0;
+}
+
+.nx-toggle-switch > .box {
+    -fx-background-color: #CBD5E1;
+    -fx-background-radius: 12px;
+    -fx-padding: 3px;
+    -fx-pref-width: 44px;
+    -fx-pref-height: 24px;
+}
+
+.nx-toggle-switch:selected > .box {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #00D4BC 0%, #00A896 100%);
+}
+
+.nx-toggle-switch > .box > .mark {
+    -fx-background-color: white;
+    -fx-background-radius: 9px;
+    -fx-pref-width: 18px;
+    -fx-pref-height: 18px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 4, 0, 0, 1);
+}
+
+.nx-info-box {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #EFF6FF 0%, #DBEAFE 100%);
+    -fx-background-radius: 14px;
+    -fx-border-color: rgba(59, 130, 246, 0.2);
+    -fx-border-radius: 14px;
+    -fx-border-width: 1px;
+    -fx-padding: 16px 18px;
+}
+
+.nx-info-icon {
+    -fx-fill: transparent;
+    -fx-stroke: #3B82F6;
+    -fx-stroke-width: 1.9;
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
+    -fx-scale-x: 0.7;
+    -fx-scale-y: 0.7;
+}
+
+.nx-info-title {
+    -fx-text-fill: #1E40AF;
+    -fx-font-size: 12px;
+    -fx-font-weight: 700;
+}
+
+.nx-info-text {
+    -fx-text-fill: #3B82F6;
+    -fx-font-size: 11px;
+    -fx-line-spacing: 2px;
+}
+
+.nx-biometric-footer {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #EEF2FF 0%, #E0E7FF 100%);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────────
+   QUICK ACTIONS CARD
+   ───────────────────────────────────────────────────────────────────────────────── */
+
+.nx-card-actions {
+    -fx-border-color: rgba(245, 158, 11, 0.1);
+}
+
+.nx-actions-icon-wrap {
+    -fx-min-width: 38px;
+    -fx-min-height: 38px;
+    -fx-max-width: 38px;
+    -fx-max-height: 38px;
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #FCD34D 0%, #F59E0B 100%);
+    -fx-background-radius: 10px;
+    -fx-alignment: CENTER;
+    -fx-effect: dropshadow(gaussian, rgba(245, 158, 11, 0.3), 6, 0, 0, 2);
+}
+
+.nx-actions-icon-wrap .svg-path,
+.nx-actions-icon-wrap SVGPath {
+    -fx-fill: white;
+    -fx-stroke: white;
+    -fx-stroke-width: 1.9;
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
+    -fx-scale-x: 0.6;
+    -fx-scale-y: 0.6;
+}
+
+.nx-quick-actions-grid {
+    -fx-padding: 18px 20px;
+}
+
+.nx-quick-action-btn {
+    -fx-background-color: #F8FAFC;
+    -fx-background-radius: 14px;
+    -fx-border-color: #E2E8F0;
+    -fx-border-radius: 14px;
+    -fx-border-width: 1px;
+    -fx-padding: 16px 20px;
+    -fx-cursor: hand;
+    -fx-pref-width: 100px;
+    -fx-pref-height: 90px;
+}
+
+.nx-quick-action-btn:hover {
+    -fx-background-color: #F1F5F9;
+    -fx-border-color: #CBD5E1;
+    -fx-translate-y: -2;
+}
+
+.nx-quick-action-icon {
+    -fx-min-width: 36px;
+    -fx-min-height: 36px;
+    -fx-max-width: 36px;
+    -fx-max-height: 36px;
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #00D4BC 0%, #00A896 100%);
+    -fx-background-radius: 10px;
+    -fx-alignment: CENTER;
+}
+
+.nx-quick-action-icon .svg-path,
+.nx-quick-action-icon SVGPath {
+    -fx-fill: white;
+    -fx-stroke: white;
+    -fx-stroke-width: 1.8;
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
+    -fx-scale-x: 0.55;
+    -fx-scale-y: 0.55;
+}
+
+.nx-quick-action-icon-purple {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #A78BFA 0%, #8B5CF6 100%);
+}
+
+.nx-quick-action-icon-orange {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #FCD34D 0%, #F59E0B 100%);
+}
+
+.nx-quick-action-label {
+    -fx-text-fill: #475569;
+    -fx-font-size: 11px;
+    -fx-font-weight: 600;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────────
+   BUTTONS
+   ───────────────────────────────────────────────────────────────────────────────── */
+
+.nx-btn {
+    -fx-background-radius: 12px;
+    -fx-border-radius: 12px;
+    -fx-padding: 12px 22px;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-cursor: hand;
+    -fx-graphic-text-gap: 10px;
+    -fx-alignment: CENTER;
+    -fx-border-width: 0;
+}
+
+.nx-btn .svg-path,
+.nx-btn SVGPath {
+    -fx-fill: #475569;
+    -fx-stroke: #475569;
+    -fx-stroke-width: 1.8;
+    -fx-stroke-line-cap: round;
+    -fx-stroke-line-join: round;
+    -fx-scale-x: 0.6;
+    -fx-scale-y: 0.6;
+}
+
+.nx-btn-full {
+    -fx-max-width: Infinity;
+}
+
+.nx-btn-primary {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #00D4BC 0%, #00B4A0 50%, #009485 100%);
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(0, 180, 160, 0.35), 12, 0, 0, 4);
+}
+
+.nx-btn-primary .svg-path,
+.nx-btn-primary SVGPath {
+    -fx-fill: white;
+    -fx-stroke: white;
+}
+
+.nx-btn-primary:hover {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #00E5CC 0%, #00C4AC 50%, #00A896 100%);
+    -fx-effect: dropshadow(gaussian, rgba(0, 180, 160, 0.45), 16, 0, 0, 6);
+    -fx-translate-y: -1;
+}
+
+.nx-btn-secondary {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #818CF8 0%, #6366F1 50%, #4F46E5 100%);
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(99, 102, 241, 0.35), 12, 0, 0, 4);
+}
+
+.nx-btn-secondary .svg-path,
+.nx-btn-secondary SVGPath {
+    -fx-fill: white;
+    -fx-stroke: white;
+}
+
+.nx-btn-secondary:hover {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #A5B4FC 0%, #818CF8 100%);
+}
+
+.nx-btn-security {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #14B8A6 0%, #0D9488 50%, #0F766E 100%);
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(20, 184, 166, 0.35), 12, 0, 0, 4);
+}
+
+.nx-btn-security .svg-path,
+.nx-btn-security SVGPath {
+    -fx-fill: white;
+    -fx-stroke: white;
+}
+
+.nx-btn-security:hover {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #2DD4BF 0%, #14B8A6 100%);
+}
+
+.nx-btn-ghost {
+    -fx-background-color: transparent;
+    -fx-text-fill: #64748B;
+}
+
+.nx-btn-ghost .svg-path,
+.nx-btn-ghost SVGPath {
+    -fx-fill: #64748B;
+    -fx-stroke: #64748B;
+}
+
+.nx-btn-ghost:hover {
+    -fx-background-color: #F1F5F9;
+    -fx-text-fill: #475569;
+}
+
+.nx-btn-ghost:hover .svg-path,
+.nx-btn-ghost:hover SVGPath {
+    -fx-fill: #475569;
+    -fx-stroke: #475569;
+}
+
+.nx-btn-outline {
+    -fx-background-color: transparent;
+    -fx-text-fill: #475569;
+    -fx-border-color: #CBD5E1;
+    -fx-border-width: 1.5px;
+}
+
+.nx-btn-outline .svg-path,
+.nx-btn-outline SVGPath {
+    -fx-fill: #64748B;
+    -fx-stroke: #64748B;
+}
+
+.nx-btn-outline:hover {
+    -fx-background-color: #F8FAFC;
+    -fx-border-color: #00B4A0;
+    -fx-text-fill: #00B4A0;
+}
+
+.nx-btn-outline:hover .svg-path,
+.nx-btn-outline:hover SVGPath {
+    -fx-fill: #00B4A0;
+    -fx-stroke: #00B4A0;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────────
+   TRANSITIONS & ANIMATIONS
+   ───────────────────────────────────────────────────────────────────────────────── */
+
+
+/* ─────────────────────────────────────────────────────────────────────────────────
+   TOOLTIP
+   ───────────────────────────────────────────────────────────────────────────────── */
+
+.tooltip {
+    -fx-background-color: #1E293B;
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+    -fx-font-weight: 500;
+    -fx-padding: 8px 14px;
+    -fx-background-radius: 8px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 8, 0, 0, 2);
+}
